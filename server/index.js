@@ -11,6 +11,12 @@ app.listen(process.env.PORT || 8080, function(){
   console.log("Сервер ожидает подключения...");
 });
 
+app.post('/createPuzzle', function(req, res){
+  const {img} = req.body;
+  return res.json({img: img});
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
+
