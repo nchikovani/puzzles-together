@@ -18,7 +18,6 @@ function App() {
       }).then(res => {
         res.json().then(body=> {
           setImg(body.img);
-          console.log(body.img);
         });
 
       });
