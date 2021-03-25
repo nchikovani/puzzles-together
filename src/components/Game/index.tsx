@@ -7,92 +7,188 @@ const partsTest = [{
   id: '1',
   xIndex: 0,
   yIndex: 0,
-  x: 0,
-  y: 0,
-  topLinkType: 'flat',
-  leftLinkType: 'flat',
-  rightLinkType: 'concave',
-  bottomLinkType: 'concave',
+  x: 621,
+  y: 310,
+  topLink: null,
+  leftLink: null,
+  rightLink: {
+    type: 'concave',
+    connected: false,
+    id: '4',
+  },
+  bottomLink: {
+    type: 'concave',
+    connected: false,
+    id: '2',
+  }
 }, {
   id: '2',
   xIndex: 0,
   yIndex: 1,
   x: 200,
   y: 200,
-  topLinkType: 'convex',
-  leftLinkType: 'flat',
-  rightLinkType: 'convex',
-  bottomLinkType: 'convex',
+  topLink: {
+    type: 'convex',
+    connected: false,
+    id: '1',
+  },
+  leftLink: null,
+  rightLink: {
+    type: 'convex',
+    connected: false,
+    id: '5',
+  },
+  bottomLink: {
+    type: 'convex',
+    connected: false,
+    id: '3',
+  }
 }, {
   id: '3',
   xIndex: 0,
   yIndex: 2,
   x: 300,
   y: 300,
-  topLinkType: 'concave',
-  leftLinkType: 'flat',
-  rightLinkType: 'convex',
-  bottomLinkType: 'flat',
+  topLink: {
+    type: 'concave',
+    connected: false,
+    id: '2',
+  },
+  leftLink: null,
+  rightLink: {
+    type: 'convex',
+    connected: false,
+    id: '6',
+  },
+  bottomLink: null
 }, {
   id: '4',
   xIndex: 1,
   yIndex: 0,
-  x: 100,
-  y: 170,
-  topLinkType: 'flat',
-  leftLinkType: 'convex',
-  rightLinkType: 'convex',
-  bottomLinkType: 'concave',
+  x: 700,
+  y: 500,
+  topLink: null,
+  leftLink: {
+    type: 'convex',
+    connected: false,
+    id: '1',
+  },
+  rightLink: {
+    type: 'convex',
+    connected: false,
+    id: '7',
+  },
+  bottomLink: {
+    type: 'convex',
+    connected: false,
+    id: '5',
+  }
 }, {
   id: '5',
   xIndex: 1,
   yIndex: 1,
-  x: 100,
-  y: 400,
-  topLinkType: 'convex',
-  leftLinkType: 'concave',
-  rightLinkType: 'convex',
-  bottomLinkType: 'concave',
+  x: 544,
+  y: 287,
+  topLink: {
+    type: 'concave',
+    connected: false,
+    id: '4',
+  },
+  leftLink: {
+    type: 'concave',
+    connected: false,
+    id: '2',
+  },
+  rightLink: {
+    type: 'convex',
+    connected: false,
+    id: '8',
+  },
+  bottomLink: {
+    type: 'concave',
+    connected: false,
+    id: '6',
+  }
 }, {
   id: '6',
   xIndex: 1,
   yIndex: 2,
-  x: 500,
-  y: 300,
-  topLinkType: 'convex',
-  leftLinkType: 'concave',
-  rightLinkType: 'convex',
-  bottomLinkType: 'flat',
-}, {
+  x: 10,
+  y: 5,
+  topLink: {
+    type: 'convex',
+    connected: false,
+    id: '5',
+  },
+  leftLink: {
+    type: 'concave',
+    connected: false,
+    id: '3',
+  },
+  rightLink: {
+    type: 'concave',
+    connected: false,
+    id: '9',
+  },
+  bottomLink: null
+},{
   id: '7',
   xIndex: 2,
   yIndex: 0,
-  x: 700,
-  y: 400,
-  topLinkType: 'flat',
-  leftLinkType: 'concave',
-  rightLinkType: 'flat',
-  bottomLinkType: 'concave',
+  x: 50,
+  y: 520,
+  topLink: null,
+  leftLink: {
+    type: 'concave',
+    connected: false,
+    id: '4',
+  },
+  rightLink: null,
+  bottomLink: {
+    type: 'convex',
+    connected: false,
+    id: '8',
+  },
 }, {
   id: '8',
   xIndex: 2,
   yIndex: 1,
-  x: 200,
-  y: 200,
-  topLinkType: 'convex',
-  leftLinkType: 'concave',
-  rightLinkType: 'flat',
-  bottomLinkType: 'concave',
+  x: 482,
+  y: 10,
+  topLink: {
+    type: 'concave',
+    connected: false,
+    id: '7',
+  },
+  leftLink: {
+    type: 'concave',
+    connected: false,
+    id: '5',
+  },
+  rightLink: null,
+  bottomLink: {
+    type: 'convex',
+    connected: false,
+    id: '9',
+  },
 }, {
   id: '9',
   xIndex: 2,
   yIndex: 2,
-  x: 220,
-  y: 420,
-  topLinkType: 'convex',
-  leftLinkType: 'concave',
-  rightLinkType: 'flat',
-  bottomLinkType: 'flat',
+  x: 100,
+  y: 398,
+  topLink: {
+    type: 'concave',
+    connected: false,
+    id: '8',
+  },
+  leftLink: {
+    type: 'convex',
+    connected: false,
+    id: '6',
+  },
+  rightLink: null,
+  bottomLink: null
 }];
 
 interface GamePropsTypes {
@@ -153,7 +249,9 @@ class Game extends React.Component<GamePropsTypes, any>{
     const isOverPart = !!this.puzzles.getPartInCoords(this.mouseX, this.mouseY);
     canvasElement.style.cursor = isOverPart ? 'pointer' : 'default';
     if (this.movablePart) {
-      this.puzzles.movePart(this.movablePart.id, this.mouseX - this.movablePartXDiff, this.mouseY - this.movablePartYDiff)
+      //на сервер отправляется Id пазла с новыми координатами
+      this.puzzles.movePart(this.movablePart.id, this.mouseX - this.movablePartXDiff, this.mouseY - this.movablePartYDiff);
+      this.puzzles.connectParts(this.movablePart, this.mouseX - this.movablePartXDiff, this.mouseY - this.movablePartYDiff);
     }
   }
 

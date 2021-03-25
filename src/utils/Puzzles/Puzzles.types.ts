@@ -4,8 +4,14 @@ export interface PartTypes {
   yIndex: number;
   x: number;
   y: number;
-  topLinkType: string;
-  leftLinkType: string;
-  rightLinkType: string;
-  bottomLinkType: string;
+  topLink: LinkTypes | null;
+  leftLink: LinkTypes | null;
+  rightLink: LinkTypes | null;
+  bottomLink: LinkTypes | null;
+}
+
+export interface LinkTypes {
+  type: string,
+  connected: boolean,
+  id: string,
 }

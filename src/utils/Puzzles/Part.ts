@@ -1,4 +1,4 @@
-import {PartTypes} from './Puzzles.types';
+import {PartTypes, LinkTypes} from './Puzzles.types';
 
 class Part {
   id: string;
@@ -16,10 +16,10 @@ class Part {
   protrusionLength: number;
   diffControlPointTop: number;
   diffControlPointBottom: number;
-  topLinkType: string;
-  leftLinkType: string;
-  rightLinkType: string;
-  bottomLinkType: string;
+  topLink: LinkTypes | null;
+  leftLink: LinkTypes | null;
+  rightLink: LinkTypes | null;
+  bottomLink: LinkTypes | null;
 
   constructor(part: PartTypes, ctx: any, img: HTMLImageElement, height: number, width: number) {
 
@@ -28,17 +28,17 @@ class Part {
     this.y = part.y;
     this.xIndex = part.xIndex;
     this.yIndex = part.yIndex;
-    this.topLinkType = part.topLinkType;
-    this.leftLinkType = part.leftLinkType;
-    this.rightLinkType = part.rightLinkType;
-    this.bottomLinkType = part.bottomLinkType;
+    this.topLink = part.topLink;
+    this.leftLink = part.leftLink;
+    this.rightLink = part.rightLink;
+    this.bottomLink = part.bottomLink;
 
     this.ctx = ctx;
     this.img = img;
     this.height = height;
     this.width = width;
-    this.fullHeight = height + ctx.lineWidth/2;
-    this.fullWidth = width + ctx.lineWidth/2;
+    this.fullHeight = height + ctx.lineWidth / 2;
+    this.fullWidth = width + ctx.lineWidth / 2;
 
     this.protrusionWidth = 0.4;
     this.protrusionLength = 0.3;
@@ -60,8 +60,13 @@ class Part {
   }
 
   drawPart() {
-    const {ctx, height, width, x, y, img, xIndex, yIndex, protrusionWidth, protrusionLength, diffControlPointTop, diffControlPointBottom, bottomLinkType, topLinkType, rightLinkType, leftLinkType} = this;
+    const {ctx, height, width, x, y, img, xIndex, yIndex, protrusionWidth, protrusionLength, diffControlPointTop, diffControlPointBottom, bottomLink, topLink, rightLink, leftLink} = this;
+    const bottomLinkType = bottomLink?.type;
+    const topLinkType = topLink?.type;
+    const rightLinkType = rightLink?.type;
+    const leftLinkType = leftLink?.type;
     const lineWidth = ctx.lineWidth;
+
     ctx.beginPath();
     ctx.moveTo(x, y);
     drawProtrusion('left');
