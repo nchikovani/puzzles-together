@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
+const { v4: uuidv4 } = require('uuid');
 
 const port = process.env.PORT || 8080;
 
@@ -42,7 +43,9 @@ io.on('connection', (socket) => {
   socket.on("puzzle:add", (data) => {
     puzzles = {
       image: data.image,
-      parts: partsTest
+      partWidth: 50,
+      partHeight: 50,
+      parts: createParts(20, 20),
     };
     socket.broadcast.emit("puzzle", puzzles);
     socket.emit("puzzle", puzzles);
@@ -51,6 +54,7 @@ io.on('connection', (socket) => {
   socket.on("puzzle:setUpdate", (data) => {
     const {moves, connections} = data.update;
     // if (moves || !Array.isArray(data.moves)) return;
+    if (!puzzles) return;
     puzzles.parts.forEach((part) => {
       const move = moves.find((move) => move.id === part.id);
       if (move) {
@@ -84,191 +88,68 @@ server.listen(port, function(){
 
 let puzzles = null;
 
-const partsTest = [
-  {
-    id: '1',
-    xIndex: 0,
-    yIndex: 0,
-    x: 621,
-    y: 310,
-    topLink: null,
-    leftLink: null,
-    rightLink: {
-      type: 'concave',
-      connected: false,
-      id: '4',
-    },
-    bottomLink: {
-      type: 'concave',
-      connected: false,
-      id: '2',
+function createParts(columnCount, rowCount) {
+  const parts = [];
+  const getRandomLinkType = () => {
+    return Math.random() > 0.5 ? 'concave': 'convex';
+  }
+
+  for (let i = 0; i < columnCount; i++) {
+    for (let j = 0; j < rowCount; j++) {
+      let topLink, rightLink, leftLink, bottomLink;
+      const id = uuidv4();
+      if (j === 0) {
+        topLink = null;
+      } else {
+        const connectingPart = parts.find((part) => part.xIndex === i && part.yIndex === j - 1);
+        connectingPart.bottomLink.id = id;
+        topLink = {
+          connected: false,
+          type: connectingPart.bottomLink.type === 'concave' ? 'convex' : 'concave',
+          id: connectingPart.id,
+        }
+      }
+      if (i === 0) {
+        leftLink = null;
+      } else {
+        const connectingPart = parts.find((part) => part.xIndex === i-1 && part.yIndex === j);
+        connectingPart.rightLink.id = id;
+        leftLink = {
+          connected: false,
+          type: connectingPart.rightLink.type === 'concave' ? 'convex' : 'concave',
+          id: connectingPart.id,
+        }
+      }
+      if (i === columnCount - 1) {
+        rightLink = null;
+      } else {
+        rightLink = {
+          type: getRandomLinkType(),
+          connected: false,
+        }
+      }
+      if (j === rowCount - 1) {
+        bottomLink = null;
+      } else {
+        bottomLink = {
+          type: getRandomLinkType(),
+          connected: false,
+        }
+      }
+
+      parts.push({
+        id,
+        xIndex: i,
+        yIndex: j,
+        x: Math.random() * 800,
+        y: Math.random() * 600,
+        topLink,
+        leftLink,
+        rightLink,
+        bottomLink
+      })
     }
-  }, {
-    id: '2',
-    xIndex: 0,
-    yIndex: 1,
-    x: 200,
-    y: 200,
-    topLink: {
-      type: 'convex',
-      connected: false,
-      id: '1',
-    },
-    leftLink: null,
-    rightLink: {
-      type: 'convex',
-      connected: false,
-      id: '5',
-    },
-    bottomLink: {
-      type: 'convex',
-      connected: false,
-      id: '3',
-    }
-  }, {
-    id: '3',
-    xIndex: 0,
-    yIndex: 2,
-    x: 300,
-    y: 300,
-    topLink: {
-      type: 'concave',
-      connected: false,
-      id: '2',
-    },
-    leftLink: null,
-    rightLink: {
-      type: 'convex',
-      connected: false,
-      id: '6',
-    },
-    bottomLink: null
-  }, {
-    id: '4',
-    xIndex: 1,
-    yIndex: 0,
-    x: 700,
-    y: 500,
-    topLink: null,
-    leftLink: {
-      type: 'convex',
-      connected: false,
-      id: '1',
-    },
-    rightLink: {
-      type: 'convex',
-      connected: false,
-      id: '7',
-    },
-    bottomLink: {
-      type: 'convex',
-      connected: false,
-      id: '5',
-    }
-  }, {
-    id: '5',
-    xIndex: 1,
-    yIndex: 1,
-    x: 544,
-    y: 287,
-    topLink: {
-      type: 'concave',
-      connected: false,
-      id: '4',
-    },
-    leftLink: {
-      type: 'concave',
-      connected: false,
-      id: '2',
-    },
-    rightLink: {
-      type: 'convex',
-      connected: false,
-      id: '8',
-    },
-    bottomLink: {
-      type: 'concave',
-      connected: false,
-      id: '6',
-    }
-  }, {
-    id: '6',
-    xIndex: 1,
-    yIndex: 2,
-    x: 10,
-    y: 5,
-    topLink: {
-      type: 'convex',
-      connected: false,
-      id: '5',
-    },
-    leftLink: {
-      type: 'concave',
-      connected: false,
-      id: '3',
-    },
-    rightLink: {
-      type: 'concave',
-      connected: false,
-      id: '9',
-    },
-    bottomLink: null
-  },{
-    id: '7',
-    xIndex: 2,
-    yIndex: 0,
-    x: 50,
-    y: 520,
-    topLink: null,
-    leftLink: {
-      type: 'concave',
-      connected: false,
-      id: '4',
-    },
-    rightLink: null,
-    bottomLink: {
-      type: 'convex',
-      connected: false,
-      id: '8',
-    },
-  }, {
-    id: '8',
-    xIndex: 2,
-    yIndex: 1,
-    x: 482,
-    y: 10,
-    topLink: {
-      type: 'concave',
-      connected: false,
-      id: '7',
-    },
-    leftLink: {
-      type: 'concave',
-      connected: false,
-      id: '5',
-    },
-    rightLink: null,
-    bottomLink: {
-      type: 'convex',
-      connected: false,
-      id: '9',
-    },
-  }, {
-    id: '9',
-    xIndex: 2,
-    yIndex: 2,
-    x: 100,
-    y: 398,
-    topLink: {
-      type: 'concave',
-      connected: false,
-      id: '8',
-    },
-    leftLink: {
-      type: 'convex',
-      connected: false,
-      id: '6',
-    },
-    rightLink: null,
-    bottomLink: null
-  }];
+  }
+
+  return parts;
+}

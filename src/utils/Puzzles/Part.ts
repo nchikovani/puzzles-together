@@ -82,7 +82,7 @@ class Part {
     ctx.clip();
     const imgXDiff = x - xIndex * width;
     const imgYDiff = y - yIndex * height;
-    ctx.drawImage(img, imgXDiff, imgYDiff, 450, 730);
+    ctx.drawImage(img, imgXDiff, imgYDiff, 420, 710);
     ctx.restore();
 
     function drawProtrusion(side: string) {

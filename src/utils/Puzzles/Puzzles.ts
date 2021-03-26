@@ -104,28 +104,28 @@ class Puzzles {
       if (movablePart.topLink?.connected) {
         const topPart = topPartId && this.getPartById(topPartId);
         if (topPart && !moves.find(move => move.id === topPart.id)) {
-          loop(topPart, x, y - this.partHeight);
+          loop(topPart, x, y - topPart.fullHeight);
         }
       }
 
       if (movablePart.bottomLink?.connected) {
         const bottomPart = bottomPartId && this.getPartById(bottomPartId);
         if (bottomPart && !moves.find(move => move.id === bottomPart.id)) {
-          loop(bottomPart, x, y + this.partHeight);
+          loop(bottomPart, x, y + bottomPart.fullHeight);
         }
       }
 
       if (movablePart.rightLink?.connected) {
         const rightPart = rightPartId && this.getPartById(rightPartId);
         if (rightPart && !moves.find(move => move.id === rightPart.id)) {
-          loop(rightPart, x + this.partWidth, y);
+          loop(rightPart, x + rightPart.fullWidth, y);
         }
       }
 
       if (movablePart.leftLink?.connected) {
         const leftPart = leftPartId && this.getPartById(leftPartId);
         if (leftPart && !moves.find(move => move.id === leftPart.id)) {
-          loop(leftPart, x - this.partWidth, y);
+          loop(leftPart, x - leftPart.fullWidth, y);
         }
       }
     }
