@@ -1,5 +1,5 @@
 import Part from './Part';
-import {PartTypes} from './Puzzles.types';
+import {PartTypes, MoveTypes, ConnectionType, UpdateType} from './Puzzles.types';
 const audio_knock = [new Audio('audio_knock1.mp3'), new Audio('audio_knock2.mp3'), new Audio('audio_knock3.mp3')];
 let knockNumber = 0
 const playKnock = () => {
@@ -51,96 +51,119 @@ class Puzzles {
     this.drawPuzzles();
   }
 
-  movePart(partId: string, x: number, y: number) {
-    const movablePart = this.parts.find(part => part.id === partId);
-    if (!movablePart) return;
-
-
-    const allMovablesParts: Part[] = [];
-    this.moveNeighbours(movablePart, allMovablesParts, x, y);
-    console.log(allMovablesParts);
-    this.parts = this.parts.filter(part => !allMovablesParts.find(movablePart => movablePart.id === part.id));
-    this.parts = this.parts.concat(allMovablesParts);
-    this.drawPuzzles();
+  getPartById(id: string) {
+    return this.parts.find(part => part.id === id);
   }
 
-  moveNeighbours(movablePart: Part, allMovablesParts: Part[], x: number, y: number) {
-    movablePart.setCoords(x, y);
-    allMovablesParts.push(movablePart);
-    const topPartId = movablePart.topLink?.id;
-    const bottomPartId = movablePart.bottomLink?.id;
-    const rightPartId = movablePart.rightLink?.id;
-    const leftPartId = movablePart.leftLink?.id;
+  setUpdate(update: UpdateType) {
+    const {moves, connections} = update;
+    const movedParts: Part[] = [];
+    moves.forEach((move) => {
+      const targetPart = this.getPartById(move.id);
+      if (targetPart) {
+        targetPart.setCoords(move.x, move.y);
+        movedParts.push(targetPart);
+      }
+    });
 
-    if (movablePart.topLink?.connected) {
-      const topPart = topPartId && this.parts.find(part => part.id === topPartId);
-      if (topPart && !allMovablesParts.includes(topPart)) {
-        this.moveNeighbours(topPart, allMovablesParts, x, y - this.partHeight);
+    this.parts = this.parts.filter(part => {
+      return !movedParts.includes(part);
+    })
+    this.parts = this.parts.concat(movedParts);
+
+    const connect = (connection: ConnectionType) => {
+      const part = this.getPartById(connection.id);
+      // @ts-ignore
+      const link = part && part[connection.link];
+      if (link) link.connected = true;
+    };
+    connections.forEach((connection) => {
+      connect(connection[0]);
+      connect(connection[1]);
+      playKnock();
+    });
+  }
+  // getUpdate(movablePart: Part, x: number, y: number) {
+  //   const connections = this.getConnections(movablePart, x, y);
+  //   const moves = this.getMoves(movablePart, x, y);
+  //   return {moves, connections};
+  // }
+
+  getUpdate(movablePart: Part, x: number, y: number) {
+    const moves: MoveTypes[] = [];
+    let connections: ConnectionType[][] = [];
+    const loop =(movablePart: Part, x: number, y: number) => {
+      moves.push({id: movablePart.id, x: x, y: y});
+      const connection = this.getConnections(movablePart, x, y);
+      connections = connections.concat(connection);
+      const topPartId = movablePart.topLink?.id;
+      const bottomPartId = movablePart.bottomLink?.id;
+      const rightPartId = movablePart.rightLink?.id;
+      const leftPartId = movablePart.leftLink?.id;
+
+      if (movablePart.topLink?.connected) {
+        const topPart = topPartId && this.getPartById(topPartId);
+        if (topPart && !moves.find(move => move.id === topPart.id)) {
+          loop(topPart, x, y - this.partHeight);
+        }
+      }
+
+      if (movablePart.bottomLink?.connected) {
+        const bottomPart = bottomPartId && this.getPartById(bottomPartId);
+        if (bottomPart && !moves.find(move => move.id === bottomPart.id)) {
+          loop(bottomPart, x, y + this.partHeight);
+        }
+      }
+
+      if (movablePart.rightLink?.connected) {
+        const rightPart = rightPartId && this.getPartById(rightPartId);
+        if (rightPart && !moves.find(move => move.id === rightPart.id)) {
+          loop(rightPart, x + this.partWidth, y);
+        }
+      }
+
+      if (movablePart.leftLink?.connected) {
+        const leftPart = leftPartId && this.getPartById(leftPartId);
+        if (leftPart && !moves.find(move => move.id === leftPart.id)) {
+          loop(leftPart, x - this.partWidth, y);
+        }
       }
     }
+    loop(movablePart, x, y);
 
-    if (movablePart.bottomLink?.connected) {
-      const bottomPart = bottomPartId && this.parts.find(part => part.id === bottomPartId);
-      if (bottomPart && !allMovablesParts.includes(bottomPart)) {
-        this.moveNeighbours(bottomPart, allMovablesParts, x, y + this.partHeight);
-      }
-    }
-
-    if (movablePart.rightLink?.connected) {
-      const rightPart = rightPartId && this.parts.find(part => part.id === rightPartId);
-      if (rightPart && !allMovablesParts.includes(rightPart)) {
-        this.moveNeighbours(rightPart, allMovablesParts, x + this.partWidth, y);
-      }
-    }
-
-    if (movablePart.leftLink?.connected) {
-      const leftPart = leftPartId && this.parts.find(part => part.id === leftPartId);
-      if (leftPart && !allMovablesParts.includes(leftPart)) {
-        this.moveNeighbours(leftPart, allMovablesParts, x - this.partWidth, y);
-      }
-    }
+    return {moves, connections};
   }
 
-  //on server
-  connectParts(movablePart: Part, x: number, y: number) {
+  getConnections(movablePart: Part, x: number, y: number):ConnectionType[][] {
     const connectionDistance = 4;
+    const connections = [];
     const topPartId = movablePart.topLink?.id;
     const bottomPartId = movablePart.bottomLink?.id;
     const rightPartId = movablePart.rightLink?.id;
     const leftPartId = movablePart.leftLink?.id;
 
-    const topPart = topPartId && this.parts.find(part => part.id === topPartId);
-    const bottomPart = bottomPartId && this.parts.find(part => part.id === bottomPartId);
-    const rightPart = rightPartId && this.parts.find(part => part.id === rightPartId);
-    const leftPart = leftPartId && this.parts.find(part => part.id === leftPartId);
+    const topPart = topPartId && this.getPartById(topPartId);
+    const bottomPart = bottomPartId && this.getPartById(bottomPartId);
+    const rightPart = rightPartId && this.getPartById(rightPartId);
+    const leftPart = leftPartId && this.getPartById(leftPartId);
 
     if (movablePart.topLink?.connected === false && topPart && Math.abs(topPart.x - x) <= connectionDistance && Math.abs(topPart.y + this.partHeight - y) <= connectionDistance) {
-      if (movablePart.topLink) movablePart.topLink.connected = true;
-      if (topPart.bottomLink) topPart.bottomLink.connected = true;
-      console.log('aaa');
-      playKnock();
+      connections.push([{id: movablePart.id, link: 'topLink'}, {id: topPart.id, link: 'bottomLink'}]);
     }
 
     if (movablePart.bottomLink?.connected === false && bottomPart && Math.abs(bottomPart.x - x) <= connectionDistance && Math.abs(bottomPart.y - this.partHeight - y) <= connectionDistance) {
-      if (movablePart.bottomLink) movablePart.bottomLink.connected = true;
-      if (bottomPart.topLink) bottomPart.topLink.connected = true;
-      console.log('aaa1');
-      playKnock();
+      connections.push([{id: movablePart.id, link: 'bottomLink'}, {id: bottomPart.id, link: 'topLink'}]);
     }
 
     if (movablePart.rightLink?.connected === false && rightPart && Math.abs(rightPart.x - this.partWidth - x) <= connectionDistance && Math.abs(rightPart.y - y) <= connectionDistance) {
-      if (movablePart.rightLink) movablePart.rightLink.connected = true;
-      if (rightPart.leftLink) rightPart.leftLink.connected = true;
-      console.log('ooo');
-      playKnock();
+      connections.push([{id: movablePart.id, link: 'rightLink'}, {id: rightPart.id, link: 'leftLink'}]);
     }
 
     if (movablePart.leftLink?.connected === false && leftPart && Math.abs(leftPart.x + this.partWidth - x) <= connectionDistance && Math.abs(leftPart.y - y) <= connectionDistance) {
-      if (movablePart.leftLink) movablePart.leftLink.connected = true;
-      if (leftPart.rightLink) leftPart.rightLink.connected = true;
-      console.log('ooo1');
-      playKnock();
+      connections.push([{id: movablePart.id, link: 'leftLink'}, {id: leftPart.id, link: 'rightLink'}]);
     }
+
+    return connections;
   }
 }
 

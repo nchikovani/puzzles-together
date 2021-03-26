@@ -11,7 +11,22 @@ export interface PartTypes {
 }
 
 export interface LinkTypes {
-  type: string,
-  connected: boolean,
-  id: string,
+  type: string;
+  connected: boolean;
+  id: string;
+}
+export interface UpdateType {
+  moves: MoveTypes[];
+  connections: ConnectionType[][];
+}
+
+export interface MoveTypes {
+  id: string;
+  x: number;
+  y: number;
+}
+
+export interface ConnectionType {
+  id: string;
+  link: string;
 }
