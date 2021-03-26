@@ -1,3 +1,10 @@
+export interface GameDataType {
+  image: string;
+  partWidth: number;
+  partHeight: number;
+  parts: PartTypes[];
+}
+
 export interface PartTypes {
   id: string;
   xIndex: number;

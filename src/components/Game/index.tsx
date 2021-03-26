@@ -1,20 +1,14 @@
 import React, {createRef, Ref} from 'react';
-import Puzzles from "../../utils/Puzzles/Puzzles";
-import Part from '../../utils/Puzzles/Part';
-import {PartTypes, UpdateType} from "../../utils/Puzzles/Puzzles.types";
+import Puzzles from "./Puzzles/Puzzles";
+import Part from './Puzzles/Part';
+import {GameDataType} from "./Puzzles/Puzzles.types";
+import SocketService from '../../service/socketService';
 import './style.scss';
 
 interface GamePropsTypes {
-
-  puzzles: {
-    image: string;
-    partWidth: number;
-    partHeight: number;
-    parts: PartTypes[];
-  }
-  sendUpdate: (update: UpdateType) => void;
-  handleGettingUpdate: (handler: (update: UpdateType) => void) => void
+  socketService: SocketService;
 }
+
 class Game extends React.Component<GamePropsTypes, any>{
   puzzles: Puzzles;
   canvas: Ref<HTMLCanvasElement>;
@@ -23,40 +17,43 @@ class Game extends React.Component<GamePropsTypes, any>{
   movablePart?: Part | null;
   movablePartXDiff: number;
   movablePartYDiff: number;
-  update: UpdateType;
 
   constructor(props: GamePropsTypes) {
     super(props);
     this.canvas = createRef();
   }
 
-  componentDidUpdate() {
-    if (this.props.puzzles) {
+  componentDidMount() {
+    this.props.socketService.handleGettingPuzzle((gameData) => {
       let image = new Image();
       image.onload = () => {
-        // if (!this.canvas || !this.canvas.current) return;
-        // @ts-ignore
-        let ctx = this.canvas.current.getContext("2d");
-        ctx.canvas.width = 900;
-        ctx.canvas.height = 700;
-
-        this.puzzles = new Puzzles(this.props.puzzles.parts, ctx, image, this.props.puzzles.partHeight, this.props.puzzles.partWidth, 3, 3);
-        this.props.handleGettingUpdate((update) => {
-          this.puzzles.setUpdate(update);
-          this.puzzles.drawPuzzles();
-        });
-        this.puzzles.drawPuzzles();
-
-        setInterval(() => {
-          if (!this.movablePart) return;
-          const update = this.puzzles.getUpdate(this.movablePart, this.mouseX - this.movablePartXDiff, this.mouseY - this.movablePartYDiff);
-          this.puzzles.setUpdate(update);
-          this.props.sendUpdate(update);
-          this.puzzles.drawPuzzles();
-        }, 33)
+        this.initGame(gameData, image);
       };
-      image.src = this.props.puzzles.image;
-    }
+      image.src = gameData.image;
+    });
+  }
+
+  initGame(gameData: GameDataType, image: HTMLImageElement) {
+    // if (!this.canvas || !this.canvas.current) return;
+    // @ts-ignore
+    let ctx = this.canvas.current.getContext("2d");
+    ctx.canvas.width = 900;
+    ctx.canvas.height = 700;
+
+    this.puzzles = new Puzzles(gameData.parts, ctx, image, gameData.partHeight, gameData.partWidth);
+    this.props.socketService.handleGettingUpdate((update) => {
+      this.puzzles.setUpdate(update);
+      this.puzzles.drawPuzzles();
+    });
+    this.puzzles.drawPuzzles();
+
+    setInterval(() => {
+      if (!this.movablePart) return;
+      const update = this.puzzles.getUpdate(this.movablePart, this.mouseX - this.movablePartXDiff, this.mouseY - this.movablePartYDiff);
+      this.puzzles.setUpdate(update);
+      this.props.socketService.sendUpdate(update);
+      this.puzzles.drawPuzzles();
+    }, 33);
   }
 
   mouseDownHandler() {
@@ -68,10 +65,6 @@ class Game extends React.Component<GamePropsTypes, any>{
       this.movablePartXDiff = this.mouseX - movablePart.x;
       this.movablePartYDiff = this.mouseY - movablePart.y;
     }
-  }
-
-  mouseUpHandler() {
-    this.movablePart = null;
   }
 
   mouseMoveHandler(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
@@ -89,8 +82,8 @@ class Game extends React.Component<GamePropsTypes, any>{
     return <canvas
       ref={this.canvas}
       className="game"
-      onMouseDown={()=>this.mouseDownHandler()}
-      onMouseUp={()=>this.mouseUpHandler()}
+      onMouseDown={() => this.mouseDownHandler()}
+      onMouseUp={() => this.movablePart = null}
       onMouseMove={(e)=>this.mouseMoveHandler(e)}
       onMouseOut={() => this.movablePart = null}
     />;

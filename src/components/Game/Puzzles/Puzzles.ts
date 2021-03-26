@@ -1,25 +1,16 @@
 import Part from './Part';
 import {PartTypes, MoveTypes, ConnectionType, UpdateType} from './Puzzles.types';
-const audio_knock = [new Audio('audio_knock1.mp3'), new Audio('audio_knock2.mp3'), new Audio('audio_knock3.mp3')];
-let knockNumber = 0
-const playKnock = () => {
-  audio_knock[knockNumber % 3].play();
-  knockNumber++;
-}
+import {playKnock} from '../utils';
 
 class Puzzles {
   parts: Part[];
   ctx: any;
-  columnsCount: number;
-  rowsCount: number;
   partHeight: number;
   partWidth: number;
 
-  constructor(parts: PartTypes[], ctx: any, img: HTMLImageElement, partHeight: number, partWidth: number, columnsCount: number, rowsCount: number) {
+  constructor(parts: PartTypes[], ctx: any, img: HTMLImageElement, partHeight: number, partWidth: number) {
     this.parts = parts.map(part => new Part(part, ctx, img, partHeight, partWidth));
     this.ctx = ctx;
-    this.columnsCount = columnsCount;
-    this.rowsCount = rowsCount;
     this.partHeight = partHeight;
     this.partWidth = partWidth;
   }
@@ -40,14 +31,14 @@ class Puzzles {
     }
   }
 
-  solvePuzzles() {
-    this.parts.forEach(part => {
-      const xCoords = this.ctx.lineWidth + part.xIndex * part.fullWidth;
-      const yCoords = this.ctx.lineWidth + part.yIndex * part.fullWidth;
-      part.setCoords(xCoords, yCoords);
-    });
-    this.drawPuzzles();
-  }
+  // solvePuzzles() {
+  //   this.parts.forEach(part => {
+  //     const xCoords = this.ctx.lineWidth + part.xIndex * part.fullWidth;
+  //     const yCoords = this.ctx.lineWidth + part.yIndex * part.fullWidth;
+  //     part.setCoords(xCoords, yCoords);
+  //   });
+  //   this.drawPuzzles();
+  // }
 
   getPartById(id: string) {
     return this.parts.find(part => part.id === id);
@@ -82,11 +73,6 @@ class Puzzles {
       playKnock();
     });
   }
-  // getUpdate(movablePart: Part, x: number, y: number) {
-  //   const connections = this.getConnections(movablePart, x, y);
-  //   const moves = this.getMoves(movablePart, x, y);
-  //   return {moves, connections};
-  // }
 
   getUpdate(movablePart: Part, x: number, y: number) {
     const moves: MoveTypes[] = [];
