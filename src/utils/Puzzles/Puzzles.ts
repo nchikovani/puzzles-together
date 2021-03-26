@@ -28,10 +28,8 @@ class Puzzles {
     const {ctx} = this;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     this.parts.forEach(part => {
-      ctx.save();
       part.drawPart();
     })
-    ctx.save();
   }
 
   getPartInCoords(x: number, y: number) {
@@ -77,6 +75,7 @@ class Puzzles {
       const link = part && part[connection.link];
       if (link) link.connected = true;
     };
+    // console.log(connections);
     connections.forEach((connection) => {
       connect(connection[0]);
       connect(connection[1]);

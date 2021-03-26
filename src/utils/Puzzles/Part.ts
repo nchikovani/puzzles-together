@@ -16,16 +16,20 @@ class Part {
   protrusionLength: number;
   diffControlPointTop: number;
   diffControlPointBottom: number;
+  lineWidth: number;
+  bufferIdent: number;
   topLink: LinkTypes | null;
   leftLink: LinkTypes | null;
   rightLink: LinkTypes | null;
   bottomLink: LinkTypes | null;
+  buffer: any;
 
   constructor(part: PartTypes, ctx: any, img: HTMLImageElement, height: number, width: number) {
 
     this.id = part.id;
     this.x = part.x;
     this.y = part.y;
+
     this.xIndex = part.xIndex;
     this.yIndex = part.yIndex;
     this.topLink = part.topLink;
@@ -37,13 +41,20 @@ class Part {
     this.img = img;
     this.height = height;
     this.width = width;
-    this.fullHeight = height + ctx.lineWidth / 2;
-    this.fullWidth = width + ctx.lineWidth / 2;
 
     this.protrusionWidth = 0.4;
     this.protrusionLength = 0.3;
     this.diffControlPointTop = 0.3;
     this.diffControlPointBottom = 0.35;
+    this.lineWidth = 2;
+
+    this.fullHeight = height + this.lineWidth / 2;
+    this.fullWidth = width + this.lineWidth / 2;
+
+    this.bufferIdent = this.protrusionLength * height + this.lineWidth;
+
+    this.updateBuffer();
+
   }
 
   setCoords(x: number, y: number) {
@@ -52,20 +63,35 @@ class Part {
   }
 
   coordsIsInPart(xCoords: number, yCoords: number) {
-    const {x, y, width, height} = this;
-    return xCoords <= x + width
+    const {x, y, fullWidth, fullHeight} = this;
+    return xCoords <= x + fullWidth
       && xCoords >= x
-      && yCoords <= y + height
+      && yCoords <= y + fullHeight
       && yCoords >= y;
   }
 
   drawPart() {
-    const {ctx, height, width, x, y, img, xIndex, yIndex, protrusionWidth, protrusionLength, diffControlPointTop, diffControlPointBottom, bottomLink, topLink, rightLink, leftLink} = this;
-    const bottomLinkType = bottomLink?.type;
-    const topLinkType = topLink?.type;
-    const rightLinkType = rightLink?.type;
-    const leftLinkType = leftLink?.type;
-    const lineWidth = ctx.lineWidth;
+    const {ctx, x, y} = this;
+    ctx.drawImage(this.buffer, x - this.bufferIdent, y - this.bufferIdent);
+  }
+
+  updateBuffer() {
+    const {height, width, xIndex, yIndex, protrusionWidth, protrusionLength, diffControlPointTop, diffControlPointBottom, lineWidth, bufferIdent} = this;
+    const bottomLinkType = this.bottomLink?.type;
+    const topLinkType = this.topLink?.type;
+    const rightLinkType = this.rightLink?.type;
+    const leftLinkType = this.leftLink?.type;
+    const x = bufferIdent, y = bufferIdent;
+
+    this.buffer = document.createElement('canvas');
+    this.buffer.width = width + 2 * bufferIdent;
+    this.buffer.height = height + 2 * bufferIdent;
+
+    const ctx = this.buffer.getContext('2d');
+    if(!ctx) return;
+
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = "brawn";
 
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -82,10 +108,10 @@ class Part {
     ctx.clip();
     const imgXDiff = x - xIndex * width;
     const imgYDiff = y - yIndex * height;
-    ctx.drawImage(img, imgXDiff, imgYDiff, 420, 710);
-    ctx.restore();
+    ctx.drawImage(this.img, imgXDiff, imgYDiff);
 
     function drawProtrusion(side: string) {
+      if (!ctx) return;
       switch (side) {
         case 'left': {
           const protrusionStartY: number =  (1 - protrusionWidth) / 2;

@@ -43,9 +43,9 @@ io.on('connection', (socket) => {
   socket.on("puzzle:add", (data) => {
     puzzles = {
       image: data.image,
-      partWidth: 50,
-      partHeight: 50,
-      parts: createParts(20, 20),
+      partWidth: 100,
+      partHeight: 100,
+      parts: createParts(4, 4),
     };
     socket.broadcast.emit("puzzle", puzzles);
     socket.emit("puzzle", puzzles);

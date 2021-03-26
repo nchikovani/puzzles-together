@@ -39,8 +39,6 @@ class Game extends React.Component<GamePropsTypes, any>{
         let ctx = this.canvas.current.getContext("2d");
         ctx.canvas.width = 900;
         ctx.canvas.height = 700;
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "brawn";
 
         this.puzzles = new Puzzles(this.props.puzzles.parts, ctx, image, this.props.puzzles.partHeight, this.props.puzzles.partWidth, 3, 3);
         this.props.handleGettingUpdate((update) => {
@@ -48,12 +46,12 @@ class Game extends React.Component<GamePropsTypes, any>{
           this.puzzles.drawPuzzles();
         });
         this.puzzles.drawPuzzles();
-        let update: UpdateType;
+
         setInterval(() => {
-          if (!this.update || this.update === update) return;
-          update = this.update;
-          this.puzzles.setUpdate(this.update);
-          this.props.sendUpdate(this.update);
+          if (!this.movablePart) return;
+          const update = this.puzzles.getUpdate(this.movablePart, this.mouseX - this.movablePartXDiff, this.mouseY - this.movablePartYDiff);
+          this.puzzles.setUpdate(update);
+          this.props.sendUpdate(update);
           this.puzzles.drawPuzzles();
         }, 33)
       };
@@ -85,10 +83,6 @@ class Game extends React.Component<GamePropsTypes, any>{
     if (!this.puzzles) return;
     const isOverPart = !!this.puzzles.getPartInCoords(this.mouseX, this.mouseY);
     canvasElement.style.cursor = isOverPart ? 'pointer' : 'default';
-    if (this.movablePart) {
-      this.update = this.puzzles.getUpdate(this.movablePart, this.mouseX - this.movablePartXDiff, this.mouseY - this.movablePartYDiff);
-
-    }
   }
 
   render() {
