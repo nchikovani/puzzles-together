@@ -47,7 +47,7 @@ class Game extends React.Component<GamePropsTypes, any>{
     ctx.canvas.width = 900;
     ctx.canvas.height = 700;
 
-    this.puzzles = new Puzzles(gameData.parts, ctx, image, gameData.partHeight, gameData.partWidth);
+    this.puzzles = new Puzzles(gameData, ctx, image);
     this.puzzles.drawPuzzles();
 
     setInterval(() => {

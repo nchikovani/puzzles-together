@@ -14,6 +14,8 @@ const socketService = new SocketService();
 
 function App() {
 
+  // @ts-ignore
+  // @ts-ignore
   return (
     <BrowserRouter>
       <Page>

@@ -1,35 +1,68 @@
 import React from 'react';
 import Game from "../../components/Game";
-import {useParams} from 'react-router-dom';
 import SocketService from '../../service/socketService';
+import {connect} from "react-redux";
+import { withRouter, RouteComponentProps  } from "react-router";
 
-interface RoomPropsTypes {
-  socketService: SocketService;
+type PathParamsType = {
+  roomId: string,
 }
 
-function Room(props: RoomPropsTypes) {
-  // @ts-ignore
-  let { roomId } = useParams();
-  props.socketService.joinRoom(roomId);
+type PropsType = RouteComponentProps<PathParamsType> & {
+  socketService: SocketService;
+  options: object[];
+}
 
-  const handleImage = (e: React.ChangeEvent<HTMLInputElement>)=> {
+class Room extends React.Component<PropsType, {}>  {
+  constructor(props: PropsType) {
+    super(props);
+    const roomId = props.match.params.roomId;
+    props.socketService.joinRoom(roomId);
+  }
+
+  componentDidUpdate(prevProps: Readonly<PropsType>) {
+    if (this.props.options !== prevProps.options) {
+      let optionsText = 'Выбирай: ';
+      this.props.options.forEach(option => {
+        // @ts-ignore
+        if (!option.columnCount || !option.rowCount) return
+        // @ts-ignore
+        optionsText += `${option.columnCount * option.rowCount}, `
+      })
+
+      const result = prompt(optionsText);
+      // @ts-ignore
+      const targetOption = this.props.options.find(option => result == option.partCount);
+      targetOption && this.props.socketService.createPuzzle(targetOption);
+    }
+  }
+
+  handleImage (e: React.ChangeEvent<HTMLInputElement>) {
     let file = e.target && e.target.files && e.target.files[0];
     if (!file) return;
 
     let reader = new FileReader();
     reader.addEventListener('load', (e) => {
       // @ts-ignore
-      props.socketService.createPuzzle(e.target.result);
+      this.props.socketService.getOptions(e.target.result);
     });
     reader.readAsDataURL(file);
   }
 
-  return (
-    <div className="App" style={{width: '100%'}}>
-      <input type="file" onChange={handleImage} style={{display: 'block'}}/>
-      <Game socketService={props.socketService}/>
-    </div>
-  )
+  render() {
+    return (
+      <div className="App" style={{width: '100%'}}>
+        <input type="file" onChange={(e) => this.handleImage(e)} style={{display: 'block'}}/>
+        <Game socketService={this.props.socketService}/>
+      </div>
+    )
+  }
 }
 
-export default Room;
+const mapStateToProps = (store: any) => {
+  return {
+    options: store.game.options
+  }
+}
+
+export default connect(mapStateToProps)(withRouter(Room));

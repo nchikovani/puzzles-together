@@ -1,6 +1,7 @@
 const initial = {
 	gameData: null,
   update: null,
+  options: null,
 }
 
 function game(state=initial, action) {
@@ -14,6 +15,11 @@ function game(state=initial, action) {
       return {
         ...state,
         update: action.update,
+      };
+    case 'SET_OPTIONS':
+      return {
+        ...state,
+        options: action.options,
       };
     default:
       return state;

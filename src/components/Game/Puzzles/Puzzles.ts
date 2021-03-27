@@ -1,5 +1,5 @@
 import Part from './Part';
-import {PartTypes, MoveTypes, ConnectionType, UpdateType} from './Puzzles.types';
+import {MoveTypes, ConnectionType, UpdateType, GameDataType} from './Puzzles.types';
 import {playKnock} from '../utils';
 
 class Puzzles {
@@ -7,12 +7,17 @@ class Puzzles {
   ctx: any;
   partHeight: number;
   partWidth: number;
+  width: number;
+  height: number;
 
-  constructor(parts: PartTypes[], ctx: any, img: HTMLImageElement, partHeight: number, partWidth: number) {
-    this.parts = parts.map(part => new Part(part, ctx, img, partHeight, partWidth));
+  constructor(gameData: GameDataType, ctx: any, img: HTMLImageElement) {
     this.ctx = ctx;
-    this.partHeight = partHeight;
-    this.partWidth = partWidth;
+    this.partHeight = gameData.partHeight;
+    this.partWidth = gameData.partWidth;
+    this.width = gameData.width;
+    this.height = gameData.height;
+
+    this.parts = gameData.parts.map(part => new Part(part, ctx, img, this));
   }
 
   drawPuzzles() {
@@ -70,8 +75,8 @@ class Puzzles {
     connections.forEach((connection) => {
       connect(connection[0]);
       connect(connection[1]);
-      playKnock();
     });
+    if (connections.length > 0) playKnock();
   }
 
   getUpdate(movablePart: Part, x: number, y: number) {

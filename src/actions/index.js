@@ -5,6 +5,13 @@ export function setGameData(gameData) {
     }
 }
 
+export function setOptions(options) {
+    return {
+        type: 'SET_OPTIONS',
+        options,
+    }
+}
+
 export function setUpdate(update) {
     return {
         type: 'SET_UPDATE',

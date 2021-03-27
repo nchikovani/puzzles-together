@@ -3,6 +3,8 @@ export interface GameDataType {
   partWidth: number;
   partHeight: number;
   parts: PartTypes[];
+  width: number;
+  height: number;
 }
 
 export interface PartTypes {

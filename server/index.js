@@ -18,12 +18,12 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
-const rooms = {};
+const rooms = {1: {
+  puzzle: null,
+  }};
 
 io.on('connection', (socket) => {
   console.log('User connected');
-
-  // const { roomId } = socket.handshake.query;
 
   socket.on("room:create", () => {
     const roomId = uuidv4();
