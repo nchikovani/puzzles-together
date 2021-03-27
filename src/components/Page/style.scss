@@ -1,0 +1,15 @@
+@import '../../styles/vars';
+
+.header {
+  background: $primary;
+  padding: 20px 30px;
+  &__title {
+    font-size: 1.3em;
+    color: $white;
+  }
+}
+
+.page-wrapper {
+  margin: 30px auto;
+  width: 1200px;
+}

@@ -4,6 +4,7 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const registerPuzzleHandlers = require('./handlers/puzzleHandlers');
+const { v4: uuidv4 } = require('uuid');
 const port = process.env.PORT || 8080;
 
 const app = express();
@@ -17,13 +18,40 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
+const rooms = {};
+
 io.on('connection', (socket) => {
   console.log('User connected');
 
-  registerPuzzleHandlers(io, socket);
+  // const { roomId } = socket.handshake.query;
+
+  socket.on("room:create", () => {
+    const roomId = uuidv4();
+    if (!rooms.hasOwnProperty(roomId)) {
+      rooms[roomId] = {
+        puzzle: null
+      };
+    }
+    socket.emit("room", roomId);
+  });
+
+  socket.on("room:join", (data) => {
+    const {roomId} = data;
+    if (rooms.hasOwnProperty(roomId)) {
+      socket.roomId = roomId;
+      socket.join(roomId);
+      const puzzle = rooms[roomId].puzzle;
+      puzzle && socket.emit("puzzle", puzzle.getGameData());
+    } else {
+      socket.emit("room:notFound");
+    }
+  });
+
+  registerPuzzleHandlers(io, socket, rooms);
 
   socket.on('disconnect', () => {
-    console.log('User disconnected')
+    console.log('User disconnected');
+    socket.roomId && socket.leave(socket.roomId);
   })
 });
 

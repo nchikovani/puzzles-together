@@ -1,11 +1,14 @@
 import React, {createRef, Ref} from 'react';
 import Puzzles from "./Puzzles/Puzzles";
 import Part from './Puzzles/Part';
-import {GameDataType} from "./Puzzles/Puzzles.types";
+import {GameDataType, UpdateType} from "./Puzzles/Puzzles.types";
 import SocketService from '../../service/socketService';
 import './style.scss';
+import {connect} from "react-redux";
 
 interface GamePropsTypes {
+  gameData: GameDataType | null;
+  update: UpdateType | null;
   socketService: SocketService;
 }
 
@@ -23,14 +26,18 @@ class Game extends React.Component<GamePropsTypes, any>{
     this.canvas = createRef();
   }
 
-  componentDidMount() {
-    this.props.socketService.handleGettingPuzzle((gameData) => {
+  componentDidUpdate(prevProps: Readonly<GamePropsTypes>, prevState: Readonly<any>, snapshot?: any) {
+    const {gameData, update} = this.props;
+    if (gameData && gameData !== prevProps.gameData) {
       let image = new Image();
       image.onload = () => {
         this.initGame(gameData, image);
       };
       image.src = gameData.image;
-    });
+    } else if (update && update !== prevProps.update && this.puzzles) {
+      this.puzzles.setUpdate(update);
+      this.puzzles.drawPuzzles();
+    }
   }
 
   initGame(gameData: GameDataType, image: HTMLImageElement) {
@@ -41,10 +48,6 @@ class Game extends React.Component<GamePropsTypes, any>{
     ctx.canvas.height = 700;
 
     this.puzzles = new Puzzles(gameData.parts, ctx, image, gameData.partHeight, gameData.partWidth);
-    this.props.socketService.handleGettingUpdate((update) => {
-      this.puzzles.setUpdate(update);
-      this.puzzles.drawPuzzles();
-    });
     this.puzzles.drawPuzzles();
 
     setInterval(() => {
@@ -89,7 +92,13 @@ class Game extends React.Component<GamePropsTypes, any>{
     />;
   }
 
-
 }
 
-export default Game;
+const mapStateToProps = (store: any) => {
+  return {
+    gameData: store.game.gameData,
+    update: store.game.update
+  }
+}
+
+export default connect(mapStateToProps)(Game);
