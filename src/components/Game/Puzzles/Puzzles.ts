@@ -2,8 +2,8 @@ import Part from './Part';
 import {MoveTypes, ConnectionType, UpdateType, GameDataType} from './Puzzles.types';
 import {playKnock} from '../utils';
 
-const maxZoom = 4;
-const minZoom = 0.5;
+const maxZoom = 7;
+const minZoom = 1;
 const connectionDistance = 4; //px
 
 class Puzzles {
@@ -50,8 +50,9 @@ class Puzzles {
 
   zoomIncrement() {
     const newZoom = this.zoom + 0.1;
-    if (newZoom < maxZoom) {
+    if (newZoom <= maxZoom) {
       this.zoom = newZoom;
+
       this.updatePartsBuffers();
       this.drawPuzzles();
     }
@@ -59,8 +60,18 @@ class Puzzles {
 
   zoomDecrement() {
     const newZoom = this.zoom - 0.1;
-    if (newZoom > minZoom) {
+
+    if (newZoom >= minZoom) {
       this.zoom = newZoom;
+      const canvasWidth = this.ctx.canvas.width;
+      const canvasHeight = this.ctx.canvas.height;
+      if (-this.xIndent + canvasWidth / this.zoom > canvasWidth) {
+        this.xIndent = canvasWidth / this.zoom - canvasWidth;
+      }
+      if (-this.yIndent + canvasHeight / this.zoom > canvasHeight) {
+        this.yIndent = canvasHeight / this.zoom - canvasHeight;
+      }
+
       this.updatePartsBuffers();
       this.drawPuzzles();
     }
@@ -74,10 +85,10 @@ class Puzzles {
     // const yMin = -this.ctx.canvas.height * (this.zoom / minZoom - 2) / 2;
     // const xMax = this.ctx.canvas.width * (this.zoom / minZoom) / 2;
     // const yMax = this.ctx.canvas.height * (this.zoom / minZoom) / 2;
-    const xMin = -this.ctx.canvas.width * (this.zoom / minZoom - 1) + this.ctx.canvas.width * (this.zoom / minZoom) / 4;
-    const yMin = -this.ctx.canvas.height * (this.zoom / minZoom - 1) + this.ctx.canvas.height * (this.zoom / minZoom) / 4;
-    const xMax = this.ctx.canvas.width * (this.zoom / minZoom) / 4;
-    const yMax = this.ctx.canvas.height * (this.zoom / minZoom) / 4;
+    const xMin = -this.ctx.canvas.width * (this.zoom - 1);
+    const yMin = -this.ctx.canvas.height * (this.zoom - 1);
+    const xMax = 0;
+    const yMax = 0;
 
     if (newXIndent > xMax) {
       this.xIndent = xMax;
@@ -158,8 +169,8 @@ class Puzzles {
       if (!inCanvas) return;
       const newX = (x - this.xIndent) / this.zoom;
       const newY = (y - this.yIndent) / this.zoom;
-      if (newX < -(this.ctx.canvas.width / minZoom) / 4 || newX > (this.ctx.canvas.width * 3 / minZoom) / 4 - this.partWidthWithoutScroll
-        || newY < -(this.ctx.canvas.height / minZoom) / 4 || newY > (this.ctx.canvas.height * 3 / minZoom) / 4 - this.partHeightWithoutScroll) {
+      if (newX < 0 || newX > this.ctx.canvas.width - this.partWidthWithoutScroll
+        || newY < 0 || newY > this.ctx.canvas.height - this.partHeightWithoutScroll) {
         inCanvas = false;
         return;
       }
