@@ -5,7 +5,7 @@ const protrusionWidth = 0.4;
 const protrusionLength = 0.3;
 const diffControlPointTop = 0.3;
 const diffControlPointBottom = 0.35;
-const lineWidthProportion = 0.01;//??
+const lineWidthProportion = 0.02;//??
 
 
 class Part {

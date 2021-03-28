@@ -2,7 +2,7 @@ import Part from './Part';
 import {MoveTypes, ConnectionType, UpdateType, GameDataType} from './Puzzles.types';
 import {playKnock} from '../utils';
 
-const maxZoom = 3;
+const maxZoom = 4;
 const minZoom = 0.5;
 const connectionDistance = 4;//px
 
@@ -45,6 +45,7 @@ class Puzzles {
   }
 
   zoomIncrement() {
+    console.log(this.zoom)
     const newZoom = this.zoom + 0.1;
     if (newZoom < maxZoom) {
       this.zoom = newZoom;

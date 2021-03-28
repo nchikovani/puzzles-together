@@ -24,6 +24,8 @@ class Game extends React.Component<GamePropsTypes, any>{
   constructor(props: GamePropsTypes) {
     super(props);
     this.canvas = createRef();
+
+    this.mouseWheelHandler = this.mouseWheelHandler.bind(this);
   }
 
   componentDidUpdate(prevProps: Readonly<GamePropsTypes>, prevState: Readonly<any>, snapshot?: any) {
@@ -38,6 +40,16 @@ class Game extends React.Component<GamePropsTypes, any>{
       this.puzzles.setUpdate(update);
       this.puzzles.drawPuzzles();
     }
+  }
+
+  componentDidMount() {
+    // @ts-ignore
+    this.canvas && this.canvas.current.addEventListener('wheel', this.mouseWheelHandler);
+  }
+
+  componentWillUnmount() {
+    // @ts-ignore
+    this.canvas && this.canvas.current.removeEventListener('wheel', this.mouseWheelHandler);
   }
 
   initGame(gameData: GameDataType, image: HTMLImageElement) {
@@ -81,9 +93,10 @@ class Game extends React.Component<GamePropsTypes, any>{
     canvasElement.style.cursor = isOverPart ? 'pointer' : 'default';
   }
 
-  mouseWheelHandler(e:  React.WheelEvent<HTMLCanvasElement>) {
-    e.stopPropagation();
+  mouseWheelHandler(e: Event) {
     if (!this.puzzles) return;
+    e.preventDefault();
+    // @ts-ignore
     if (e.deltaY < 0) {
       this.puzzles.zoomIncrement();
     } else {
@@ -99,7 +112,6 @@ class Game extends React.Component<GamePropsTypes, any>{
       onMouseUp={() => this.movablePart = null}
       onMouseMove={(e)=>this.mouseMoveHandler(e)}
       onMouseOut={() => this.movablePart = null}
-      onWheel={(e) => this.mouseWheelHandler(e)}
     />;
   }
 
