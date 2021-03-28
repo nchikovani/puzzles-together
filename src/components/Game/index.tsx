@@ -81,6 +81,16 @@ class Game extends React.Component<GamePropsTypes, any>{
     canvasElement.style.cursor = isOverPart ? 'pointer' : 'default';
   }
 
+  mouseWheelHandler(e:  React.WheelEvent<HTMLCanvasElement>) {
+    e.stopPropagation();
+    if (!this.puzzles) return;
+    if (e.deltaY < 0) {
+      this.puzzles.zoomIncrement();
+    } else {
+      this.puzzles.zoomDecrement();
+    }
+  }
+
   render() {
     return <canvas
       ref={this.canvas}
@@ -89,6 +99,7 @@ class Game extends React.Component<GamePropsTypes, any>{
       onMouseUp={() => this.movablePart = null}
       onMouseMove={(e)=>this.mouseMoveHandler(e)}
       onMouseOut={() => this.movablePart = null}
+      onWheel={(e) => this.mouseWheelHandler(e)}
     />;
   }
 

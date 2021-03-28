@@ -1,37 +1,30 @@
 import {PartTypes, LinkTypes} from './Puzzles.types';
 import Puzzles from "./Puzzles";
 
+const protrusionWidth = 0.4;
+const protrusionLength = 0.3;
+const diffControlPointTop = 0.3;
+const diffControlPointBottom = 0.35;
+const lineWidth = 2;//??
+
+
 class Part {
   id: string;
-  ctx: any;
-  img: HTMLImageElement;
-  height: number;
-  width: number;
-  fullHeight: number;
-  fullWidth: number;
-  x: number;
-  y: number;
+  _x: number;
+  _y: number;
   xIndex: number;
   yIndex: number;
-  protrusionWidth: number;
-  protrusionLength: number;
-  diffControlPointTop: number;
-  diffControlPointBottom: number;
-  lineWidth: number;
-  bufferIdentY: number;
-  bufferIdentX: number;
   topLink: LinkTypes | null;
   leftLink: LinkTypes | null;
   rightLink: LinkTypes | null;
   bottomLink: LinkTypes | null;
-  buffer: any;
   puzzles: Puzzles;
+  buffer: HTMLCanvasElement;
 
-  constructor(part: PartTypes, ctx: any, img: HTMLImageElement, puzzles: Puzzles) {
-
+  constructor(part: PartTypes, puzzles: Puzzles) {
     this.id = part.id;
-    this.x = part.x;
-    this.y = part.y;
+    this._x = part.x;
+    this._y = part.y;
 
     this.xIndex = part.xIndex;
     this.yIndex = part.yIndex;
@@ -40,31 +33,46 @@ class Part {
     this.rightLink = part.rightLink;
     this.bottomLink = part.bottomLink;
 
-    this.ctx = ctx;
-    this.img = img;
-    this.height = puzzles.partHeight;
-    this.width = puzzles.partWidth;
     this.puzzles = puzzles;
 
-    this.protrusionWidth = 0.4;
-    this.protrusionLength = 0.3;
-    this.diffControlPointTop = 0.3;
-    this.diffControlPointBottom = 0.35;
-    this.lineWidth = 2;
-
-    this.fullHeight = this.height + this.lineWidth / 2;
-    this.fullWidth = this.width + this.lineWidth / 2;
-
-    this.bufferIdentY = this.protrusionLength * this.height + this.lineWidth;
-    this.bufferIdentX = this.protrusionLength * this.width + this.lineWidth;
-
     this.updateBuffer();
+  }
 
+  get x() {
+    return this._x * this.puzzles.zoom;
+  }
+
+  get y() {
+    return this._y * this.puzzles.zoom;
+  }
+
+  set x(value) {
+    this._x = value / this.puzzles.zoom;
+  }
+
+  set y(value) {
+    this._y = value / this.puzzles.zoom;
+  }
+
+  get fullHeight() {
+    return this.puzzles.partHeight + lineWidth / 2;
+  }
+
+  get fullWidth() {
+    return   this.puzzles.partWidth + lineWidth / 2;
+  }
+
+  get bufferIdentY() {
+    return protrusionLength * this.puzzles.partHeight + lineWidth;
+  }
+
+  get bufferIdentX() {
+    return protrusionLength * this.puzzles.partWidth + lineWidth;
   }
 
   setCoords(x: number, y: number) {
-    this.x = x;
-    this.y = y;
+    this._x = x;
+    this._y = y;
   }
 
   coordsIsInPart(xCoords: number, yCoords: number) {
@@ -76,12 +84,14 @@ class Part {
   }
 
   drawPart() {
-    const {ctx, x, y} = this;
-    ctx.drawImage(this.buffer, x - this.bufferIdentX, y - this.bufferIdentY);
+    const {x, y} = this;
+    this.puzzles.ctx.drawImage(this.buffer, x - this.bufferIdentX, y - this.bufferIdentY);
   }
 
   updateBuffer() {
-    const {height, width, xIndex, yIndex, protrusionWidth, protrusionLength, diffControlPointTop, diffControlPointBottom, lineWidth, bufferIdentX, bufferIdentY} = this;
+    const {xIndex, yIndex, bufferIdentX, bufferIdentY} = this;
+    const height = this.puzzles.partHeight;
+    const width = this.puzzles.partWidth;
     const bottomLinkType = this.bottomLink?.type;
     const topLinkType = this.topLink?.type;
     const rightLinkType = this.rightLink?.type;
@@ -113,7 +123,7 @@ class Part {
     ctx.clip();
     const imgXDiff = x - xIndex * width;
     const imgYDiff = y - yIndex * height;
-    ctx.drawImage(this.img, imgXDiff, imgYDiff, this.puzzles.width, this.puzzles.height);
+    ctx.drawImage(this.puzzles.image, imgXDiff, imgYDiff, this.puzzles.width, this.puzzles.height);
 
     function drawProtrusion(side: string) {
       if (!ctx) return;

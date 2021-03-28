@@ -3,6 +3,8 @@ const sizeOf = require('image-size');
 
 const maxWidth = 800;
 const maxHeight = 600;
+const canvasWidth = 900;
+const canvasHeight = 700;
 const maxPartCount = 1500;
 
 class Puzzle {
@@ -36,7 +38,6 @@ class Puzzle {
     if (!this.width || !this.height) return;
     const smallSide = this.width > this.height ? 'height' : 'width';
     const bigSide = smallSide === 'height' ? 'width' : 'height';
-
 
     const options = []
     let i = 2;
@@ -155,8 +156,8 @@ class Puzzle {
           id,
           xIndex: i,
           yIndex: j,
-          x: Math.random() * 800,
-          y: Math.random() * 600,
+          x: Math.random() * (canvasWidth - this.partWidth),
+          y: Math.random() * (canvasHeight - this.partHeight),
           topLink,
           leftLink,
           rightLink,

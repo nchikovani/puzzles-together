@@ -2,22 +2,67 @@ import Part from './Part';
 import {MoveTypes, ConnectionType, UpdateType, GameDataType} from './Puzzles.types';
 import {playKnock} from '../utils';
 
+const maxZoom = 3;
+const minZoom = 0.5;
+
 class Puzzles {
   parts: Part[];
   ctx: any;
-  partHeight: number;
-  partWidth: number;
-  width: number;
-  height: number;
+  partHeightWithoutScroll: number;
+  partWidthWithoutScroll: number;
+  widthWithoutScroll: number;
+  heightWithoutScroll: number;
+  zoom: number;
+  image: HTMLImageElement;
 
   constructor(gameData: GameDataType, ctx: any, img: HTMLImageElement) {
     this.ctx = ctx;
-    this.partHeight = gameData.partHeight;
-    this.partWidth = gameData.partWidth;
-    this.width = gameData.width;
-    this.height = gameData.height;
+    this.image = img;
+    this.partHeightWithoutScroll = gameData.partHeight;
+    this.partWidthWithoutScroll = gameData.partWidth;
+    this.widthWithoutScroll = gameData.width;
+    this.heightWithoutScroll = gameData.height;
+    this.zoom = 1;
 
-    this.parts = gameData.parts.map(part => new Part(part, ctx, img, this));
+    this.parts = gameData.parts.map(part => new Part(part, this));
+  }
+
+  get partWidth() {
+    return this.partWidthWithoutScroll * this.zoom;
+  }
+
+  get partHeight() {
+    return this.partHeightWithoutScroll * this.zoom;
+  }
+
+  get width() {
+    return this.widthWithoutScroll * this.zoom;
+  }
+
+  get height() {
+    return this.heightWithoutScroll * this.zoom;
+  }
+
+  zoomIncrement() {
+    const newZoom = this.zoom + 0.1;
+    if (newZoom < maxZoom) {
+      this.zoom = newZoom;
+      this.updatePartsBuffers();
+      this.drawPuzzles();
+    }
+  }
+
+  zoomDecrement() {
+    const newZoom = this.zoom - 0.1;
+    if (newZoom > minZoom) {
+      this.zoom = newZoom;
+      this.updatePartsBuffers();
+      this.drawPuzzles();
+    }
+  }
+
+  updatePartsBuffers() {
+    this.parts.forEach(part => part.updateBuffer());
   }
 
   drawPuzzles() {
@@ -35,15 +80,6 @@ class Puzzles {
       }
     }
   }
-
-  // solvePuzzles() {
-  //   this.parts.forEach(part => {
-  //     const xCoords = this.ctx.lineWidth + part.xIndex * part.fullWidth;
-  //     const yCoords = this.ctx.lineWidth + part.yIndex * part.fullWidth;
-  //     part.setCoords(xCoords, yCoords);
-  //   });
-  //   this.drawPuzzles();
-  // }
 
   getPartById(id: string) {
     return this.parts.find(part => part.id === id);
@@ -83,7 +119,7 @@ class Puzzles {
     const moves: MoveTypes[] = [];
     let connections: ConnectionType[][] = [];
     const loop =(movablePart: Part, x: number, y: number) => {
-      moves.push({id: movablePart.id, x: x, y: y});
+      moves.push({id: movablePart.id, x: x / this.zoom, y: y / this.zoom});
       const connection = this.getConnections(movablePart, x, y);
       connections = connections.concat(connection);
       const topPartId = movablePart.topLink?.id;
