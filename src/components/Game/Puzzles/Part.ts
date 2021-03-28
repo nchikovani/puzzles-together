@@ -5,7 +5,7 @@ const protrusionWidth = 0.4;
 const protrusionLength = 0.3;
 const diffControlPointTop = 0.3;
 const diffControlPointBottom = 0.35;
-const lineWidth = 2;//??
+const lineWidthProportion = 0.01;//??
 
 
 class Part {
@@ -54,20 +54,24 @@ class Part {
     this._y = value / this.puzzles.zoom;
   }
 
+  get lineWidth() {
+    return lineWidthProportion * this.puzzles.partWidth;
+  }
+
   get fullHeight() {
-    return this.puzzles.partHeight + lineWidth / 2;
+    return this.puzzles.partHeight + this.lineWidth / 2;
   }
 
   get fullWidth() {
-    return   this.puzzles.partWidth + lineWidth / 2;
+    return   this.puzzles.partWidth + this.lineWidth / 2;
   }
 
   get bufferIdentY() {
-    return protrusionLength * this.puzzles.partHeight + lineWidth;
+    return protrusionLength * this.puzzles.partHeight + this.lineWidth;
   }
 
   get bufferIdentX() {
-    return protrusionLength * this.puzzles.partWidth + lineWidth;
+    return protrusionLength * this.puzzles.partWidth + this.lineWidth;
   }
 
   setCoords(x: number, y: number) {
@@ -89,7 +93,7 @@ class Part {
   }
 
   updateBuffer() {
-    const {xIndex, yIndex, bufferIdentX, bufferIdentY} = this;
+    const {xIndex, yIndex, bufferIdentX, bufferIdentY, lineWidth} = this;
     const height = this.puzzles.partHeight;
     const width = this.puzzles.partWidth;
     const bottomLinkType = this.bottomLink?.type;

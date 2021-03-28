@@ -4,6 +4,7 @@ import {playKnock} from '../utils';
 
 const maxZoom = 3;
 const minZoom = 0.5;
+const connectionDistance = 4;//px
 
 class Puzzles {
   parts: Part[];
@@ -107,7 +108,7 @@ class Puzzles {
       const link = part && part[connection.link];
       if (link) link.connected = true;
     };
-    // console.log(connections);
+
     connections.forEach((connection) => {
       connect(connection[0]);
       connect(connection[1]);
@@ -161,7 +162,6 @@ class Puzzles {
   }
 
   getConnections(movablePart: Part, x: number, y: number):ConnectionType[][] {
-    const connectionDistance = 4;
     const connections = [];
     const topPartId = movablePart.topLink?.id;
     const bottomPartId = movablePart.bottomLink?.id;
