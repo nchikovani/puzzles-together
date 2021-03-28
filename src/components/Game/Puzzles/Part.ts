@@ -39,19 +39,19 @@ class Part {
   }
 
   get x() {
-    return this._x * this.puzzles.zoom;
+    return this._x * this.puzzles.zoom + this.puzzles.xIndent;
   }
 
   get y() {
-    return this._y * this.puzzles.zoom;
+    return this._y * this.puzzles.zoom + this.puzzles.yIndent;
   }
 
   set x(value) {
-    this._x = value / this.puzzles.zoom;
+    this._x = (value - this.puzzles.xIndent) / this.puzzles.zoom;
   }
 
   set y(value) {
-    this._y = value / this.puzzles.zoom;
+    this._y = (value - this.puzzles.yIndent) / this.puzzles.zoom;
   }
 
   get lineWidth() {

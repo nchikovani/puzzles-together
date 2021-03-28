@@ -4,7 +4,7 @@ import {playKnock} from '../utils';
 
 const maxZoom = 4;
 const minZoom = 0.5;
-const connectionDistance = 4;//px
+const connectionDistance = 4; //px
 
 class Puzzles {
   parts: Part[];
@@ -13,6 +13,8 @@ class Puzzles {
   partWidthWithoutScroll: number;
   widthWithoutScroll: number;
   heightWithoutScroll: number;
+  xIndent: number;
+  yIndent: number;
   zoom: number;
   image: HTMLImageElement;
 
@@ -24,6 +26,8 @@ class Puzzles {
     this.widthWithoutScroll = gameData.width;
     this.heightWithoutScroll = gameData.height;
     this.zoom = 1;
+    this.xIndent = 0;
+    this.yIndent = 0;
 
     this.parts = gameData.parts.map(part => new Part(part, this));
   }
@@ -45,7 +49,6 @@ class Puzzles {
   }
 
   zoomIncrement() {
-    console.log(this.zoom)
     const newZoom = this.zoom + 0.1;
     if (newZoom < maxZoom) {
       this.zoom = newZoom;
@@ -60,6 +63,36 @@ class Puzzles {
       this.zoom = newZoom;
       this.updatePartsBuffers();
       this.drawPuzzles();
+    }
+  }
+
+  incrementIndent (xIncrement: number, yIncrement: number) {
+    const newXIndent = this.xIndent + xIncrement;
+    const newYIndent = this.yIndent + yIncrement;
+
+    // const xMin = -this.ctx.canvas.width * (this.zoom / minZoom - 2) / 2;
+    // const yMin = -this.ctx.canvas.height * (this.zoom / minZoom - 2) / 2;
+    // const xMax = this.ctx.canvas.width * (this.zoom / minZoom) / 2;
+    // const yMax = this.ctx.canvas.height * (this.zoom / minZoom) / 2;
+    const xMin = -this.ctx.canvas.width * (this.zoom / minZoom - 1) + this.ctx.canvas.width * (this.zoom / minZoom) / 4;
+    const yMin = -this.ctx.canvas.height * (this.zoom / minZoom - 1) + this.ctx.canvas.height * (this.zoom / minZoom) / 4;
+    const xMax = this.ctx.canvas.width * (this.zoom / minZoom) / 4;
+    const yMax = this.ctx.canvas.height * (this.zoom / minZoom) / 4;
+
+    if (newXIndent > xMax) {
+      this.xIndent = xMax;
+    } else if (newXIndent < xMin){
+      this.xIndent = xMin
+    } else {
+      this.xIndent = newXIndent;
+    }
+
+    if (newYIndent > yMax) {
+      this.yIndent = yMax;
+    } else if (newYIndent < yMin){
+      this.yIndent = yMin
+    } else {
+      this.yIndent = newYIndent;
     }
   }
 
@@ -120,8 +153,17 @@ class Puzzles {
   getUpdate(movablePart: Part, x: number, y: number) {
     const moves: MoveTypes[] = [];
     let connections: ConnectionType[][] = [];
+    let inCanvas = true;
     const loop =(movablePart: Part, x: number, y: number) => {
-      moves.push({id: movablePart.id, x: x / this.zoom, y: y / this.zoom});
+      if (!inCanvas) return;
+      const newX = (x - this.xIndent) / this.zoom;
+      const newY = (y - this.yIndent) / this.zoom;
+      if (newX < -(this.ctx.canvas.width / minZoom) / 4 || newX > (this.ctx.canvas.width * 3 / minZoom) / 4 - this.partWidthWithoutScroll
+        || newY < -(this.ctx.canvas.height / minZoom) / 4 || newY > (this.ctx.canvas.height * 3 / minZoom) / 4 - this.partHeightWithoutScroll) {
+        inCanvas = false;
+        return;
+      }
+      moves.push({id: movablePart.id, x: newX, y: newY});
       const connection = this.getConnections(movablePart, x, y);
       connections = connections.concat(connection);
       const topPartId = movablePart.topLink?.id;
@@ -159,7 +201,7 @@ class Puzzles {
     }
     loop(movablePart, x, y);
 
-    return {moves, connections};
+    return inCanvas ? {moves, connections} : {moves: [], connections: []};
   }
 
   getConnections(movablePart: Part, x: number, y: number):ConnectionType[][] {

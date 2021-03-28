@@ -18,8 +18,11 @@ class Game extends React.Component<GamePropsTypes, any>{
   mouseX: number;
   mouseY: number;
   movablePart?: Part | null;
+  canvasIsMoving: boolean;
   movablePartXDiff: number;
   movablePartYDiff: number;
+  startXMovingCanvas: number;
+  startYMovingCanvas: number;
 
   constructor(props: GamePropsTypes) {
     super(props);
@@ -37,7 +40,7 @@ class Game extends React.Component<GamePropsTypes, any>{
       };
       image.src = gameData.image;
     } else if (update && update !== prevProps.update && this.puzzles) {
-      this.puzzles.setUpdate(update);
+      this.puzzles.setUpdate(update); // перенести в setTimeOut
       this.puzzles.drawPuzzles();
     }
   }
@@ -63,11 +66,17 @@ class Game extends React.Component<GamePropsTypes, any>{
     this.puzzles.drawPuzzles();
 
     setInterval(() => {
-      if (!this.movablePart) return;
-      const update = this.puzzles.getUpdate(this.movablePart, this.mouseX - this.movablePartXDiff, this.mouseY - this.movablePartYDiff);
-      this.puzzles.setUpdate(update);
-      this.props.socketService.sendUpdate(update);
-      this.puzzles.drawPuzzles();
+      if (this.canvasIsMoving) {
+        this.puzzles.incrementIndent(this.mouseX - this.startXMovingCanvas, this.mouseY - this.startYMovingCanvas);
+        this.startXMovingCanvas = this.mouseX;
+        this.startYMovingCanvas = this.mouseY;
+        this.puzzles.drawPuzzles();
+      } else if (this.movablePart) {
+        const update = this.puzzles.getUpdate(this.movablePart, this.mouseX - this.movablePartXDiff, this.mouseY - this.movablePartYDiff);
+        this.puzzles.setUpdate(update);
+        this.props.socketService.sendUpdate(update);
+        this.puzzles.drawPuzzles();
+      }
     }, 33);
   }
 
@@ -79,6 +88,12 @@ class Game extends React.Component<GamePropsTypes, any>{
       this.movablePart = movablePart;
       this.movablePartXDiff = this.mouseX - movablePart.x;
       this.movablePartYDiff = this.mouseY - movablePart.y;
+    } else {
+      this.canvasIsMoving = true;
+      this.startXMovingCanvas = this.mouseX;
+      this.startYMovingCanvas = this.mouseY;
+      // @ts-ignore
+      this.canvas.current.style.cursor = 'grab';
     }
   }
 
@@ -88,7 +103,7 @@ class Game extends React.Component<GamePropsTypes, any>{
     this.mouseX = e.pageX - canvasElement.offsetLeft - canvasElement.clientLeft;
     this.mouseY = e.pageY - canvasElement.offsetTop - canvasElement.clientTop;
 
-    if (!this.puzzles) return;
+    if (!this.puzzles || this.canvasIsMoving) return;
     const isOverPart = !!this.puzzles.getPartInCoords(this.mouseX, this.mouseY);
     canvasElement.style.cursor = isOverPart ? 'pointer' : 'default';
   }
@@ -97,7 +112,7 @@ class Game extends React.Component<GamePropsTypes, any>{
     if (!this.puzzles) return;
     e.preventDefault();
     // @ts-ignore
-    if (e.deltaY < 0) {
+    if (e.deltaY < 0) { //просто изменять значение zoom, в setTimeOut смотреть, если изменился, то перерисовывать буфер
       this.puzzles.zoomIncrement();
     } else {
       this.puzzles.zoomDecrement();
@@ -109,9 +124,19 @@ class Game extends React.Component<GamePropsTypes, any>{
       ref={this.canvas}
       className="game"
       onMouseDown={() => this.mouseDownHandler()}
-      onMouseUp={() => this.movablePart = null}
+      onMouseUp={() => {
+        this.movablePart = null;
+        this.canvasIsMoving = false;
+        // @ts-ignore
+        this.canvas.current.cursor = 'default';
+      }}
       onMouseMove={(e)=>this.mouseMoveHandler(e)}
-      onMouseOut={() => this.movablePart = null}
+      onMouseOut={() => {
+        this.movablePart = null;
+        this.canvasIsMoving = false;
+        // @ts-ignore
+        this.canvas.current.cursor = 'default';
+      }}
     />;
   }
 
