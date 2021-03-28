@@ -3,7 +3,6 @@ import {MoveTypes, ConnectionType, UpdateType, GameDataType} from './Puzzles.typ
 import {playKnock} from '../utils';
 
 const maxZoom = 7;
-const minZoom = 1;
 const connectionDistance = 4; //px
 
 class Puzzles {
@@ -48,43 +47,45 @@ class Puzzles {
     return this.heightWithoutScroll * this.zoom;
   }
 
-  zoomIncrement() {
-    const newZoom = this.zoom + 0.1;
-    if (newZoom <= maxZoom) {
-      this.zoom = newZoom;
+  zoomIncrement(mouseX: number, mouseY: number) {
+    if (this.zoom >= maxZoom) return;
+    const newZoom = this.zoom * 1.1 > maxZoom ? maxZoom : this.zoom * 1.1;
+    this.xIndent -= mouseX * (newZoom - this.zoom);
+    this.yIndent -= mouseY * (newZoom - this.zoom);
+    this.zoom = newZoom;
 
-      this.updatePartsBuffers();
-      this.drawPuzzles();
-    }
+    this.updatePartsBuffers();
+    this.drawPuzzles();
   }
 
-  zoomDecrement() {
-    const newZoom = this.zoom - 0.1;
+  zoomDecrement(mouseX: number, mouseY: number) {
+    if (this.zoom <= 1) return;
+    const newZoom = this.zoom / 1.1 < 1 ? 1 : this.zoom / 1.1;
+    this.xIndent += mouseX * (-newZoom + this.zoom);
+    this.yIndent += mouseY * (-newZoom + this.zoom);
+    if (this.xIndent > 0) this.xIndent = 0;
+    if (this.yIndent > 0) this.yIndent = 0;
 
-    if (newZoom >= minZoom) {
-      this.zoom = newZoom;
-      const canvasWidth = this.ctx.canvas.width;
-      const canvasHeight = this.ctx.canvas.height;
-      if (-this.xIndent + canvasWidth / this.zoom > canvasWidth) {
-        this.xIndent = canvasWidth / this.zoom - canvasWidth;
-      }
-      if (-this.yIndent + canvasHeight / this.zoom > canvasHeight) {
-        this.yIndent = canvasHeight / this.zoom - canvasHeight;
-      }
+    this.zoom = newZoom < 1 ? 1 : newZoom;
+    const canvasWidth = this.ctx.canvas.width;
+    const canvasHeight = this.ctx.canvas.height;
 
-      this.updatePartsBuffers();
-      this.drawPuzzles();
+    if ((canvasWidth - this.xIndent) / this.zoom > canvasWidth) {
+      this.xIndent = canvasWidth - canvasWidth * this.zoom;
     }
+    if ((canvasHeight - this.yIndent) / this.zoom > canvasHeight) {
+      this.yIndent = canvasHeight - canvasHeight * this.zoom;
+    }
+
+    this.updatePartsBuffers();
+    this.drawPuzzles();
+
   }
 
   incrementIndent (xIncrement: number, yIncrement: number) {
     const newXIndent = this.xIndent + xIncrement;
     const newYIndent = this.yIndent + yIncrement;
 
-    // const xMin = -this.ctx.canvas.width * (this.zoom / minZoom - 2) / 2;
-    // const yMin = -this.ctx.canvas.height * (this.zoom / minZoom - 2) / 2;
-    // const xMax = this.ctx.canvas.width * (this.zoom / minZoom) / 2;
-    // const yMax = this.ctx.canvas.height * (this.zoom / minZoom) / 2;
     const xMin = -this.ctx.canvas.width * (this.zoom - 1);
     const yMin = -this.ctx.canvas.height * (this.zoom - 1);
     const xMax = 0;

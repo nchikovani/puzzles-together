@@ -113,9 +113,9 @@ class Game extends React.Component<GamePropsTypes, any>{
     e.preventDefault();
     // @ts-ignore
     if (e.deltaY < 0) { //просто изменять значение zoom, в setTimeOut смотреть, если изменился, то перерисовывать буфер
-      this.puzzles.zoomIncrement();
+      this.puzzles.zoomIncrement(this.mouseX, this.mouseY);
     } else {
-      this.puzzles.zoomDecrement();
+      this.puzzles.zoomDecrement(this.mouseX, this.mouseY);
     }
   }
 
