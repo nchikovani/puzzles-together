@@ -1,7 +1,7 @@
 import {io} from "socket.io-client";
 import {UpdateType} from '../components/Game/Puzzles/Puzzles.types'
 import store from '../store';
-import {setGameData, setUpdate, setRoomId, setNotFound, setOptions} from '../actions';
+import {setGameData, setUpdate, setRoomId, setNotFound, setOptions, setIsSolved} from '../actions';
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -11,6 +11,7 @@ export default class socketService {
     this.socket = io(SERVER_URL, {
       transports: ['websocket', 'polling', 'flashsocket']
     });
+
     this.socket.on('puzzle:options', (options) => {
       store.dispatch(setOptions(options));
     });
@@ -19,8 +20,12 @@ export default class socketService {
       store.dispatch(setGameData(puzzle));
     });
     this.socket.on('puzzle:getUpdate', (data) => {
-      console.log('get from server');
+      console.log('update from server');
       store.dispatch(setUpdate(data.update));
+    });
+    this.socket.on('puzzle:solved', () => {
+      console.log('solved');
+      store.dispatch(setIsSolved(true));
     });
     this.socket.on('room', (roomId) => {
       store.dispatch(setRoomId(roomId));
@@ -50,17 +55,4 @@ export default class socketService {
   sendUpdate (update: UpdateType) {
     this.socket.emit('puzzle:setUpdate', { update });
   }
-  // handleGettingPuzzle(handle: (puzzles: GameDataType)=>void) {
-  //   this.socket.on('puzzle', (puzzles) => {
-  //     handle(puzzles);
-  //     console.log('puzzle');
-  //   });
-  // }
-
-  // handleGettingUpdate (handler: (update: UpdateType) => void) {
-  //   this.socket.on('puzzle:getUpdate', (data) => {
-  //     handler(data.update);
-  //   });
-  // }
-
 }

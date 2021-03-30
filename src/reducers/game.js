@@ -2,6 +2,7 @@ const initial = {
 	gameData: null,
   update: null,
   options: null,
+  isSolved: false,
 }
 
 function game(state=initial, action) {
@@ -15,6 +16,11 @@ function game(state=initial, action) {
       return {
         ...state,
         update: action.update,
+      };
+    case 'SET_IS_SOLVED':
+      return {
+        ...state,
+        isSolved: action.isSolved,
       };
     case 'SET_OPTIONS':
       return {

@@ -27,7 +27,6 @@ class Puzzles {
     this.updateBuffersZoom = 1;
     this.xIndent = 0;
     this.yIndent = 0;
-
     this.parts = gameData.parts.map(part => new Part(part, this));
   }
 

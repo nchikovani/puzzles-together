@@ -15,7 +15,6 @@ class Puzzle {
     // this.partWidth = partWidth;
     // this.partHeight = partHeight;
 
-
     try {
       const buffer = Buffer.from(image.substring(image.indexOf(',') + 1), 'base64');
       const dimensions = sizeOf(buffer);
@@ -30,8 +29,6 @@ class Puzzle {
     } catch (e) {
       console.log(e);
     }
-
-    this.parts = this.createParts();
   }
 
   getPartsCountOptions () {
@@ -66,6 +63,23 @@ class Puzzle {
     this.partWidth = this.width / this.columnCount;
     this.partHeight = this.height / this.rowCount;
     this.parts = this.createParts();
+
+    this.connectionCount = this.getConnectionCount();
+    this.solvedConnectionCount = 0;
+    this.isSolved = false;
+  }
+
+  getConnectionCount () {
+    let connectionCount = 0;
+    for (let i = 0; i < this.rowCount; i++) {
+      for (let j = 0; j < this.columnCount; j++) {
+        i !== 0 && connectionCount++;
+        j !== 0 && connectionCount++;
+        i !== this.rowCount - 1 && connectionCount++;
+        j !== this.columnCount - 1 && connectionCount++;
+      }
+    }
+    return connectionCount;
   }
 
   getGameData() {
@@ -95,7 +109,13 @@ class Puzzle {
       if (!connection) return;
       const targetPart = this.parts.find((part) => part && part.id === connection.id);
       const link = targetPart && targetPart[connection.link];
-      if (link) link.connected = true;
+      if (link && link.connected === false) {
+        link.connected = true;
+        this.solvedConnectionCount++
+        if (this.solvedConnectionCount === this.connectionCount) {
+          this.isSolved = true;
+        }
+      }
     };
     connections.forEach((connection) => {
       connection && connect(connection[0]);

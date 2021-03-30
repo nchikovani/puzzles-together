@@ -5,10 +5,12 @@ import {GameDataType, UpdateType} from "./Puzzles/Puzzles.types";
 import SocketService from '../../service/socketService';
 import './style.scss';
 import {connect} from "react-redux";
+import {fps} from './Puzzles/puzzleConstants';
 
 interface GamePropsTypes {
   gameData: GameDataType | null;
   update: UpdateType | null;
+  isSolved: boolean;
   socketService: SocketService;
 }
 
@@ -41,6 +43,9 @@ class Game extends React.Component<GamePropsTypes, any>{
         this.initGame(gameData, image);
       };
       image.src = gameData.image;
+    }
+    if (this.props.isSolved) {
+      this.puzzles.parts && alert(`Ураа, ты собрал пазл из ${this.puzzles.parts.length} кусков. Так держать!`);
     }
   }
 
@@ -81,7 +86,6 @@ class Game extends React.Component<GamePropsTypes, any>{
         this.props.socketService.sendUpdate(update);
         fullUpdate.moves.push(...update.moves);
         fullUpdate.connections.push(...update.connections);
-        // this.puzzles.drawPuzzles();
       }
       if (this.oldUpdateFromServer !== this.props.update && this.props.update) {
         fullUpdate.moves.push(...this.props.update.moves);
@@ -91,7 +95,7 @@ class Game extends React.Component<GamePropsTypes, any>{
       this.zoomIsChanged = false;
       this.puzzles.setUpdate(fullUpdate);
       this.puzzles.drawPuzzles();
-    }, 33);
+    }, 1000 / fps);
   }
 
   mouseDownHandler() {
@@ -162,7 +166,8 @@ class Game extends React.Component<GamePropsTypes, any>{
 const mapStateToProps = (store: any) => {
   return {
     gameData: store.game.gameData,
-    update: store.game.update
+    update: store.game.update,
+    isSolved: store.game.isSolved,
   }
 }
 

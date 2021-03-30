@@ -1,3 +1,5 @@
+export const fps = 40;
+
 export const maxZoom = 8;
 export const connectionDistance = 4; //px
 export const zoomDifferenceBuffersUpdating = 1.5;

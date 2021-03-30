@@ -22,8 +22,13 @@ module.exports = (io, socket, rooms) => {
   socket.on("puzzle:setUpdate", (data) => {
     const room = rooms[socket.roomId];
     if (!room || !room.puzzle) return;
+    const beforeIsSolved = room.puzzle.isSolved;
     room.puzzle.update(data.update);
     socket.broadcast.to(socket.roomId).emit("puzzle:getUpdate", data);
+
+    if (beforeIsSolved === false && room.puzzle.isSolved === true) {
+      io.to(socket.roomId).emit("puzzle:solved");
+    }
   });
 
 }

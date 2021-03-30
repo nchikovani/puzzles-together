@@ -19,6 +19,13 @@ export function setUpdate(update) {
     }
 }
 
+export function setIsSolved(isSolved) {
+    return {
+        type: 'SET_IS_SOLVED',
+        isSolved,
+    }
+}
+
 export function setRoomId(roomId) {
     return {
         type: 'SET_ROOM_ID',
