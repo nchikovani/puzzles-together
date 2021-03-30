@@ -1,8 +1,10 @@
 const { v4: uuidv4 } = require('uuid');
 const sizeOf = require('image-size');
 
-const canvasWidth = 900;
-const canvasHeight = 700;
+const canvasProportions = 1.7;
+
+const canvasWidth = 1;
+const canvasHeight = 1 / canvasProportions;
 const maxWidth = canvasWidth / 2;
 const maxHeight = canvasHeight / 2;
 const maxPartCount = 1500;
@@ -51,7 +53,6 @@ class Puzzle {
       });
       i+=2;
     }
-
     return options;
   }
 

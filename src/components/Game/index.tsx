@@ -14,6 +14,8 @@ interface GamePropsTypes {
   socketService: SocketService;
 }
 
+const canvasProportions = 1.7;
+
 class Game extends React.Component<GamePropsTypes, any>{
   puzzles: Puzzles;
   canvas: Ref<HTMLCanvasElement>;
@@ -44,7 +46,7 @@ class Game extends React.Component<GamePropsTypes, any>{
       };
       image.src = gameData.image;
     }
-    if (this.props.isSolved) {
+    if (this.props.isSolved !== prevProps.isSolved && this.props.isSolved) {
       this.puzzles.parts && alert(`Ураа, ты собрал пазл из ${this.puzzles.parts.length} кусков. Так держать!`);
     }
   }
@@ -52,6 +54,16 @@ class Game extends React.Component<GamePropsTypes, any>{
   componentDidMount() {
     // @ts-ignore
     this.canvas && this.canvas.current.addEventListener('wheel', this.mouseWheelHandler);
+    window.addEventListener(`resize`, () => {
+      // @ts-ignore
+      if (!this.canvas.current) return;
+      // @ts-ignore
+      this.ctx.canvas.width = this.canvas.current.offsetWidth;
+      // @ts-ignore
+      this.ctx.canvas.height = this.canvas.current.offsetWidth / canvasProportions;
+      this.puzzles.updatePartsBuffers();
+      this.puzzles.drawPuzzles();
+    });
   }
 
   componentWillUnmount() {
@@ -62,11 +74,13 @@ class Game extends React.Component<GamePropsTypes, any>{
   initGame(gameData: GameDataType, image: HTMLImageElement) {
     // if (!this.canvas || !this.canvas.current) return;
     // @ts-ignore
-    let ctx = this.canvas.current.getContext("2d");
-    ctx.canvas.width = 900;
-    ctx.canvas.height = 700;
-
-    this.puzzles = new Puzzles(gameData, ctx, image);
+    this.ctx = this.canvas.current.getContext("2d");
+    // @ts-ignore
+    this.ctx.canvas.width = this.canvas.current.offsetWidth;
+    // @ts-ignore
+    this.ctx.canvas.height = this.canvas.current.offsetWidth / canvasProportions;
+    // @ts-ignore
+    this.puzzles = new Puzzles(gameData, this.ctx, image);
     this.puzzles.drawPuzzles();
 
     setInterval(() => {
@@ -114,7 +128,6 @@ class Game extends React.Component<GamePropsTypes, any>{
       // @ts-ignore
       this.canvas.current.style.cursor = 'grab';
       // @ts-ignore
-      console.log(this.canvas.current.style.cursor);
     }
   }
 
@@ -133,7 +146,7 @@ class Game extends React.Component<GamePropsTypes, any>{
     if (!this.puzzles) return;
     e.preventDefault();
     // @ts-ignore
-    if (e.deltaY < 0) { //просто изменять значение zoom, в setTimeOut смотреть, если изменился, то перерисовывать буфер
+    if (e.deltaY < 0) {
       this.puzzles.zoomIncrement(this.mouseX, this.mouseY);
     } else {
       this.puzzles.zoomDecrement(this.mouseX, this.mouseY);
@@ -144,7 +157,7 @@ class Game extends React.Component<GamePropsTypes, any>{
   render() {
     return <canvas
       ref={this.canvas}
-      className="game"
+      className="canvas"
       onMouseDown={() => this.mouseDownHandler()}
       onMouseUp={() => {
         this.movablePart = null;

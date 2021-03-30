@@ -34,19 +34,19 @@ class Part {
   }
 
   get x() {
-    return this._x * this.puzzles.zoom + this.puzzles.xIndent;
+    return this._x * this.puzzles.ctx.canvas.width * this.puzzles.zoom + this.puzzles.xIndent;
   }
 
   get y() {
-    return this._y * this.puzzles.zoom + this.puzzles.yIndent;
+    return this._y * this.puzzles.ctx.canvas.width * this.puzzles.zoom + this.puzzles.yIndent;
   }
 
   set x(value) {
-    this._x = (value - this.puzzles.xIndent) / this.puzzles.zoom;
+    this._x = (value - this.puzzles.xIndent) / (this.puzzles.zoom * this.puzzles.ctx.canvas.width);
   }
 
   set y(value) {
-    this._y = (value - this.puzzles.yIndent) / this.puzzles.zoom;
+    this._y = (value - this.puzzles.yIndent) / (this.puzzles.zoom * this.puzzles.ctx.canvas.width);
   }
 
   get lineWidth() {

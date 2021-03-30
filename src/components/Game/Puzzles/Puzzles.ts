@@ -31,19 +31,19 @@ class Puzzles {
   }
 
   get partWidth() {
-    return this.partWidthWithoutScroll * this.zoom;
+    return this.partWidthWithoutScroll * this.zoom * this.ctx.canvas.width;
   }
 
   get partHeight() {
-    return this.partHeightWithoutScroll * this.zoom;
+    return this.partHeightWithoutScroll * this.zoom * this.ctx.canvas.width;
   }
 
   get width() {
-    return this.widthWithoutScroll * this.zoom;
+    return this.widthWithoutScroll * this.zoom * this.ctx.canvas.width;
   }
 
   get height() {
-    return this.heightWithoutScroll * this.zoom;
+    return this.heightWithoutScroll * this.zoom * this.ctx.canvas.width;
   }
 
   zoomIncrement(mouseX: number, mouseY: number) {
@@ -177,11 +177,11 @@ class Puzzles {
 
     const loop =(movablePart: Part, x: number, y: number) => {
       if (!inCanvas) return;
-      const newX = (x - this.xIndent) / this.zoom;
-      const newY = (y - this.yIndent) / this.zoom;
+      const newX = (x - this.xIndent) / (this.zoom * this.ctx.canvas.width);
+      const newY = (y - this.yIndent) / (this.zoom * this.ctx.canvas.width);
 
-      diffX = getDiff(newX, this.ctx.canvas.width - this.partWidthWithoutScroll, diffX);
-      diffY = getDiff(newY, this.ctx.canvas.height - this.partHeightWithoutScroll, diffY);
+      diffX = getDiff(newX, this.ctx.canvas.width / this.ctx.canvas.width - this.partWidthWithoutScroll, diffX);
+      diffY = getDiff(newY, this.ctx.canvas.height / this.ctx.canvas.width - this.partHeightWithoutScroll, diffY);
 
       moves.push({id: movablePart.id, x: newX, y: newY});
       const connection = this.getConnections(movablePart, x, y);

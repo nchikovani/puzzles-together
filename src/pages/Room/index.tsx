@@ -2,7 +2,8 @@ import React from 'react';
 import Game from "../../components/Game";
 import SocketService from '../../service/socketService';
 import {connect} from "react-redux";
-import { withRouter, RouteComponentProps  } from "react-router";
+import {withRouter, RouteComponentProps} from "react-router";
+import './style.scss';
 
 type PathParamsType = {
   roomId: string,
@@ -13,7 +14,7 @@ type PropsType = RouteComponentProps<PathParamsType> & {
   options: object[];
 }
 
-class Room extends React.Component<PropsType, {}>  {
+class Room extends React.Component<PropsType, {}> {
   constructor(props: PropsType) {
     super(props);
     const roomId = props.match.params.roomId;
@@ -37,7 +38,7 @@ class Room extends React.Component<PropsType, {}>  {
     }
   }
 
-  handleImage (e: React.ChangeEvent<HTMLInputElement>) {
+  handleImage(e: React.ChangeEvent<HTMLInputElement>) {
     let file = e.target && e.target.files && e.target.files[0];
     if (!file) return;
 
@@ -53,7 +54,12 @@ class Room extends React.Component<PropsType, {}>  {
     return (
       <div className="App" style={{width: '100%'}}>
         <input type="file" onChange={(e) => this.handleImage(e)} style={{display: 'block'}}/>
-        <Game socketService={this.props.socketService}/>
+        <div className="room-game">
+          <div className="room-game__game">
+            <Game socketService={this.props.socketService}/>
+          </div>
+          <div className="room-game__chat"/>
+        </div>
       </div>
     )
   }
