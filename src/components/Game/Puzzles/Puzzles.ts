@@ -2,8 +2,9 @@ import Part from './Part';
 import {MoveTypes, ConnectionType, UpdateType, GameDataType} from './Puzzles.types';
 import {playKnock} from '../utils';
 
-const maxZoom = 7;
+const maxZoom = 8;
 const connectionDistance = 4; //px
+const zoomDifferenceBuffersUpdating = 1.5;
 
 class Puzzles {
   parts: Part[];
@@ -15,6 +16,7 @@ class Puzzles {
   xIndent: number;
   yIndent: number;
   zoom: number;
+  updateBuffersZoom: number;
   image: HTMLImageElement;
 
   constructor(gameData: GameDataType, ctx: any, img: HTMLImageElement) {
@@ -25,6 +27,7 @@ class Puzzles {
     this.widthWithoutScroll = gameData.width;
     this.heightWithoutScroll = gameData.height;
     this.zoom = 1;
+    this.updateBuffersZoom = 1;
     this.xIndent = 0;
     this.yIndent = 0;
 
@@ -50,19 +53,16 @@ class Puzzles {
   zoomIncrement(mouseX: number, mouseY: number) {
     if (this.zoom >= maxZoom) return;
     const newZoom = this.zoom * 1.1 > maxZoom ? maxZoom : this.zoom * 1.1;
-    this.xIndent -= mouseX * (newZoom - this.zoom);
-    this.yIndent -= mouseY * (newZoom - this.zoom);
+    this.xIndent -= (mouseX - this.xIndent) * (newZoom - this.zoom) / this.zoom;
+    this.yIndent -= (mouseY - this.yIndent) * (newZoom - this.zoom) / this.zoom;
     this.zoom = newZoom;
-
-    this.updatePartsBuffers();
-    this.drawPuzzles();
   }
 
   zoomDecrement(mouseX: number, mouseY: number) {
     if (this.zoom <= 1) return;
     const newZoom = this.zoom / 1.1 < 1 ? 1 : this.zoom / 1.1;
-    this.xIndent += mouseX * (-newZoom + this.zoom);
-    this.yIndent += mouseY * (-newZoom + this.zoom);
+    this.xIndent += (mouseX - this.xIndent) * (this.zoom - newZoom) / this.zoom;
+    this.yIndent += (mouseY - this.yIndent) * (this.zoom - newZoom) / this.zoom;
     if (this.xIndent > 0) this.xIndent = 0;
     if (this.yIndent > 0) this.yIndent = 0;
 
@@ -76,10 +76,6 @@ class Puzzles {
     if ((canvasHeight - this.yIndent) / this.zoom > canvasHeight) {
       this.yIndent = canvasHeight - canvasHeight * this.zoom;
     }
-
-    this.updatePartsBuffers();
-    this.drawPuzzles();
-
   }
 
   incrementIndent (xIncrement: number, yIncrement: number) {
@@ -114,6 +110,12 @@ class Puzzles {
 
   drawPuzzles() {
     const {ctx} = this;
+    if (this.updateBuffersZoom / this.zoom  > zoomDifferenceBuffersUpdating || (this.zoom === 1 && this.updateBuffersZoom !== 1) ||
+      this.zoom / this.updateBuffersZoom > zoomDifferenceBuffersUpdating || (this.zoom === maxZoom && this.updateBuffersZoom !== maxZoom)) {
+      this.updatePartsBuffers();
+      this.updateBuffersZoom = this.zoom;
+    }
+
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     this.parts.forEach(part => {
       part.drawPart();

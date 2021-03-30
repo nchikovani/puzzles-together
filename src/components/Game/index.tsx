@@ -23,6 +23,8 @@ class Game extends React.Component<GamePropsTypes, any>{
   movablePartYDiff: number;
   startXMovingCanvas: number;
   startYMovingCanvas: number;
+  oldUpdateFromServer: UpdateType | null;
+  zoomIsChanged: boolean;
 
   constructor(props: GamePropsTypes) {
     super(props);
@@ -32,16 +34,13 @@ class Game extends React.Component<GamePropsTypes, any>{
   }
 
   componentDidUpdate(prevProps: Readonly<GamePropsTypes>, prevState: Readonly<any>, snapshot?: any) {
-    const {gameData, update} = this.props;
+    const {gameData} = this.props;
     if (gameData && gameData !== prevProps.gameData) {
       let image = new Image();
       image.onload = () => {
         this.initGame(gameData, image);
       };
       image.src = gameData.image;
-    } else if (update && update !== prevProps.update && this.puzzles) {
-      this.puzzles.setUpdate(update); // перенести в setTimeOut
-      this.puzzles.drawPuzzles();
     }
   }
 
@@ -66,17 +65,32 @@ class Game extends React.Component<GamePropsTypes, any>{
     this.puzzles.drawPuzzles();
 
     setInterval(() => {
+      if (!this.canvasIsMoving && !this.movablePart && this.oldUpdateFromServer === this.props.update && !this.zoomIsChanged) return;
+      const fullUpdate: UpdateType = {
+        moves: [],
+        connections: [],
+      };
+
       if (this.canvasIsMoving) {
         this.puzzles.incrementIndent(this.mouseX - this.startXMovingCanvas, this.mouseY - this.startYMovingCanvas);
         this.startXMovingCanvas = this.mouseX;
         this.startYMovingCanvas = this.mouseY;
-        this.puzzles.drawPuzzles();
-      } else if (this.movablePart) {
-        const update = this.puzzles.getUpdate(this.movablePart, this.mouseX - this.movablePartXDiff, this.mouseY - this.movablePartYDiff);
-        this.puzzles.setUpdate(update);
-        this.props.socketService.sendUpdate(update);
-        this.puzzles.drawPuzzles();
       }
+      if (this.movablePart) {
+        const update = this.puzzles.getUpdate(this.movablePart, this.mouseX - this.movablePartXDiff, this.mouseY - this.movablePartYDiff);
+        this.props.socketService.sendUpdate(update);
+        fullUpdate.moves.push(...update.moves);
+        fullUpdate.connections.push(...update.connections);
+        // this.puzzles.drawPuzzles();
+      }
+      if (this.oldUpdateFromServer !== this.props.update && this.props.update) {
+        fullUpdate.moves.push(...this.props.update.moves);
+        fullUpdate.connections.push(...this.props.update.connections);
+        this.oldUpdateFromServer = this.props.update;
+      }
+      this.zoomIsChanged = false;
+      this.puzzles.setUpdate(fullUpdate);
+      this.puzzles.drawPuzzles();
     }, 33);
   }
 
@@ -94,6 +108,8 @@ class Game extends React.Component<GamePropsTypes, any>{
       this.startYMovingCanvas = this.mouseY;
       // @ts-ignore
       this.canvas.current.style.cursor = 'grab';
+      // @ts-ignore
+      console.log(this.canvas.current.style.cursor);
     }
   }
 
@@ -117,6 +133,7 @@ class Game extends React.Component<GamePropsTypes, any>{
     } else {
       this.puzzles.zoomDecrement(this.mouseX, this.mouseY);
     }
+    this.zoomIsChanged = true;
   }
 
   render() {

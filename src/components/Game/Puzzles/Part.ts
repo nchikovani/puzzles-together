@@ -7,7 +7,6 @@ const diffControlPointTop = 0.3;
 const diffControlPointBottom = 0.35;
 const lineWidthProportion = 0.02;//??
 
-
 class Part {
   id: string;
   _x: number;
@@ -89,7 +88,9 @@ class Part {
 
   drawPart() {
     const {x, y} = this;
-    this.puzzles.ctx.drawImage(this.buffer, x - this.bufferIdentX, y - this.bufferIdentY);
+    // this.buffer.width = this.puzzles.partWidth + 2 * this.bufferIdentX;
+    // this.buffer.height = this.puzzles.partHeight + 2 * this.bufferIdentY;
+    this.puzzles.ctx.drawImage(this.buffer, x - this.bufferIdentX, y - this.bufferIdentY, this.puzzles.partWidth + 2 * this.bufferIdentX, this.puzzles.partHeight + 2 * this.bufferIdentY);
   }
 
   updateBuffer() {
