@@ -133,6 +133,7 @@ class Puzzles {
   setUpdate(update: UpdateType) {
     const {moves, connections} = update;
     const movedParts: Part[] = [];
+
     moves.forEach((move) => {
       const targetPart = this.getPartById(move.id);
       if (targetPart) {
@@ -163,16 +164,25 @@ class Puzzles {
   getUpdate(movablePart: Part, x: number, y: number) {
     const moves: MoveTypes[] = [];
     let connections: ConnectionType[][] = [];
+    let diffX = 0;
+    let diffY = 0;
     let inCanvas = true;
+
+    const getDiff = (newCoord: number, maxCoord: number, diff: number) => {
+      let newDiff = 0;
+      if (newCoord < 0) newDiff = newCoord;
+      if (newCoord > maxCoord) newDiff = newCoord  - maxCoord;
+      return (Math.abs(diff) < Math.abs(newDiff)) ? newDiff: diff;
+    }
+
     const loop =(movablePart: Part, x: number, y: number) => {
       if (!inCanvas) return;
       const newX = (x - this.xIndent) / this.zoom;
       const newY = (y - this.yIndent) / this.zoom;
-      if (newX < 0 || newX > this.ctx.canvas.width - this.partWidthWithoutScroll
-        || newY < 0 || newY > this.ctx.canvas.height - this.partHeightWithoutScroll) {
-        inCanvas = false;
-        return;
-      }
+
+      diffX = getDiff(newX, this.ctx.canvas.width - this.partWidthWithoutScroll, diffX);
+      diffY = getDiff(newY, this.ctx.canvas.height - this.partHeightWithoutScroll, diffY);
+
       moves.push({id: movablePart.id, x: newX, y: newY});
       const connection = this.getConnections(movablePart, x, y);
       connections = connections.concat(connection);
@@ -210,6 +220,11 @@ class Puzzles {
       }
     }
     loop(movablePart, x, y);
+
+    moves.forEach(move => {
+      move.x -=diffX;
+      move.y -=diffY;
+    });
 
     return inCanvas ? {moves, connections} : {moves: [], connections: []};
   }

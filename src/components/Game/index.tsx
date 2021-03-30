@@ -25,7 +25,7 @@ class Game extends React.Component<GamePropsTypes, any>{
   movablePartYDiff: number;
   startXMovingCanvas: number;
   startYMovingCanvas: number;
-  oldUpdateFromServer: UpdateType | null;
+  oldUpdateFromServer: UpdateType | null = null;
   zoomIsChanged: boolean;
 
   constructor(props: GamePropsTypes) {
@@ -87,11 +87,12 @@ class Game extends React.Component<GamePropsTypes, any>{
         fullUpdate.moves.push(...update.moves);
         fullUpdate.connections.push(...update.connections);
       }
-      if (this.oldUpdateFromServer !== this.props.update && this.props.update) {
-        fullUpdate.moves.push(...this.props.update.moves);
-        fullUpdate.connections.push(...this.props.update.connections);
+      if (this.oldUpdateFromServer !== this.props.update) {
+        this.props.update && fullUpdate.moves.push(...this.props.update.moves);
+        this.props.update && fullUpdate.connections.push(...this.props.update.connections);
         this.oldUpdateFromServer = this.props.update;
       }
+
       this.zoomIsChanged = false;
       this.puzzles.setUpdate(fullUpdate);
       this.puzzles.drawPuzzles();
