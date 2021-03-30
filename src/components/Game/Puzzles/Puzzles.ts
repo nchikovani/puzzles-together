@@ -1,10 +1,7 @@
 import Part from './Part';
 import {MoveTypes, ConnectionType, UpdateType, GameDataType} from './Puzzles.types';
 import {playKnock} from '../utils';
-
-const maxZoom = 8;
-const connectionDistance = 4; //px
-const zoomDifferenceBuffersUpdating = 1.5;
+import {maxZoom, connectionDistance, zoomDifferenceBuffersUpdating} from './puzzleConstants';
 
 class Puzzles {
   parts: Part[];

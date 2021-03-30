@@ -1,11 +1,7 @@
 import {PartTypes, LinkTypes} from './Puzzles.types';
 import Puzzles from "./Puzzles";
+import {lineWidthProportion, diffControlPointBottom, diffControlPointTop, protrusionLength, protrusionWidth} from './puzzleConstants';
 
-const protrusionWidth = 0.4;
-const protrusionLength = 0.3;
-const diffControlPointTop = 0.3;
-const diffControlPointBottom = 0.35;
-const lineWidthProportion = 0.02;//??
 
 class Part {
   id: string;
