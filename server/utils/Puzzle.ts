@@ -1,4 +1,5 @@
-const { v4: uuidv4 } = require('uuid');
+import {v4 as uuidv4} from 'uuid';
+import {ConnectionTypes, GameDataTypes, OptionTypes, PartTypes, UpdateTypes} from "../../shared/Game.types";
 const sizeOf = require('image-size');
 
 const canvasProportions = 1.7;
@@ -10,13 +11,19 @@ const maxHeight = canvasHeight / 2;
 const maxPartCount = 1500;
 
 class Puzzle {
-  constructor(image) {
-    // this.columnCount = columnCount;
-    // this.rowCount = rowCount;
+  image: string;
+  width: number = 0;
+  height: number = 0;
+  columnCount: number = 0;
+  rowCount: number = 0;
+  partWidth: number = 0;
+  partHeight: number = 0;
+  connectionCount: number = 0;
+  solvedConnectionCount: number = 0;
+  isSolved: boolean = false;
+  parts: PartTypes[] = [];
+  constructor(image: string) {
     this.image = image;
-    // this.partWidth = partWidth;
-    // this.partHeight = partHeight;
-
     try {
       const buffer = Buffer.from(image.substring(image.indexOf(',') + 1), 'base64');
       const dimensions = sizeOf(buffer);
@@ -33,12 +40,11 @@ class Puzzle {
     }
   }
 
-  getPartsCountOptions () {
-    if (!this.width || !this.height) return;
+  getPartsCountOptions (): OptionTypes[] {
+    const options: OptionTypes[] = []
     const smallSide = this.width > this.height ? 'height' : 'width';
     const bigSide = smallSide === 'height' ? 'width' : 'height';
 
-    const options = []
     let i = 2;
     while (true) {
       const smallSidePartCount = i;
@@ -56,8 +62,7 @@ class Puzzle {
     return options;
   }
 
-  createPuzzle(option) {
-    if (!option.columnCount || !option.rowCount) return;
+  createPuzzle(option: OptionTypes) {
     this.columnCount = option.columnCount;
     this.rowCount = option.rowCount;
 
@@ -83,7 +88,7 @@ class Puzzle {
     return connectionCount;
   }
 
-  getGameData() {
+  getGameData(): GameDataTypes | null {
     return {
       image: this.image,
       width: this.width,
@@ -94,9 +99,8 @@ class Puzzle {
     };
   }
 
-  update(update) {
+  update(update: UpdateTypes) {
     const {moves, connections} = update;
-    if (!Array.isArray(moves) || !Array.isArray(connections) || !this.parts) return;
 
     this.parts.forEach((part) => {
       const targetMove = moves.find((move) => move && move.id === part.id);
@@ -106,8 +110,7 @@ class Puzzle {
       }
     });
 
-    const connect = (connection) => {
-      if (!connection) return;
+    const connect = (connection: ConnectionTypes) => {
       const targetPart = this.parts.find((part) => part && part.id === connection.id);
       const link = targetPart && targetPart[connection.link];
       if (link && link.connected === false) {
@@ -126,51 +129,50 @@ class Puzzle {
 
 
   createParts() {
-    const parts = [];
+    const parts: PartTypes[] = [];
     const getRandomLinkType = () => {
       return Math.random() > 0.5 ? 'concave': 'convex';
     }
 
     for (let i = 0; i < this.columnCount; i++) {
       for (let j = 0; j < this.rowCount; j++) {
-        let topLink, rightLink, leftLink, bottomLink;
+        let topLink = null, rightLink = null, leftLink = null, bottomLink = null;
         const id = uuidv4();
-        if (j === 0) {
-          topLink = null;
-        } else {
+        if (j !== 0) {
           const connectingPart = parts.find((part) => part.xIndex === i && part.yIndex === j - 1);
-          connectingPart.bottomLink.id = id;
-          topLink = {
-            connected: false,
-            type: connectingPart.bottomLink.type === 'concave' ? 'convex' : 'concave',
-            id: connectingPart.id,
+          if (connectingPart && connectingPart.bottomLink) {
+            connectingPart.bottomLink.id = id;
+            topLink = {
+              connected: false,
+              type: connectingPart.bottomLink.type === 'concave' ? 'convex' : 'concave',
+              id: connectingPart.id,
+            }
           }
+
         }
-        if (i === 0) {
-          leftLink = null;
-        } else {
+        if (i !== 0) {
           const connectingPart = parts.find((part) => part.xIndex === i-1 && part.yIndex === j);
-          connectingPart.rightLink.id = id;
-          leftLink = {
-            connected: false,
-            type: connectingPart.rightLink.type === 'concave' ? 'convex' : 'concave',
-            id: connectingPart.id,
+          if (connectingPart && connectingPart.rightLink) {
+            connectingPart.rightLink.id = id;
+            leftLink = {
+              connected: false,
+              type: connectingPart.rightLink.type === 'concave' ? 'convex' : 'concave',
+              id: connectingPart.id,
+            }
           }
         }
-        if (i === this.columnCount - 1) {
-          rightLink = null;
-        } else {
+        if (i !== this.columnCount - 1) {
           rightLink = {
             type: getRandomLinkType(),
             connected: false,
+            id: ''
           }
         }
-        if (j === this.rowCount - 1) {
-          bottomLink = null;
-        } else {
+        if (j !== this.rowCount - 1) {
           bottomLink = {
             type: getRandomLinkType(),
             connected: false,
+            id: ''
           }
         }
         parts.push({
@@ -193,4 +195,4 @@ class Puzzle {
 
 
 
-module.exports = Puzzle;
+export default Puzzle;
