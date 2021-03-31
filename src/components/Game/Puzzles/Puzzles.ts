@@ -1,5 +1,5 @@
 import Part from './Part';
-import {MoveTypes, ConnectionType, UpdateType, GameDataType} from './Puzzles.types';
+import {MoveTypes, ConnectionTypes, UpdateTypes, GameDataTypes} from './Puzzles.types';
 import {playKnock} from '../utils';
 import {maxZoom, connectionDistance, zoomDifferenceBuffersUpdating} from './puzzleConstants';
 
@@ -16,7 +16,7 @@ class Puzzles {
   updateBuffersZoom: number = 1;
   image: HTMLImageElement;
 
-  constructor(gameData: GameDataType, ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
+  constructor(gameData: GameDataTypes, ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
     this.ctx = ctx;
     this.image = img;
     this._partHeight = gameData.partHeight;
@@ -126,7 +126,7 @@ class Puzzles {
     return this.parts.find(part => part.id === id);
   }
 
-  setUpdate(update: UpdateType) {
+  setUpdate(update: UpdateTypes) {
     const {moves, connections} = update;
     const movedParts: Part[] = [];
 
@@ -143,7 +143,7 @@ class Puzzles {
     })
     this.parts = this.parts.concat(movedParts);
 
-    const connect = (connection: ConnectionType) => {
+    const connect = (connection: ConnectionTypes) => {
       const part = this.getPartById(connection.id);
       // @ts-ignore
       const link = part && part[connection.link];
@@ -159,7 +159,7 @@ class Puzzles {
 
   getUpdate(movablePart: Part, x: number, y: number) {
     const moves: MoveTypes[] = [];
-    let connections: ConnectionType[][] = [];
+    let connections: ConnectionTypes[][] = [];
     let diffX = 0;
     let diffY = 0;
     let inCanvas = true;
@@ -225,7 +225,7 @@ class Puzzles {
     return inCanvas ? {moves, connections} : {moves: [], connections: []};
   }
 
-  getConnections(movablePart: Part, x: number, y: number):ConnectionType[][] {
+  getConnections(movablePart: Part, x: number, y: number):ConnectionTypes[][] {
     const connections = [];
     const topPartId = movablePart.topLink?.id;
     const bottomPartId = movablePart.bottomLink?.id;

@@ -1,5 +1,5 @@
 import {io} from "socket.io-client";
-import {UpdateType} from '../components/Game/Puzzles/Puzzles.types'
+import {OptionTypes, UpdateTypes} from '../components/Game/Puzzles/Puzzles.types'
 import store from '../store';
 import {setGameData, setUpdate, setRoomId, setNotFound, setOptions, setIsSolved} from '../store/actionCreators';
 
@@ -48,11 +48,11 @@ export default class socketService {
     this.socket.emit('room:join', roomId);
   }
 
-  createPuzzle(option: object) {
+  createPuzzle(option: OptionTypes) {
     this.socket.emit('puzzle:create', option);
   }
 
-  sendUpdate (update: UpdateType) {
+  sendUpdate (update: UpdateTypes) {
     this.socket.emit('puzzle:setUpdate', update);
   }
 }

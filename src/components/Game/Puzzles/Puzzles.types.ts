@@ -1,4 +1,4 @@
-export interface GameDataType {
+export interface GameDataTypes {
   image: string;
   partWidth: number;
   partHeight: number;
@@ -24,9 +24,9 @@ export interface LinkTypes {
   connected: boolean;
   id: string;
 }
-export interface UpdateType {
+export interface UpdateTypes {
   moves: MoveTypes[];
-  connections: ConnectionType[][];
+  connections: ConnectionTypes[][];
 }
 
 export interface MoveTypes {
@@ -35,7 +35,13 @@ export interface MoveTypes {
   y: number;
 }
 
-export interface ConnectionType {
+export interface ConnectionTypes {
   id: string;
   link: string;
+}
+
+export interface OptionTypes {
+  columnCount: number;
+  rowCount: number;
+  partCount: number;
 }

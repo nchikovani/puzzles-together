@@ -1,17 +1,17 @@
 import * as actionTypes from './actionTypes';
-import {GameDataType, UpdateType} from '../components/Game/Puzzles/Puzzles.types';
+import {GameDataTypes, UpdateTypes, OptionTypes} from '../components/Game/Puzzles/Puzzles.types';
 
-export const setGameData = (gameData: GameDataType) => (<const>{
+export const setGameData = (gameData: GameDataTypes) => (<const>{
   type: actionTypes.SET_GAME_DATA,
   gameData,
 });
 
-export const setOptions = (options: any) =>  (<const>{
+export const setOptions = (options: OptionTypes[]) =>  (<const>{
   type: actionTypes.SET_OPTIONS,
   options,
 });
 
-export function setUpdate(update: UpdateType) {
+export function setUpdate(update: UpdateTypes) {
   return <const>{
     type: actionTypes.SET_UPDATE,
     update,

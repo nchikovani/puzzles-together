@@ -3,6 +3,8 @@ import Game from "../../components/Game";
 import SocketService from '../../service/socketService';
 import {connect} from "react-redux";
 import {withRouter, RouteComponentProps} from "react-router";
+import {OptionTypes} from '../../components/Game/Puzzles/Puzzles.types'
+import {StoreTypes} from '../../store/store.types';
 import './style.scss';
 
 type PathParamsType = {
@@ -11,7 +13,7 @@ type PathParamsType = {
 
 type PropsType = RouteComponentProps<PathParamsType> & {
   socketService: SocketService;
-  options: object[];
+  options: OptionTypes[] | null;
 }
 
 class Room extends React.Component<PropsType, {}> {
@@ -22,18 +24,16 @@ class Room extends React.Component<PropsType, {}> {
   }
 
   componentDidUpdate(prevProps: Readonly<PropsType>) {
-    if (this.props.options !== prevProps.options) {
+    if (this.props.options && this.props.options !== prevProps.options) {
       let optionsText = 'Выбирай: ';
-      this.props.options.forEach(option => {
-        // @ts-ignore
+       this.props.options.forEach(option => {
         if (!option.columnCount || !option.rowCount) return
-        // @ts-ignore
         optionsText += `${option.columnCount * option.rowCount}, `
       })
 
       const result = prompt(optionsText);
-      // @ts-ignore
-      const targetOption = this.props.options.find(option => result == option.partCount);
+
+      const targetOption = this.props.options.find(option => Number(result) === option.partCount);
       targetOption && this.props.socketService.createPuzzle(targetOption);
     }
   }
@@ -65,7 +65,7 @@ class Room extends React.Component<PropsType, {}> {
   }
 }
 
-const mapStateToProps = (store: any) => {
+const mapStateToProps = (store: StoreTypes) => {
   return {
     options: store.game.options
   }
