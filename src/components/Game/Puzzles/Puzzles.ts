@@ -5,45 +5,41 @@ import {maxZoom, connectionDistance, zoomDifferenceBuffersUpdating} from './puzz
 
 class Puzzles {
   parts: Part[];
-  ctx: any;
-  partHeightWithoutScroll: number;
-  partWidthWithoutScroll: number;
-  widthWithoutScroll: number;
-  heightWithoutScroll: number;
-  xIndent: number;
-  yIndent: number;
-  zoom: number;
-  updateBuffersZoom: number;
+  ctx: CanvasRenderingContext2D;
+  _partHeight: number;
+  _partWidth: number;
+  _height: number;
+  _width: number;
+  xIndent: number = 0;
+  yIndent: number = 0;
+  zoom: number = 1;
+  updateBuffersZoom: number = 1;
   image: HTMLImageElement;
 
-  constructor(gameData: GameDataType, ctx: any, img: HTMLImageElement) {
+  constructor(gameData: GameDataType, ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
     this.ctx = ctx;
     this.image = img;
-    this.partHeightWithoutScroll = gameData.partHeight;
-    this.partWidthWithoutScroll = gameData.partWidth;
-    this.widthWithoutScroll = gameData.width;
-    this.heightWithoutScroll = gameData.height;
-    this.zoom = 1;
-    this.updateBuffersZoom = 1;
-    this.xIndent = 0;
-    this.yIndent = 0;
+    this._partHeight = gameData.partHeight;
+    this._partWidth = gameData.partWidth;
+    this._width = gameData.width;
+    this._height = gameData.height;
     this.parts = gameData.parts.map(part => new Part(part, this));
   }
 
   get partWidth() {
-    return this.partWidthWithoutScroll * this.zoom * this.ctx.canvas.width;
+    return this._partWidth * this.zoom * this.ctx.canvas.width;
   }
 
   get partHeight() {
-    return this.partHeightWithoutScroll * this.zoom * this.ctx.canvas.width;
+    return this._partHeight * this.zoom * this.ctx.canvas.width;
   }
 
   get width() {
-    return this.widthWithoutScroll * this.zoom * this.ctx.canvas.width;
+    return this._width * this.zoom * this.ctx.canvas.width;
   }
 
   get height() {
-    return this.heightWithoutScroll * this.zoom * this.ctx.canvas.width;
+    return this._height * this.zoom * this.ctx.canvas.width;
   }
 
   zoomIncrement(mouseX: number, mouseY: number) {
@@ -180,8 +176,8 @@ class Puzzles {
       const newX = (x - this.xIndent) / (this.zoom * this.ctx.canvas.width);
       const newY = (y - this.yIndent) / (this.zoom * this.ctx.canvas.width);
 
-      diffX = getDiff(newX, this.ctx.canvas.width / this.ctx.canvas.width - this.partWidthWithoutScroll, diffX);
-      diffY = getDiff(newY, this.ctx.canvas.height / this.ctx.canvas.width - this.partHeightWithoutScroll, diffY);
+      diffX = getDiff(newX, this.ctx.canvas.width / this.ctx.canvas.width - this._partWidth, diffX);
+      diffY = getDiff(newY, this.ctx.canvas.height / this.ctx.canvas.width - this._partHeight, diffY);
 
       moves.push({id: movablePart.id, x: newX, y: newY});
       const connection = this.getConnections(movablePart, x, y);

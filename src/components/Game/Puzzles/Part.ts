@@ -84,9 +84,9 @@ class Part {
 
   drawPart() {
     const {x, y} = this;
-    // this.buffer.width = this.puzzles.partWidth + 2 * this.bufferIdentX;
-    // this.buffer.height = this.puzzles.partHeight + 2 * this.bufferIdentY;
-    this.puzzles.ctx.drawImage(this.buffer, x - this.bufferIdentX, y - this.bufferIdentY, this.puzzles.partWidth + 2 * this.bufferIdentX, this.puzzles.partHeight + 2 * this.bufferIdentY);
+    const imageWidth = this.puzzles.partWidth + 2 * this.bufferIdentX;
+    const imageHeight = this.puzzles.partHeight + 2 * this.bufferIdentY;
+    this.puzzles.ctx.drawImage(this.buffer, x - this.bufferIdentX, y - this.bufferIdentY, imageWidth, imageHeight);
   }
 
   updateBuffer() {

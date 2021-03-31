@@ -1,4 +1,5 @@
 export const fps = 40;
+export const canvasProportions = 1.7;
 
 export const maxZoom = 8;
 export const connectionDistance = 4; //px
