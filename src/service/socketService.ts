@@ -1,7 +1,7 @@
 import {io} from "socket.io-client";
 import {UpdateType} from '../components/Game/Puzzles/Puzzles.types'
 import store from '../store';
-import {setGameData, setUpdate, setRoomId, setNotFound, setOptions, setIsSolved} from '../actions';
+import {setGameData, setUpdate, setRoomId, setNotFound, setOptions, setIsSolved} from '../store/actionCreators';
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -15,13 +15,13 @@ export default class socketService {
     this.socket.on('puzzle:options', (options) => {
       store.dispatch(setOptions(options));
     });
-    this.socket.on('puzzle', (puzzle) => {
+    this.socket.on('puzzle', (gameData) => {
       console.log('puzzle');
-      store.dispatch(setGameData(puzzle));
+      store.dispatch(setGameData(gameData));
     });
-    this.socket.on('puzzle:getUpdate', (data) => {
+    this.socket.on('puzzle:getUpdate', (update) => {
       console.log('update from server');
-      store.dispatch(setUpdate(data.update));
+      store.dispatch(setUpdate(update));
     });
     this.socket.on('puzzle:solved', () => {
       console.log('solved');
@@ -37,7 +37,7 @@ export default class socketService {
   }
 
   getOptions(image: string) {
-    this.socket.emit('puzzle:getOptions', { image });
+    this.socket.emit('puzzle:getOptions', image);
   }
 
   createRoom() {
@@ -45,14 +45,14 @@ export default class socketService {
   }
 
   joinRoom(roomId: string) {
-    this.socket.emit('room:join', {roomId});
+    this.socket.emit('room:join', roomId);
   }
 
   createPuzzle(option: object) {
-    this.socket.emit('puzzle:create', { option });
+    this.socket.emit('puzzle:create', option);
   }
 
   sendUpdate (update: UpdateType) {
-    this.socket.emit('puzzle:setUpdate', { update });
+    this.socket.emit('puzzle:setUpdate', update);
   }
 }

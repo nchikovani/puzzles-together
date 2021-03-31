@@ -1,16 +1,17 @@
+import * as actionTypes from '../actionTypes';
 const initial = {
   roomId: null,
   notFound: false,
 }
 
-function room(state=initial, action: any) {
+function roomReducer(state=initial, action: any) {
   switch (action.type) {
-    case 'SET_ROOM_ID':
+    case actionTypes.SET_ROOM_ID:
       return {
         roomId: action.roomId,
         notFound: false,
       };
-    case 'SET_NOT_FOUND':
+    case actionTypes.SET_NOT_FOUND:
       return {
         ...state,
         notFound: action.isNotFound,
@@ -20,4 +21,4 @@ function room(state=initial, action: any) {
   }
 }
 
-export default room;
+export default roomReducer;

@@ -2,6 +2,7 @@ import React, {createRef, RefObject} from 'react';
 import Puzzles from "./Puzzles/Puzzles";
 import Part from './Puzzles/Part';
 import {GameDataType, UpdateType} from "./Puzzles/Puzzles.types";
+import {StoreTypes} from "../../store/store.types";
 import SocketService from '../../service/socketService';
 import './style.scss';
 import {connect} from "react-redux";
@@ -176,7 +177,7 @@ class Game extends React.Component<GamePropsTypes, any>{
 
 }
 
-const mapStateToProps = (store: any) => {
+const mapStateToProps = (store: StoreTypes) => {
   return {
     gameData: store.game.gameData,
     update: store.game.update,

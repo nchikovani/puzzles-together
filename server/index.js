@@ -35,8 +35,7 @@ io.on('connection', (socket) => {
     socket.emit("room", roomId);
   });
 
-  socket.on("room:join", (data) => {
-    const {roomId} = data;
+  socket.on("room:join", (roomId) => {
     if (rooms.hasOwnProperty(roomId)) {
       socket.roomId = roomId;
       socket.join(roomId);
