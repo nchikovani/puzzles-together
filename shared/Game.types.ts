@@ -37,7 +37,7 @@ export interface MoveTypes {
 
 export interface ConnectionTypes {
   id: string;
-  link: string;
+  link: 'topLink' | 'bottomLink' | 'rightLink' | 'leftLink';
 }
 
 export interface OptionTypes {

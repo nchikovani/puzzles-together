@@ -1,47 +1,49 @@
-const path = require("path");
-const bodyParser = require('body-parser');
-const express = require("express");
-const http = require("http");
-const socketIo = require("socket.io");
-const registerPuzzleHandlers = require('./handlers/puzzleHandlers');
-const { v4: uuidv4 } = require('uuid');
+import path = require("path");
+import bodyParser = require('body-parser');
+import express = require("express");
+import http = require("http");
+import {Server, Socket} from "socket.io";
+import {RoomsTypes} from "./server.types";
+import registerPuzzleHandlers from './handlers/puzzleHandlers';
+import {v4 as uuidv4} from 'uuid';
 const port = process.env.PORT || 8080;
 
 const app = express();
 app.use(express.static(path.join(__dirname, '../client/build')));
-app.use(bodyParser.json({limit: '10mb', extended: true}));
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const server = http.createServer(app);
-const io = socketIo(server);
-// @ts-ignore
+const io = new Server(server);
+
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
 
+const rooms: RoomsTypes = {'1': {
+    puzzle: null,
+  }
+};
 
-const rooms = {1: {// @ts-ignore
-  puzzle: null,
-  }};
-// @ts-ignore
-io.on('connection', (socket) => {
+io.on('connection', (socket: Socket & {roomId?: string;}) => {
   console.log('User connected');
 
   socket.on("room:create", () => {
     const roomId = uuidv4();
     if (!rooms.hasOwnProperty(roomId)) {
-      // @ts-ignore
       rooms[roomId] = {
         puzzle: null
       };
     }
     socket.emit("room", roomId);
   });
-  // @ts-ignore
-  socket.on("room:join", (roomId) => {
+
+  socket.on("room:join", (roomId: any) => {
     if (rooms.hasOwnProperty(roomId)) {
-      socket.roomId = roomId;
+      socket.roomId  = roomId;
       socket.join(roomId);
-      // @ts-ignore
+
       const puzzle = rooms[roomId].puzzle;
       puzzle && socket.emit("puzzle", puzzle.getGameData());
     } else {

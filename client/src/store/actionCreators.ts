@@ -1,5 +1,5 @@
 import * as actionTypes from './actionTypes';
-import {GameDataTypes, UpdateTypes, OptionTypes} from '../components/Game/Puzzles/Puzzles.types';
+import {GameDataTypes, UpdateTypes, OptionTypes} from '../../../shared/Game.types';
 
 export const setGameData = (gameData: GameDataTypes) => (<const>{
   type: actionTypes.SET_GAME_DATA,

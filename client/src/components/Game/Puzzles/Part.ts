@@ -1,4 +1,4 @@
-import {PartTypes, LinkTypes} from './Puzzles.types';
+import {PartTypes, LinkTypes} from '../../../../../shared/Game.types';
 import Puzzles from "./Puzzles";
 import {lineWidthProportion, diffControlPointBottom, diffControlPointTop, protrusionLength, protrusionWidth} from './puzzleConstants';
 

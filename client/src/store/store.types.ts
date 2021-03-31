@@ -1,4 +1,4 @@
-import {GameDataTypes, UpdateTypes, OptionTypes} from '../components/Game/Puzzles/Puzzles.types'
+import {GameDataTypes, UpdateTypes, OptionTypes} from '../../../shared/Game.types'
 
 export interface GameStateTypes {
   gameData: GameDataTypes | null;

@@ -1,5 +1,5 @@
 import Part from './Part';
-import {MoveTypes, ConnectionTypes, UpdateTypes, GameDataTypes} from './Puzzles.types';
+import {MoveTypes, ConnectionTypes, UpdateTypes, GameDataTypes} from '../../../../../shared/Game.types';
 import {playKnock} from '../utils';
 import {maxZoom, connectionDistance, zoomDifferenceBuffersUpdating} from './puzzleConstants';
 
@@ -226,7 +226,7 @@ class Puzzles {
   }
 
   getConnections(movablePart: Part, x: number, y: number):ConnectionTypes[][] {
-    const connections = [];
+    const connections: ConnectionTypes[][] = [];
     const topPartId = movablePart.topLink?.id;
     const bottomPartId = movablePart.bottomLink?.id;
     const rightPartId = movablePart.rightLink?.id;

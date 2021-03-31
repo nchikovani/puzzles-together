@@ -1,5 +1,5 @@
 import {io} from "socket.io-client";
-import {OptionTypes, UpdateTypes} from '../components/Game/Puzzles/Puzzles.types'
+import {OptionTypes, UpdateTypes} from '../../../shared/Game.types'
 import store from '../store';
 import {setGameData, setUpdate, setRoomId, setNotFound, setOptions, setIsSolved} from '../store/actionCreators';
 
@@ -11,7 +11,7 @@ export default class socketService {
     this.socket = io(SERVER_URL, {
       transports: ['websocket', 'polling', 'flashsocket']
     });
-
+    //проверять входящие данные?
     this.socket.on('puzzle:options', (options) => {
       store.dispatch(setOptions(options));
     });
