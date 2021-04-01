@@ -1,40 +1,29 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {useHistory} from 'react-router-dom'
 import './style.scss';
-import UserService from "../../service/userService";
+import {connect, useDispatch} from "react-redux";
+import {StoreTypes} from "../../store/store.types";
+import {fetchGetRooms, fetchPostRoom} from '../../store/actions/fetchActions';
 
-interface UserRoomsPropsTypes {
-  userService: UserService;
+interface UserRoomsTypes {
+  rooms: any[];
 }
 
-function UserRooms ({userService}: UserRoomsPropsTypes) {
-  const [rooms, setRooms] = useState(null)
+function UserRooms (props: UserRoomsTypes) {
   const history = useHistory();
-  useEffect(() => {
-    const localStoreToken = localStorage.getItem('token');
-    foo(localStoreToken);
+  const dispatch = useDispatch();
 
-    async function foo(localStoreToken: string | null) {
-      if (!localStoreToken) {
-        const token = await userService.postUser();
-        localStorage.setItem('token', token);
-      }
-      const rooms = await userService.getRooms();
-      setRooms(rooms);
-    }
+  useEffect(() => {
+    dispatch(fetchGetRooms());
   }, []);
 
 
-
   const joinRoom = (roomId: string) => {
-    history.push(`/Room/` + roomId);
+    history.push(`/room/` + roomId);
   }
-  const createRoom = async () => {
-    console.log('create Room');
-    const rooms = await userService.postRoom('название');
-    setRooms(rooms);
+  const createRoom = () => {
+    dispatch(fetchPostRoom('Название'))
   }
-  // const rooms: any[] = [{id: 1}, {id: 5}];
 
   return (
     <div className="room-list">
@@ -46,7 +35,7 @@ function UserRooms ({userService}: UserRoomsPropsTypes) {
       </div>
       {
         // @ts-ignore
-        rooms && rooms.map(room => <div
+        props.rooms.map(room => <div
           key={room.id}
           className="room-list__item"
           onClick={() => joinRoom(room.id)}
@@ -58,4 +47,10 @@ function UserRooms ({userService}: UserRoomsPropsTypes) {
   )
 }
 
-export default UserRooms;
+const mapStateToProps = (store: StoreTypes) => {
+  return {
+    rooms: store.user.rooms
+  }
+}
+
+export default connect(mapStateToProps)( UserRooms);

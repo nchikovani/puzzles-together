@@ -7,6 +7,12 @@ export interface GameStateTypes {
   isSolved: boolean;
 }
 
+export interface UserStateTypes {
+  id: string | null;
+  rooms: any[];
+}
+
 export interface StoreTypes {
   game: GameStateTypes;
+  user: UserStateTypes;
 }

@@ -1,10 +1,11 @@
 import React, {FunctionComponent} from 'react';
 import './style.scss';
 import { useHistory } from "react-router-dom";
-// import {connect} from "react-redux";
+import {StoreTypes} from "../../store/store.types";
+import {connect} from "react-redux";
 
 interface PagePropsTypes {
-  // roomId: string;
+  userId: string | null;
   // notFound: boolean;
 }
 
@@ -30,7 +31,14 @@ const Page: FunctionComponent<PagePropsTypes> = (props) => {
           </a>
         </div>
         <div>
-          <a className="header__rooms-link" href="/rooms">Мои комнаты</a>
+          <a
+            href="#"
+             className="header__rooms-link"
+             onClick={(e) => {
+               e.preventDefault();
+               props.userId && history.push(`/users/${props.userId}/rooms`);
+             }}
+          >Личный кабинет</a>
         </div>
       </header>
       <div className="page-wrapper">
@@ -40,12 +48,10 @@ const Page: FunctionComponent<PagePropsTypes> = (props) => {
   )
 }
 
-// const mapStateToProps = (store: any) => {
-//   return {
-//     roomId: store.room.roomId,
-//     notFound: store.room.notFound,
-//   }
-// }
+const mapStateToProps = (store: StoreTypes) => {
+  return {
+    userId: store.user.id
+  }
+}
 
-// export default connect(mapStateToProps)(Page);
-export default Page;
+export default connect(mapStateToProps)(Page);

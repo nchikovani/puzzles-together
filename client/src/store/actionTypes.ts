@@ -1,3 +1,6 @@
+export const SET_USER = 'SET_USER';
+export const SET_ROOMS = 'SET_ROOMS';
+
 export const SET_GAME_DATA = 'SET_GAME_DATA';
 export const SET_OPTIONS = 'SET_OPTIONS';
 export const SET_UPDATE = 'SET_UPDATE';

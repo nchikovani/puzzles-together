@@ -1,49 +1,60 @@
 
-class UserService {
-  async postUser() {
-    const response = await fetch('/user', {
-      method: 'POST',
-      headers: new Headers({
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      }),
-      mode: 'same-origin',
-    });
+export const getUser = async () => {
+  const token = localStorage.getItem('token');
+  const response = await fetch('/user', {
+    method: 'GET',
+    headers: new Headers({
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    }),
+    mode: 'same-origin',
+  });
 
-    const {token} = await response.json();
-    return token;
-  }
-
-  async getRooms() {
-    const token = localStorage.getItem('token');
-    const response = await fetch('/rooms', {
-      method: 'GET',
-      headers: {
-        "Authorization": `Bearer ${token}`
-      },
-      mode: 'same-origin',
-    });
-
-    const {rooms, error} = await response.json();
-    return rooms;
-  }
-
-  async postRoom(name: string) {
-    const token = localStorage.getItem('token');
-    const response = await fetch('/room', {
-      method: 'POST',
-      headers: new Headers({
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        "Authorization": `Bearer ${token}`
-      }),
-      mode: 'same-origin',
-      body: JSON.stringify({name})
-    });
-
-    const {rooms} = await response.json();
-    return rooms;
-  }
+  const userData = await response.json();
+  return userData;
 }
 
-export default UserService;
+// export const postUser = async () => {
+//   const response = await fetch('/user', {
+//     method: 'POST',
+//     headers: new Headers({
+//       Accept: 'application/json',
+//       'Content-Type': 'application/json'
+//     }),
+//     mode: 'same-origin',
+//   });
+//
+//   const {token} = await response.json();
+//   return token;
+// }
+
+export const getRooms = async () => {
+  const token = localStorage.getItem('token');
+  const response = await fetch('/rooms', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+    mode: 'same-origin',
+  });
+
+  return await response.json();
+}
+
+export const postRoom = async (name: string) => {
+  const token = localStorage.getItem('token');
+  const response = await fetch('/room', {
+    method: 'POST',
+    headers: new Headers({
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    }),
+    mode: 'same-origin',
+    body: JSON.stringify({name})
+  });
+
+  return await response.json();
+}

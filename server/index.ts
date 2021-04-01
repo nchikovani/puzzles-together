@@ -33,23 +33,46 @@ const users: UserTypes[] = [{
   roomsId: [],
 }];
 
-app.post("/user", (req, res) => {
-  const user_id = uuidv4();
-  const token = jwt.encode(user_id, 'secret');
-  const user = {
-    id: user_id,
-    roomsId: [],
+app.get("/user", (req, res) => {
+  const authHeader = req.headers['authorization'];
+  let token = authHeader && authHeader.split(' ')[1];
+  let user: UserTypes;
+
+  const createUser = () => {
+    const id = uuidv4();
+    user = {
+      id: id,
+      roomsId: [],
+    };
+    token = jwt.encode(id, 'secret');
+    users.push(user);
   };
-  users.push(user);
-  res.json({token})
+
+
+  if (!token) {
+    createUser();
+  } else {
+    const user_id = jwt.decode(token, 'secret');
+    const userFind = users.find(user => user.id === user_id);
+    if (!userFind) {
+      createUser();
+    } else {
+      user = userFind;
+    }
+  }
+
+
+  // @ts-ignore
+  res.json({token, id: user.id})
 });
+
 
 app.get("/rooms", (req, res) => {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
   if (!token) return res.sendStatus(401)
 
-  const user_id= jwt.decode(token, 'secret')
+  const user_id = jwt.decode(token, 'secret')
   const user = users.find(user => user.id === user_id);
 
   if (!user) return res.json({error: 'Ошибочка'});
@@ -58,6 +81,7 @@ app.get("/rooms", (req, res) => {
   //чутка другая инфа нужна
   res.json({rooms: userRooms});
 });
+
 
 app.post('/room', (req, res) => {
   const {name} = req.body;
@@ -91,17 +115,7 @@ app.get("*", (req, res) => {
 
 
 io.on('connection', (socket: Socket & {roomId?: string; room?: RoomTypes;}) => {
-  console.log('User connected');
-
-  // socket.on("room:create", (token) => {
-  //   const roomId = uuidv4();
-  //   if (!rooms.hasOwnProperty(roomId)) {
-  //     rooms[roomId] = {
-  //       puzzle: null
-  //     };
-  //   }
-  //   socket.emit("room", roomId);
-  // });
+  console.log('User connected to webSocket');
 
   socket.on("room:join", (roomId: any) => {
     const joinRoom = rooms.find(room => room.id === roomId);
@@ -117,10 +131,11 @@ io.on('connection', (socket: Socket & {roomId?: string; room?: RoomTypes;}) => {
     }
   });
 
+
   registerPuzzleHandlers(io, socket);
 
   socket.on('disconnect', () => {
-    console.log('User disconnected');
+    console.log('User disconnected from webSocket');
     socket.roomId && socket.leave(socket.roomId);
   })
 });

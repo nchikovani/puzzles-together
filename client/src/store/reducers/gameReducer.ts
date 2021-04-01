@@ -1,6 +1,6 @@
 import * as actionTypes from '../actionTypes';
 import {GameStateTypes} from "../store.types";
-import * as actions from "../actionCreators";
+import * as actions from "../actions";
 
 const initial: GameStateTypes = {
 	gameData: null,

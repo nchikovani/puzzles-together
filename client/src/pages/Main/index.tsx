@@ -6,15 +6,15 @@ interface MainPropsTypes {
 }
 
 function Main(props: MainPropsTypes) {
-  const createRoom = () => {
-    props.socketService.createRoom();
-  }
+  // const createRoom = () => {
+  //   props.socketService.createRoom();
+  // }
   return (
     <div>
-      <button
-        onClick={createRoom}
-        style={{cursor: "pointer"}}
-      >Создать Комнату</button>
+      {/*<button*/}
+      {/*  // onClick={createRoom}*/}
+      {/*  style={{cursor: "pointer"}}*/}
+      {/*>Создать Комнату</button>*/}
     </div>
   )
 }

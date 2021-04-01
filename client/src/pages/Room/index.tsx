@@ -20,6 +20,7 @@ class Room extends React.Component<PropsType, {}> {
   constructor(props: PropsType) {
     super(props);
     const roomId = props.match.params.roomId;
+    props.socketService.connect();
     props.socketService.joinRoom(roomId);
   }
 
@@ -36,6 +37,10 @@ class Room extends React.Component<PropsType, {}> {
       const targetOption = this.props.options.find(option => Number(result) === option.partCount);
       targetOption && this.props.socketService.createPuzzle(targetOption);
     }
+  }
+
+  componentWillUnmount() {
+    this.props.socketService.disconnect();
   }
 
   handleImage(e: React.ChangeEvent<HTMLInputElement>) {

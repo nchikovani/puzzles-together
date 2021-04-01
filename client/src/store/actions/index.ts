@@ -1,5 +1,15 @@
-import * as actionTypes from './actionTypes';
-import {GameDataTypes, UpdateTypes, OptionTypes} from '../../../shared/Game.types';
+import * as actionTypes from '../actionTypes';
+import {GameDataTypes, UpdateTypes, OptionTypes} from '../../../../shared/Game.types';
+
+export const setUser = (id: string) => (<const>{
+  type: actionTypes.SET_USER,
+  id,
+});
+
+export const setRooms = (rooms: any[]) => (<const>{
+  type: actionTypes.SET_ROOMS,
+  rooms,
+});
 
 export const setGameData = (gameData: GameDataTypes) => (<const>{
   type: actionTypes.SET_GAME_DATA,

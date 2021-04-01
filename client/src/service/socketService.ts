@@ -1,7 +1,7 @@
 import {io} from "socket.io-client";
 import {OptionTypes, UpdateTypes} from '../../../shared/Game.types'
 import store from '../store';
-import {setGameData, setUpdate, setRoomId, setNotFound, setOptions, setIsSolved} from '../store/actionCreators';
+import {setGameData, setUpdate, setRoomId, setNotFound, setOptions, setIsSolved} from '../store/actions';
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -9,14 +9,16 @@ export default class socketService {
   socket;
   constructor() {
     this.socket = io(SERVER_URL, {
-      transports: ['websocket', 'polling', 'flashsocket']
+      transports: ['websocket', 'polling', 'flashsocket'],
+      autoConnect: false,
     });
+
     //проверять входящие данные?
     this.socket.on('puzzle:options', (options) => {
       store.dispatch(setOptions(options));
     });
     this.socket.on('puzzle', (gameData) => {
-      console.log('puzzle');
+      console.log('puzzle gameData');
       store.dispatch(setGameData(gameData));
     });
     this.socket.on('puzzle:getUpdate', (update) => {
@@ -35,13 +37,16 @@ export default class socketService {
     });
 
   }
+  connect() {
+    this.socket.connect();
+  }
+
+  disconnect() {
+    this.socket.disconnect();
+  }
 
   getOptions(image: string) {
     this.socket.emit('puzzle:getOptions', image);
-  }
-
-  createRoom() {
-    this.socket.emit('room:create');
   }
 
   joinRoom(roomId: string) {
