@@ -5,10 +5,13 @@ const sizeOf = require('image-size');
 const canvasProportions = 1.7;
 
 const canvasWidth = 1;
-const canvasHeight = 1 / canvasProportions;
-const maxWidth = canvasWidth / 2;
-const maxHeight = canvasHeight / 2;
+const puzzlePartOfSize = 0.6;
 const maxPartCount = 1500;
+
+const canvasHeight = canvasWidth / canvasProportions;
+const maxWidth = canvasWidth * puzzlePartOfSize;
+const maxHeight = canvasHeight * puzzlePartOfSize;
+
 
 class Puzzle {
   image: string;

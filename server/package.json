@@ -19,6 +19,7 @@
     "@types/socket.io-client": "^1.4.36",
     "express": "^4.17.1",
     "image-size": "^0.9.7",
+    "jwt-simple": "^0.5.6",
     "socket.io": "^4.0.0",
     "uuid": "^8.3.2"
   },

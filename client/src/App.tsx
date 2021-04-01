@@ -7,10 +7,13 @@ import NotFound from './pages/NotFound';
 import ErrorService from "./service/errorService";
 import './styles/base.scss';
 import SocketService from "./service/socketService";
+import UserService from "./service/userService";
+import UserRooms from "./pages/UserRooms";
 
 
 const errorService = new ErrorService();
 const socketService = new SocketService();
+const userService = new UserService();
 
 function App() {
 
@@ -26,6 +29,9 @@ function App() {
           </Route>
           <Route path="/Room/:roomId">
             <Room socketService={socketService}/>
+          </Route>
+          <Route path="/Rooms">
+            <UserRooms userService={userService}/>
           </Route>
           <Route>
             <NotFound/>

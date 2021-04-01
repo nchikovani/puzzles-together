@@ -1,0 +1,15 @@
+.room-list {
+  display: flex;
+  flex-wrap: wrap;
+  &__item {
+    width: 200px;
+    height: 200px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    border: 1px solid black;
+    cursor: pointer;
+  }
+  &__create-room {
+    background: #f2f2f2;
+  }
+}

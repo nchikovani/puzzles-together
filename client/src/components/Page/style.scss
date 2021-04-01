@@ -1,11 +1,18 @@
 @import '../../styles/vars';
 
 .header {
+  display: flex;
+  justify-content: space-between;
   background: $primary;
   padding: 20px 30px;
+
   &__title {
     font-size: 1.3em;
     color: $white;
+  }
+
+  &__rooms-link {
+    color: white;
   }
 }
 
