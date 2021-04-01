@@ -93,7 +93,6 @@ app.post("/getPersonalArea", (req, res) => {
   res.status(200).json({rooms: userRooms, isOwner: true});
 });
 
-
 app.post('/postRoom', (req, res) => {
   const {name} = req.body;
   const authHeader = req.headers['authorization']
@@ -115,7 +114,16 @@ app.post('/postRoom', (req, res) => {
   });
 
   user.roomsId.push(roomId);
-  const userRooms = user.roomsId.map(roomId => rooms.find(room => room.id === roomId));
+
+  const userRooms: any[] = [];
+  user.roomsId.forEach(roomId => {
+    const targetRoom = rooms.find(room => room.id === roomId)
+    if (!targetRoom) return;
+    userRooms.push({
+      id: targetRoom.id,
+      name: targetRoom.name,
+    });
+  });
 
   res.json({rooms: userRooms});
 });
