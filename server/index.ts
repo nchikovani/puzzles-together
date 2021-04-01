@@ -19,6 +19,7 @@ const io = new Server(server);
 
 interface UserTypes {
   id: string;
+  registered: boolean;
   roomsId: string[];
 }
 
@@ -30,6 +31,7 @@ const rooms: RoomTypes[] = [{
 
 const users: UserTypes[] = [{
   id: '1',
+  registered: false,
   roomsId: [],
 }];
 
@@ -42,6 +44,7 @@ app.get("/user", (req, res) => {
     const id = uuidv4();
     user = {
       id: id,
+      registered: false,
       roomsId: [],
     };
     token = jwt.encode(id, 'secret');
@@ -60,30 +63,38 @@ app.get("/user", (req, res) => {
       user = userFind;
     }
   }
-
-
   // @ts-ignore
-  res.json({token, id: user.id})
+  res.json({token, id: user.id, registered: user.registered})
 });
 
 
-app.get("/rooms", (req, res) => {
+app.post("/getPersonalArea", (req, res) => {
+  const {userId} = req.body;
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
   if (!token) return res.sendStatus(401)
 
-  const user_id = jwt.decode(token, 'secret')
-  const user = users.find(user => user.id === user_id);
+  const userIdFromToken = jwt.decode(token, 'secret');
 
-  if (!user) return res.json({error: 'Ошибочка'});
+  const user = users.find(user => user.id === userId);
+  if (!user) return res.status(404).json({error: 'Ошибочка, пользователь не найден'});
 
-  const userRooms = user.roomsId.map(roomId => rooms.find(room => room.id === roomId));
-  //чутка другая инфа нужна
-  res.json({rooms: userRooms});
+  if (userId !== userIdFromToken) return res.status(200).json({rooms: [], isOwner: false});
+
+  const userRooms: any[] = [];
+  user.roomsId.forEach(roomId => {
+    const targetRoom = rooms.find(room => room.id === roomId)
+    if (!targetRoom) return;
+    userRooms.push({
+      id: targetRoom.id,
+      name: targetRoom.name,
+    });
+  });
+  res.status(200).json({rooms: userRooms, isOwner: true});
 });
 
 
-app.post('/room', (req, res) => {
+app.post('/postRoom', (req, res) => {
   const {name} = req.body;
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1];
@@ -112,7 +123,6 @@ app.post('/room', (req, res) => {
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
-
 
 io.on('connection', (socket: Socket & {roomId?: string; room?: RoomTypes;}) => {
   console.log('User connected to webSocket');

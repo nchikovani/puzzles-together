@@ -1,13 +1,20 @@
 import * as actionTypes from '../actionTypes';
 import {GameDataTypes, UpdateTypes, OptionTypes} from '../../../../shared/Game.types';
 
-export const setUser = (id: string) => (<const>{
+export const setUser = (id: string, registered: boolean) => (<const>{
   type: actionTypes.SET_USER,
   id,
+  registered
 });
 
-export const setRooms = (rooms: any[]) => (<const>{
-  type: actionTypes.SET_ROOMS,
+export const setPersonalArea = (rooms: any[], isOwner: boolean) => (<const>{
+  type: actionTypes.SET_PERSONAL_AREA,
+  rooms,
+  isOwner,
+});
+
+export const setPersonalAreaRooms = (rooms: any[]) => (<const>{
+  type: actionTypes.SET_PERSONAL_AREA_ROOMS,
   rooms,
 });
 

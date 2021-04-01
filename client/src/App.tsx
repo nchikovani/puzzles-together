@@ -7,7 +7,7 @@ import NotFound from './pages/NotFound';
 import ErrorService from "./service/errorService";
 import './styles/base.scss';
 import SocketService from "./service/socketService";
-import UserRooms from "./pages/UserRooms";
+import PersonalArea from "./pages/PersonalArea";
 import {useDispatch} from "react-redux";
 import {fetchGetUser} from "./store/actions/fetchActions";
 
@@ -34,7 +34,7 @@ function App() {
             <Room socketService={socketService}/>
           </Route>
           <Route path="/users/:userId/rooms">
-            <UserRooms/>
+            <PersonalArea/>
           </Route>
           <Route>
             <NotFound/>

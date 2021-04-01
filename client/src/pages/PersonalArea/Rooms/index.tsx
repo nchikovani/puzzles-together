@@ -1,22 +1,16 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useHistory} from 'react-router-dom'
 import './style.scss';
-import {connect, useDispatch} from "react-redux";
-import {StoreTypes} from "../../store/store.types";
-import {fetchGetRooms, fetchPostRoom} from '../../store/actions/fetchActions';
+import {useDispatch} from "react-redux";
+import {fetchPostRoom} from '../../../store/actions/fetchActions';
 
 interface UserRoomsTypes {
   rooms: any[];
 }
 
-function UserRooms (props: UserRoomsTypes) {
+function Rooms (props: UserRoomsTypes) {
   const history = useHistory();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchGetRooms());
-  }, []);
-
+  const dispatch = useDispatch()
 
   const joinRoom = (roomId: string) => {
     history.push(`/room/` + roomId);
@@ -47,10 +41,4 @@ function UserRooms (props: UserRoomsTypes) {
   )
 }
 
-const mapStateToProps = (store: StoreTypes) => {
-  return {
-    rooms: store.user.rooms
-  }
-}
-
-export default connect(mapStateToProps)( UserRooms);
+export default Rooms;

@@ -3,6 +3,7 @@ import './style.scss';
 import { useHistory } from "react-router-dom";
 import {StoreTypes} from "../../store/store.types";
 import {connect} from "react-redux";
+import {Link} from 'react-router-dom';
 
 interface PagePropsTypes {
   userId: string | null;
@@ -21,24 +22,10 @@ const Page: FunctionComponent<PagePropsTypes> = (props) => {
     <React.Fragment>
       <header className="header">
         <div className="header__logo">
-          <a href="#"
-             onClick={(e) => {
-               e.preventDefault();
-               history.push('/');
-             }}
-          >
-            <h1 className="header__title">Puzzles together</h1>
-          </a>
+          <Link to={`/`}><h1 className="header__title">Puzzles together</h1></Link>
         </div>
         <div>
-          <a
-            href="#"
-             className="header__rooms-link"
-             onClick={(e) => {
-               e.preventDefault();
-               props.userId && history.push(`/users/${props.userId}/rooms`);
-             }}
-          >Личный кабинет</a>
+          <Link to={`/users/${props.userId}/rooms`} className="header__rooms-link">Личный кабинет</Link>
         </div>
       </header>
       <div className="page-wrapper">
