@@ -13,9 +13,9 @@ export const setPersonalArea = (rooms: any[], isOwner: boolean) => (<const>{
   isOwner,
 });
 
-export const setPersonalAreaRooms = (rooms: any[]) => (<const>{
-  type: actionTypes.SET_PERSONAL_AREA_ROOMS,
-  rooms,
+export const addRoom = (room: any) => (<const>{
+  type: actionTypes.ADD_ROOM,
+  room,
 });
 
 export const setGameData = (gameData: GameDataTypes) => (<const>{

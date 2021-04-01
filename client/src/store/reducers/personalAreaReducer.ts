@@ -17,10 +17,10 @@ function userReducer(state: PersonalAreaTypes = initial, action: ActionTypes) {
         rooms: action.rooms,
         isOwner: action.isOwner,
       };
-    case actionTypes.SET_PERSONAL_AREA_ROOMS:
+    case actionTypes.ADD_ROOM:
       return {
         ...state,
-        rooms: action.rooms,
+        rooms: [...state.rooms, action.room],
       };
 
     default:

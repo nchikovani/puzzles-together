@@ -24,13 +24,12 @@ export const getPersonalArea = async (userId: string) => {
   return await response.json();
 }
 
-export const postRoom = async (name: string) => {
+export const addRoom = async () => {
   const token = localStorage.getItem('token');
-  const response = await fetch('/postRoom', {
+  const response = await fetch('/addRoom', {
     method: 'POST',
     headers: getHeaders(token),
     mode: 'same-origin',
-    body: JSON.stringify({name})
   });
 
   return await response.json();

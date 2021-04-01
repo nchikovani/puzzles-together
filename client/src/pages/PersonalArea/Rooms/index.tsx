@@ -2,7 +2,7 @@ import React from 'react';
 import {useHistory} from 'react-router-dom'
 import './style.scss';
 import {useDispatch} from "react-redux";
-import {fetchPostRoom} from '../../../store/actions/fetchActions';
+import {fetchAddRoom} from '../../../store/actions/fetchActions';
 
 interface UserRoomsTypes {
   rooms: any[];
@@ -10,13 +10,13 @@ interface UserRoomsTypes {
 
 function Rooms (props: UserRoomsTypes) {
   const history = useHistory();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const joinRoom = (roomId: string) => {
     history.push(`/room/` + roomId);
   }
   const createRoom = () => {
-    dispatch(fetchPostRoom('Название'))
+    dispatch(fetchAddRoom(joinRoom))
   }
 
   return (
@@ -34,7 +34,7 @@ function Rooms (props: UserRoomsTypes) {
           className="room-list__item"
           onClick={() => joinRoom(room.id)}
         >
-          {room.id}
+          {room.name}
         </div>)
       }
     </div>

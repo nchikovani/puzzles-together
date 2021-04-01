@@ -6,7 +6,7 @@ import * as jwt from 'jwt-simple';
 import {Server, Socket} from "socket.io";
 import {RoomTypes} from "./server.types";
 import registerPuzzleHandlers from './handlers/puzzleHandlers';
-import {v4 as uuidv4} from 'uuid';
+const shortid = require('shortid');
 const port = process.env.PORT || 8080;
 
 const app = express();
@@ -41,7 +41,7 @@ app.get("/user", (req, res) => {
   let user: UserTypes;
 
   const createUser = () => {
-    const id = uuidv4();
+    const id = shortid.generate();
     user = {
       id: id,
       registered: false,
@@ -93,8 +93,7 @@ app.post("/getPersonalArea", (req, res) => {
   res.status(200).json({rooms: userRooms, isOwner: true});
 });
 
-app.post('/postRoom', (req, res) => {
-  const {name} = req.body;
+app.post('/addRoom', (req, res) => {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.sendStatus(401);
@@ -106,26 +105,17 @@ app.post('/postRoom', (req, res) => {
     return;
   }
 
-  const roomId = uuidv4();
+  const roomId = shortid.generate();
+
   rooms.push({
     id: roomId,
-    name,
+    name: roomId,
     puzzle: null
   });
 
   user.roomsId.push(roomId);
 
-  const userRooms: any[] = [];
-  user.roomsId.forEach(roomId => {
-    const targetRoom = rooms.find(room => room.id === roomId)
-    if (!targetRoom) return;
-    userRooms.push({
-      id: targetRoom.id,
-      name: targetRoom.name,
-    });
-  });
-
-  res.json({rooms: userRooms});
+  res.json({room: {id: roomId, name: roomId}});
 });
 
 app.get("*", (req, res) => {

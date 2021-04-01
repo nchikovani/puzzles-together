@@ -1,4 +1,4 @@
-import {v4 as uuidv4} from 'uuid';
+const shortid = require('shortid');
 import {ConnectionTypes, GameDataTypes, OptionTypes, PartTypes, UpdateTypes} from "../../shared/Game.types";
 const sizeOf = require('image-size');
 
@@ -140,7 +140,7 @@ class Puzzle {
     for (let i = 0; i < this.columnCount; i++) {
       for (let j = 0; j < this.rowCount; j++) {
         let topLink = null, rightLink = null, leftLink = null, bottomLink = null;
-        const id = uuidv4();
+        const id = shortid.generate();
         if (j !== 0) {
           const connectingPart = parts.find((part) => part.xIndex === i && part.yIndex === j - 1);
           if (connectingPart && connectingPart.bottomLink) {

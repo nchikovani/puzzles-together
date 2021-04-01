@@ -1,5 +1,5 @@
 import * as userService from '../../service/userService';
-import {setUser, setPersonalArea, setPersonalAreaRooms} from './index';
+import {setUser, setPersonalArea, addRoom} from './index';
 
 export const fetchGetUser = () => async (dispatch: any) => {
   const {id, registered, token} = await userService.getUser();
@@ -16,7 +16,8 @@ export const fetchGetPersonalArea = (userId: string) => async (dispatch: any) =>
   rooms && dispatch(setPersonalArea(rooms, isOwner));
 };
 
-export const fetchPostRoom = (name: string) => async (dispatch: any) => {
-  const {rooms} = await userService.postRoom(name);
-  rooms && dispatch(setPersonalAreaRooms(rooms));
+export const fetchAddRoom = (joinRoom: (id: string) => void) => async (dispatch: any) => {//addRoom
+  const {room} = await userService.addRoom();
+  joinRoom(room.id);
+  room && dispatch(addRoom(room));//открыть окошко
 };
