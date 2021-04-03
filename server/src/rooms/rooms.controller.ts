@@ -1,5 +1,7 @@
 import RoomsService from './rooms.service';
 import UsersService from '../users/users.service';
+import {Schema, Types} from 'mongoose';
+
 import { Request, Response } from 'express';
 
 class RoomsController {
@@ -8,24 +10,28 @@ class RoomsController {
     // @ts-ignore
     const userIdFromToken = req.userId;
 
-    const user = await UsersService.getUserById(userId);//проверять userId??
-    if (user !== undefined) {
-      if (user) {
-        if (userId === userIdFromToken) {
-          const rooms = await RoomsService.getRoomsByUserId(user._id);
-          if (rooms) {
-            return res.status(200).json({rooms});
+    if (Types.ObjectId.isValid(userId)) {
+      const user = await UsersService.getUserById(userId);//проверять userId??
+      if (user !== undefined) {
+        if (user) {
+          if (userId === userIdFromToken) {
+            const rooms = await RoomsService.getRoomsByUserId(user._id);
+            if (rooms) {
+              return res.status(200).json({rooms});
+            } else {
+              return res.status(500).send({ message: 'Unable find rooms.' });
+            }
           } else {
-            return res.status(500).send({ message: 'Unable find rooms.' });
+            return res.status(403 ).send({message: 'Access to the page is denied.'});
           }
         } else {
-          return res.status(403 ).send({message: 'Access to the page is denied.'});
+          res.status(404).send({ message: 'User not found.' });
         }
       } else {
-        res.status(404).send({ message: 'User not found.' });
+        res.status(500).send({ message: 'Unable find user.' });
       }
     } else {
-      res.status(500).send({ message: 'Unable find user.' });
+      res.status(404).send({ message: 'User not found.' });
     }
   }
 

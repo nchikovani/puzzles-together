@@ -9,13 +9,14 @@ class UsersController {
 
     jwt.verify(token,"secret_key",async (err: any, data: any)=>{
       if(!err){
-        const userId = data.id
+        const userId = data.id;
         const user = await UsersService.getUserById(userId);
 
         if (user !== undefined) {
           if (user) {
             res.status(200).json({id: user._id, registered: user.registered});
           } else {
+            res.cookie('token', '',{maxAge:900000, httpOnly:true});
             res.status(404).send({ message: 'User not found.' });
           }
         } else {
