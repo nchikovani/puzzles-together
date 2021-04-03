@@ -3,7 +3,7 @@ import { model, Schema, Model, Document, ObjectId } from 'mongoose';
 export interface RoomTypes extends Document {
   owner: ObjectId;
   name: string;
-  puzzle: string | null;
+  puzzleData: string | null;
 }
 
 const RoomsSchema = new Schema({

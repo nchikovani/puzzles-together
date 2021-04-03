@@ -1,17 +1,17 @@
 import RoomsService from './rooms.service';
 import UsersService from '../users/users.service';
-import {Schema, Types} from 'mongoose';
+import {Types} from 'mongoose';
 
 import { Request, Response } from 'express';
 
 class RoomsController {
   async getRooms(req: Request, res: Response) {
     const userId = req.params.userId;
-    // @ts-ignore
+
     const userIdFromToken = req.userId;
 
     if (Types.ObjectId.isValid(userId)) {
-      const user = await UsersService.getUserById(userId);//проверять userId??
+      const user = await UsersService.getUserById(userId);
       if (user !== undefined) {
         if (user) {
           if (userId === userIdFromToken) {

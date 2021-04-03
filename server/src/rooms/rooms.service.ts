@@ -2,6 +2,14 @@ import Rooms from "./room.model";
 import { ObjectId } from 'mongoose';
 
 class RoomsService {
+  async getRoomById(id: string) {
+    try {
+      return await Rooms.findById(id).exec();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async getRoomsByUserId(userId: ObjectId) {
     try {
       return await Rooms.find({owner: userId}).exec();

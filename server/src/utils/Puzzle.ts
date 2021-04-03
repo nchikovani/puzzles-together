@@ -12,7 +12,6 @@ const canvasHeight = canvasWidth / canvasProportions;
 const maxWidth = canvasWidth * puzzlePartOfSize;
 const maxHeight = canvasHeight * puzzlePartOfSize;
 
-
 class Puzzle {
   image: string;
   width: number = 0;
@@ -25,6 +24,8 @@ class Puzzle {
   solvedConnectionCount: number = 0;
   isSolved: boolean = false;
   parts: PartTypes[] = [];
+  isInit: boolean = false;
+
   constructor(image: string) {
     this.image = image;
     try {
@@ -41,6 +42,10 @@ class Puzzle {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  init(puzzleData: any) {
+
   }
 
   getPartsCountOptions (): OptionTypes[] {
