@@ -7,9 +7,11 @@ export interface GameStateTypes {
   isSolved: boolean;
 }
 
-export interface PersonalAreaTypes {
-  rooms: any[];
-  isOwner: false;
+export interface RoomTypes {
+  _id: string;
+  owner: string;
+  name?: string;
+  puzzle?: string;
 }
 
 export interface UserStateTypes {
@@ -20,5 +22,5 @@ export interface UserStateTypes {
 export interface StoreTypes {
   game: GameStateTypes;
   user: UserStateTypes;
-  personalArea: PersonalAreaTypes;
+  rooms: RoomTypes[];
 }

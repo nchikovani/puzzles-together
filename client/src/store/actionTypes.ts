@@ -1,5 +1,5 @@
 export const SET_USER = 'SET_USER';
-export const SET_PERSONAL_AREA = 'SET_PERSONAL_AREA';
+export const SET_ROOMS = 'SET_ROOMS';
 export const ADD_ROOM = 'ADD_ROOM';
 
 export const SET_GAME_DATA = 'SET_GAME_DATA';

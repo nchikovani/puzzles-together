@@ -1,16 +1,25 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useHistory} from 'react-router-dom'
 import './style.scss';
-import {useDispatch} from "react-redux";
-import {fetchAddRoom} from '../../../store/actions/fetchActions';
+import {connect, useDispatch} from "react-redux";
+import {fetchAddRoom, fetchGetRooms} from '../../../store/actions/fetchActions';
+import {RoomTypes, StoreTypes} from "../../../store/store.types";
+import {useRouteMatch} from "react-router-dom";
 
 interface UserRoomsTypes {
-  rooms: any[];
+  rooms: RoomTypes[];
 }
 
 function Rooms (props: UserRoomsTypes) {
-  const history = useHistory();
+  const match = useRouteMatch();
   const dispatch = useDispatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    // @ts-ignore
+    dispatch(fetchGetRooms(match.params.userId));
+  }, [dispatch, match.params]);
+
 
   const joinRoom = (roomId: string) => {
     history.push(`/room/` + roomId);
@@ -28,17 +37,21 @@ function Rooms (props: UserRoomsTypes) {
         Создать комнату
       </div>
       {
-        // @ts-ignore
         props.rooms.map(room => <div
-          key={room.id}
+          key={room._id}
           className="room-list__item"
-          onClick={() => joinRoom(room.id)}
+          onClick={() => joinRoom(room._id)}
         >
-          {room.name}
+          {room.name || room._id}
         </div>)
       }
     </div>
   )
 }
+const mapStateToProps = (store: StoreTypes) => {
+  return {
+    rooms: store.rooms,
+  }
+}
 
-export default Rooms;
+export default connect(mapStateToProps)(Rooms);

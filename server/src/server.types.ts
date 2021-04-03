@@ -5,3 +5,9 @@ export interface RoomTypes {
   name?: string;
   puzzle: Puzzle | null;
 }
+
+export interface UserTypes {
+  id: string;
+  registered: boolean;
+  roomsId: string[];
+}

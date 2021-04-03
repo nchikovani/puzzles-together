@@ -1,46 +1,46 @@
 
 export const getUser = async () => {
-  const token = localStorage.getItem('token');
-  const response = await fetch('/user', {
+  const response = await fetch('/users/authenticate', {
     method: 'GET',
-    headers: getHeaders(token),
+    headers: {
+      'Content-Type': 'application/json'
+    },
     mode: 'same-origin',
   });
 
-  const userData = await response.json();
-  return userData;
+  return await response.json();
 }
 
-export const getPersonalArea = async (userId: string) => {
-  const token = localStorage.getItem('token');
-
-  const response = await fetch('/getPersonalArea', {
-    method: 'POST',
-    headers: getHeaders(token),
+export const getRooms = async (userId: string) => {
+  const response = await fetch(`/rooms/${userId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    },
     mode: 'same-origin',
-    body: JSON.stringify({userId})
   });
 
   return await response.json();
 }
 
 export const addRoom = async () => {
-  const token = localStorage.getItem('token');
-  const response = await fetch('/addRoom', {
+  const response = await fetch('/rooms', {
     method: 'POST',
-    headers: getHeaders(token),
+    headers: {
+      'Content-Type': 'application/json'
+    },
     mode: 'same-origin',
   });
 
   return await response.json();
 }
 
-const getHeaders = (token?: string | null) => {
-  const headers: any = {
-    'Content-Type': 'application/json',
-  }
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-  return headers;
-}
+// const getHeaders = (token?: string | null) => {
+//   const headers: any = {
+//     'Content-Type': 'application/json',
+//   }
+//   if (token) {
+//     headers["Authorization"] = `Bearer ${token}`;
+//   }
+//   return headers;
+// }

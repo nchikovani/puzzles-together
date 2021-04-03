@@ -7,10 +7,9 @@ export const setUser = (id: string, registered: boolean) => (<const>{
   registered
 });
 
-export const setPersonalArea = (rooms: any[], isOwner: boolean) => (<const>{
-  type: actionTypes.SET_PERSONAL_AREA,
+export const setPersonalArea = (rooms: any[]) => (<const>{
+  type: actionTypes.SET_ROOMS,
   rooms,
-  isOwner,
 });
 
 export const addRoom = (room: any) => (<const>{

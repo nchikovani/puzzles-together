@@ -27,7 +27,7 @@ const puzzleHandlers =  (io: Server<DefaultEventsMap, DefaultEventsMap>, socket:
 
   socket.on("puzzle:setUpdate", (update: any) => {
     if (!socket.roomId) return;
-    const room = socket.room;;
+    const room = socket.room;
     if (!room || !room.puzzle) return;
     const beforeIsSolved = room.puzzle.isSolved;
     room.puzzle.update(update);
