@@ -7,7 +7,7 @@ import { Request, Response } from 'express';
 class RoomsController {
   async getRooms(req: Request, res: Response) {
     const userId = req.params.userId;
-
+    // @ts-ignore
     const userIdFromToken = req.userId;
 
     if (Types.ObjectId.isValid(userId)) {

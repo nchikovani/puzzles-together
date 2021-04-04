@@ -1,7 +1,7 @@
 import React, {createRef, RefObject} from 'react';
 import Puzzles from "./Puzzles/Puzzles";
 import Part from './Puzzles/Part';
-import {GameDataTypes, UpdateTypes} from "../../../../shared/Game.types";
+import {GameDataTypes, UpdateTypes} from "shared";
 import {StoreTypes} from "../../store/store.types";
 import SocketService from '../../service/socketService';
 import './style.scss';

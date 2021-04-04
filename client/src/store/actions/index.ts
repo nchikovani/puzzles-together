@@ -1,5 +1,5 @@
 import * as actionTypes from '../actionTypes';
-import {GameDataTypes, UpdateTypes, OptionTypes} from '../../../../shared/Game.types';
+import {GameDataTypes, UpdateTypes, OptionTypes} from 'shared';
 
 export const setUser = (id: string, registered: boolean) => (<const>{
   type: actionTypes.SET_USER,

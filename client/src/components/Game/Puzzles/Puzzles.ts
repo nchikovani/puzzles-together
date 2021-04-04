@@ -1,5 +1,5 @@
 import Part from './Part';
-import {MoveTypes, ConnectionTypes, UpdateTypes, GameDataTypes} from '../../../../../shared/Game.types';
+import {MoveTypes, ConnectionTypes, UpdateTypes, GameDataTypes} from 'shared';
 import {playKnock} from '../utils';
 import {maxZoom, connectionDistance, zoomDifferenceBuffersUpdating} from './puzzleConstants';
 

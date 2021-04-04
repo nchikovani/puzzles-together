@@ -3,7 +3,7 @@ import Game from "../../components/Game";
 import SocketService from '../../service/socketService';
 import {connect} from "react-redux";
 import {withRouter, RouteComponentProps} from "react-router";
-import {OptionTypes} from '../../../../shared/Game.types'
+import {OptionTypes} from 'shared'
 import {StoreTypes} from '../../store/store.types';
 import './style.scss';
 

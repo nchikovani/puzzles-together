@@ -1,20 +1,12 @@
 import {io} from "socket.io-client";
-import {OptionTypes, UpdateTypes} from '../../../shared/Game.types'
+import {OptionTypes, UpdateTypes, WebSocketServerActionsTypes} from 'shared';
+import {webSocketActionsTypes, webSocketClientActions} from 'shared';
 import store from '../store';
 import {setGameData, setUpdate, setOptions, setIsSolved} from '../store/actions';
-import * as actions from "../../../shared/webSocketActions";
-import {
-  createAction,
-  getOptionsAction,
-  joinAction,
-  setUpdateAction
-} from "../../../shared/webSocketActions";
-import * as actionTypes from "../../../shared/webSocketActionsTypes";
 
+const {createAction, getOptionsAction, joinAction, setUpdateAction} = webSocketClientActions;
 const SERVER_URL = 'http://localhost:8080';
 
-type InferValueTypes<T> = T extends { [key: string]: infer U} ? U : never;
-type ActionTypes = ReturnType<InferValueTypes<typeof actions>>;
 
 export default class socketService {
   socket;
@@ -35,21 +27,21 @@ export default class socketService {
     this.socket.disconnect();
   }
 
-  puzzleHandlers(action: ActionTypes) {
+  puzzleHandlers(action: WebSocketServerActionsTypes) {
     switch (action.type) {
-      case actionTypes.OPTIONS:
+      case webSocketActionsTypes.OPTIONS:
         store.dispatch(setOptions(action.options));
         break;
-      case actionTypes.GAME_DATA:
+      case webSocketActionsTypes.GAME_DATA:
         store.dispatch(setGameData(action.gameData));
         break;
-      case actionTypes.UPDATE:
+      case webSocketActionsTypes.UPDATE:
         store.dispatch(setUpdate(action.update));
         break;
-      case actionTypes.SOLVED:
+      case webSocketActionsTypes.SOLVED:
         store.dispatch(setIsSolved(true));
         break;
-      case actionTypes.ERROR:
+      case webSocketActionsTypes.ERROR:
         console.log(action.error);
         break;
     }

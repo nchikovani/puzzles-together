@@ -7,6 +7,7 @@ export const checkToken = (req: Request, res: Response, next: NextFunction) => {
     if(err){
       return res.status(401 ).send({message: 'Missing token.'});
     } else if(data.id){
+      // @ts-ignore
       req.userId = data.id;
       next();
     }

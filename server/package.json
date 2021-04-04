@@ -11,6 +11,7 @@
     "tslint-fix": "tslint --project tsconfig.json --config tslint.json --fix",
     "build": "webpack"
   },
+  "typings": "./src/custom.d.ts",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -23,6 +24,7 @@
     "image-size": "^0.9.7",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.3",
+    "shared": "file:../shared",
     "shortid": "^2.2.16",
     "socket.io": "^4.0.0"
   },

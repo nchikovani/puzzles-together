@@ -1,5 +1,6 @@
 const shortid = require('shortid');
-import {ConnectionTypes, GameDataTypes, OptionTypes, PartTypes, UpdateTypes} from "../../../shared/Game.types";
+
+import {ConnectionTypes, GameDataTypes, OptionTypes, PartTypes, UpdateTypes} from 'shared';
 const sizeOf = require('image-size');
 
 const canvasProportions = 1.7;
