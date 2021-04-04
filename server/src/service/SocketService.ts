@@ -2,56 +2,73 @@ import {Server} from "socket.io";
 import Puzzle from "../utils/Puzzle";
 import RoomsService from '../rooms/rooms.service';
 import {DefaultEventsMap} from "socket.io/dist/typed-events";
-import {RoomTypes} from '../rooms/room.model';
 import {SocketObject} from "../server.types";
 import * as webSocketServerActions from 'shared/webSocketServerActions';
 import * as webSocketActionsTypes from 'shared/webSocketActionsTypes';
 import {WebSocketClientActionsTypes} from 'shared';
 const {gameDataAction, optionsAction, updateAction, errorAction, solvedAction} = webSocketServerActions;
 
-interface activeRoomTypes extends RoomTypes{
-  puzzle?: Puzzle;
+interface activeRoomTypes {
+  _id: string;
+  owner: string;
+  puzzleData: string | null;
+  puzzle: Puzzle | null;
+
 }
 
 class SocketService {
   io: Server<DefaultEventsMap, DefaultEventsMap>;
-  socket: SocketObject
   activeRooms: activeRoomTypes[] = [];
 
-  constructor(io: Server<DefaultEventsMap, DefaultEventsMap>, socket: SocketObject) {
+  constructor(io: Server<DefaultEventsMap, DefaultEventsMap>) {
     this.io = io;
-    this.socket = socket;
 
     this.roomHandlers = this.roomHandlers.bind(this);
     this.puzzleHandlers = this.puzzleHandlers.bind(this);
   }
 
   registerListener() {
-    const {socket} = this;
-    socket.on("room", this.roomHandlers);
-    socket.on("puzzle", this.puzzleHandlers);
+    const {io} = this;
+    io.on('connection', (socket: SocketObject) => {
+      console.log('User connected to webSocket');
+      socket.on("room", (action) => this.roomHandlers(action, socket));
+      socket.on("puzzle", (action) => this.puzzleHandlers(action, socket));
+
+      socket.on('disconnect', () => {
+        if (socket.roomId) {
+          const clients = io.sockets.adapter.rooms.get(socket.roomId);
+          if (!clients) {
+            this.activeRooms = this.activeRooms.filter(room => room._id != socket.roomId);
+          }
+        }
+        socket.roomId && socket.leave(socket.roomId);
+        console.log('User disconnected from webSocket');
+      })
+    });
   }
 
-  async roomHandlers(action: WebSocketClientActionsTypes) {
-    const {socket} = this;
+  async roomHandlers(action: WebSocketClientActionsTypes, socket: SocketObject) {
     switch (action.type) {
       case webSocketActionsTypes.JOIN: {
         let joinRoom: activeRoomTypes;
-        const activeRoom = this.activeRooms.find(activeRoom => activeRoom._id === action.roomId);
+        const activeRoom = this.activeRooms.find(activeRoom => activeRoom._id == action.roomId);
         if (activeRoom) {
           joinRoom = activeRoom;
           const puzzle = joinRoom.puzzle;
           const gameData = puzzle && puzzle.getGameData();
           if (gameData) {
             socket.emit("puzzle", gameDataAction(gameData));
-          } else {
-            return socket.emit("puzzle", errorAction(4, ''));//какая-то ошибка тут
           }
         } else {
           const room = await RoomsService.getRoomById(action.roomId);
           if (room !== undefined) {
             if (room) {
-              joinRoom = room;
+              joinRoom = {
+                _id: String(room._id),
+                owner: String(room.owner),
+                puzzleData: room.puzzleData || null,
+                puzzle: null,
+              };
               const jsonPuzzleData = joinRoom.puzzleData;
               if (jsonPuzzleData) {
                 let puzzleData;
@@ -72,22 +89,24 @@ class SocketService {
           }
         }
         socket.roomId = action.roomId;
+        console.log(action.roomId);
         socket.join(action.roomId);
         break;
       }
     }
   }
 
-  puzzleHandlers(action: WebSocketClientActionsTypes) {
-    const {io, socket} = this;
+  puzzleHandlers(action: WebSocketClientActionsTypes, socket: SocketObject) {
+    const {io} = this;
     switch (action.type) {
       case webSocketActionsTypes.GET_OPTIONS: {//проверять токен
         const roomId = socket.roomId;
         if (roomId) {
-          const room = this.activeRooms.find(activeRoom => activeRoom._id === roomId)
+          const room = this.activeRooms.find(activeRoom => activeRoom._id == roomId);
           if (room) {
-            room.puzzle = new Puzzle(action.image);
-            const options = room.puzzle.getPartsCountOptions();
+            const newPuzzle = new Puzzle(action.image);
+            room.puzzle = newPuzzle;
+            const options = newPuzzle.getPartsCountOptions();
             //если что, отправлять ошибку, проверять входящие данные??
             socket.emit("puzzle", optionsAction(options));
           } else {

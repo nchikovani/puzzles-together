@@ -8,7 +8,6 @@ import mongoose = require('mongoose');
 import usersRouters from './users/users.routers';
 import roomsRouters from './rooms/rooms.routers';
 import SocketService from "./service/SocketService";
-import {SocketObject} from "./server.types";
 const port = process.env.PORT || 8080;
 const uri = "mongodb+srv://admin:admin@cluster0.vr7at.mongodb.net/puzzles-together?retryWrites=true&w=majority";
 
@@ -28,15 +27,8 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, '../../client/build/index.html'));
 });
 
-io.on('connection', (socket: SocketObject) => {
-  console.log('User connected to webSocket');
-  const socketService = new SocketService(io, socket);
-  socketService.registerListener();
-  socket.on('disconnect', () => {
-    console.log('User disconnected from webSocket');
-    socket.roomId && socket.leave(socket.roomId);
-  })
-});
+const socketService = new SocketService(io);
+socketService.registerListener();
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true}, function(err){
   if(err) return console.log(err);
