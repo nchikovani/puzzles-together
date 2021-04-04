@@ -8,6 +8,8 @@ import mongoose = require('mongoose');
 import usersRouters from './users/users.routers';
 import roomsRouters from './rooms/rooms.routers';
 import SocketService from "./service/SocketService";
+import errorHandler from "./middleware/errorHandler";
+import {checkToken} from "./middleware/checkToken";
 const port = process.env.PORT || 8080;
 const uri = "mongodb+srv://admin:admin@cluster0.vr7at.mongodb.net/puzzles-together?retryWrites=true&w=majority";
 
@@ -21,7 +23,9 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 app.use('/users', usersRouters);
+app.use(checkToken);
 app.use('/rooms', roomsRouters);
+app.use(errorHandler);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, '../../client/build/index.html'));

@@ -1,6 +1,6 @@
 //client
 import * as actionTypes from "./webSocketActionsTypes";
-import {OptionTypes, UpdateTypes} from "./Game.types";
+import {UpdateTypes} from "./Game.types";
 
 export const joinAction = (roomId: string) => (<const>{
   type: actionTypes.JOIN,
@@ -10,9 +10,9 @@ export const setUpdateAction = (update: UpdateTypes) => (<const>{
   type: actionTypes.SET_UPDATE,
   update,
 });
-export const createAction = (option: OptionTypes) => (<const>{
+export const createAction = (optionId: string) => (<const>{
   type: actionTypes.CREATE,
-  option,
+  optionId,
 });
 export const getOptionsAction = (image: string) => (<const>{
   type: actionTypes.GET_OPTIONS,

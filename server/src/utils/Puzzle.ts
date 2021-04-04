@@ -1,4 +1,5 @@
 const shortid = require('shortid');
+import Error from "../utils/Error";
 
 import {ConnectionTypes, GameDataTypes, OptionTypes, PartTypes, UpdateTypes} from 'shared';
 const sizeOf = require('image-size');
@@ -14,7 +15,7 @@ const maxWidth = canvasWidth * puzzlePartOfSize;
 const maxHeight = canvasHeight * puzzlePartOfSize;
 
 class Puzzle {
-  image: string;
+  image: string = '';
   width: number = 0;
   height: number = 0;
   columnCount: number = 0;
@@ -25,9 +26,11 @@ class Puzzle {
   solvedConnectionCount: number = 0;
   isSolved: boolean = false;
   parts: PartTypes[] = [];
+  options: OptionTypes[] = [];
   isInit: boolean = false;
+  puzzleIsCreated: boolean = false;
 
-  constructor(image: string) {
+  init(image: string) {
     this.image = image;
     try {
       const buffer = Buffer.from(image.substring(image.indexOf(',') + 1), 'base64');
@@ -40,16 +43,26 @@ class Puzzle {
         this.height = maxHeight;
         this.width = maxHeight * dimensions.width / dimensions.height;
       }
+      this._setPartsCountOptions();
+      this.isInit = true;
     } catch (e) {
-      console.log(e);
+      throw new Error(500, 'Image is not the correct format');
     }
   }
 
-  init(puzzleData: any) {
+  createPuzzleFromJson(jsonPuzzleData: string) {
+    try {
+      const puzzleData = JSON.parse(jsonPuzzleData);
 
+
+      this.isInit = true;
+      this.puzzleIsCreated = true;
+    } catch (e) {
+      throw new Error(500, 'Incorrect saved data');
+    }
   }
 
-  getPartsCountOptions (): OptionTypes[] {
+  _setPartsCountOptions () {
     const options: OptionTypes[] = []
     const smallSide = this.width > this.height ? 'height' : 'width';
     const bigSide = smallSide === 'height' ? 'width' : 'height';
@@ -62,29 +75,37 @@ class Puzzle {
       const partCount = smallSidePartCount * bigSidePartCount;
       if (partCount > maxPartCount) break;
       options.push({
+        id: shortid.generate(),
         columnCount: smallSide === 'width' ? smallSidePartCount : bigSidePartCount,
         rowCount: smallSide === 'height' ? smallSidePartCount : bigSidePartCount,
-        partCount: partCount,
       });
       i+=2;
     }
-    return options;
+    this.options = options;
   }
 
-  createPuzzle(option: OptionTypes) {
+  createPuzzle(optionId: string) {
+    if (!this.isInit) {
+      throw new Error(400, 'Game is not initialized');
+    }
+    const option = this.options.find(option => option.id === optionId);
+    if (!option) {
+      throw new Error(404, 'Option not found');
+    }
     this.columnCount = option.columnCount;
     this.rowCount = option.rowCount;
 
     this.partWidth = this.width / this.columnCount;
     this.partHeight = this.height / this.rowCount;
-    this.parts = this.createParts();
+    this.parts = this._createParts();
 
-    this.connectionCount = this.getConnectionCount();
+    this.connectionCount = this._getConnectionCount();
     this.solvedConnectionCount = 0;
     this.isSolved = false;
+    this.puzzleIsCreated = true;
   }
 
-  getConnectionCount () {
+  _getConnectionCount () {
     let connectionCount = 0;
     for (let i = 0; i < this.rowCount; i++) {
       for (let j = 0; j < this.columnCount; j++) {
@@ -97,7 +118,10 @@ class Puzzle {
     return connectionCount;
   }
 
-  getGameData(): GameDataTypes | null {
+  getGameData(): GameDataTypes {
+    if (!this.puzzleIsCreated) {
+      throw new Error(400, 'Puzzle is not created');
+    }
     return {
       image: this.image,
       width: this.width,
@@ -109,6 +133,9 @@ class Puzzle {
   }
 
   update(update: UpdateTypes) {
+    if (!this.puzzleIsCreated) {
+      throw new Error(400, 'Puzzle is not created');
+    }
     const {moves, connections} = update;
 
     this.parts.forEach((part) => {
@@ -137,7 +164,7 @@ class Puzzle {
   }
 
 
-  createParts() {
+  _createParts() {
     const parts: PartTypes[] = [];
     const getRandomLinkType = () => {
       return Math.random() > 0.5 ? 'concave': 'convex';

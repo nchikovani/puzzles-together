@@ -1,7 +1,7 @@
-import { model, Schema, Model, Document, ObjectId } from 'mongoose';
+import { model, Schema, Model, Document } from 'mongoose';
 
 export interface RoomTypes extends Document {
-  owner: ObjectId;
+  owner: any;
   name: string;
   puzzleData: string | null;
 }

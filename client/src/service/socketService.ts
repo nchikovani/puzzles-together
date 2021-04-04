@@ -1,5 +1,5 @@
 import {io} from "socket.io-client";
-import {OptionTypes, UpdateTypes, WebSocketServerActionsTypes} from 'shared';
+import {UpdateTypes, WebSocketServerActionsTypes} from 'shared';
 import {webSocketActionsTypes, webSocketClientActions} from 'shared';
 import store from '../store';
 import {setGameData, setUpdate, setOptions, setIsSolved} from '../store/actions';
@@ -55,8 +55,8 @@ export default class socketService {
     this.socket.emit('puzzle', getOptionsAction(image));
   }
 
-  createPuzzle(option: OptionTypes) {
-    this.socket.emit('puzzle', createAction(option));
+  createPuzzle(optionId: string) {
+    this.socket.emit('puzzle', createAction(optionId));
   }
 
   sendUpdate (update: UpdateTypes) {

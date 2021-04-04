@@ -1,11 +1,22 @@
 import Users from "./user.model";
+import Error from "../utils/Error";
+import {Types} from "mongoose";
+
+const validateId = (id: any, error: Error) => {
+  if (!Types.ObjectId.isValid(id)) throw error;
+}
 
 class UsersService {
   async getUserById(id: string) {
     try {
+      validateId(id, new Error(404, 'User not found.'));
       return await Users.findById(id).exec();
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        throw error;
+      } else {
+        throw new Error(500, 'Unable find user.');
+      }
     }
   }
 
@@ -16,7 +27,11 @@ class UsersService {
       });
       return await newUser.save();
     } catch (error) {
-     console.log(error);
+      if (error instanceof Error) {
+        throw error;
+      } else {
+        throw new Error(500, 'Unable create user.');
+      }
     }
   }
 }

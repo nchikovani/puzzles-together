@@ -43,5 +43,5 @@ export interface ConnectionTypes {
 export interface OptionTypes {
   columnCount: number;
   rowCount: number;
-  partCount: number;
+  id: string;
 }

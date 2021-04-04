@@ -6,7 +6,7 @@ export const checkToken = (req: Request, res: Response, next: NextFunction) => {
   jwt.verify(token,"secret_key",(err: any, data: any)=>{
     if(err){
       return res.status(401 ).send({message: 'Missing token.'});
-    } else if(data.id){
+    } else if (data.id){
       // @ts-ignore
       req.userId = data.id;
       next();

@@ -6,6 +6,7 @@ import {SocketObject} from "../server.types";
 import * as webSocketServerActions from 'shared/webSocketServerActions';
 import * as webSocketActionsTypes from 'shared/webSocketActionsTypes';
 import {WebSocketClientActionsTypes} from 'shared';
+import MyError from '../utils/Error';
 const {gameDataAction, optionsAction, updateAction, errorAction, solvedAction} = webSocketServerActions;
 
 interface activeRoomTypes {
@@ -23,16 +24,17 @@ class SocketService {
   constructor(io: Server<DefaultEventsMap, DefaultEventsMap>) {
     this.io = io;
 
-    this.roomHandlers = this.roomHandlers.bind(this);
-    this.puzzleHandlers = this.puzzleHandlers.bind(this);
+    this.roomRouters = this.roomRouters.bind(this);
+    this.puzzleRouters = this.puzzleRouters.bind(this);
   }
 
   registerListener() {
     const {io} = this;
     io.on('connection', (socket: SocketObject) => {
       console.log('User connected to webSocket');
-      socket.on("room", (action) => this.roomHandlers(action, socket));
-      socket.on("puzzle", (action) => this.puzzleHandlers(action, socket));
+
+      socket.on("room", (action) => this.roomRouters(action, socket));
+      socket.on("puzzle", (action) => this.puzzleRouters(action, socket));
 
       socket.on('disconnect', () => {
         if (socket.roomId) {
@@ -47,7 +49,7 @@ class SocketService {
     });
   }
 
-  async roomHandlers(action: WebSocketClientActionsTypes, socket: SocketObject) {
+  async roomRouters(action: WebSocketClientActionsTypes, socket: SocketObject) {
     switch (action.type) {
       case webSocketActionsTypes.JOIN: {
         let joinRoom: activeRoomTypes;
@@ -55,13 +57,17 @@ class SocketService {
         if (activeRoom) {
           joinRoom = activeRoom;
           const puzzle = joinRoom.puzzle;
-          const gameData = puzzle && puzzle.getGameData();
-          if (gameData) {
-            socket.emit("puzzle", gameDataAction(gameData));
+          if (puzzle) {
+            try {
+              const gameData = puzzle && puzzle.getGameData();
+              socket.emit("puzzle", gameDataAction(gameData));
+            } catch (error) {
+              return this.handleError(new MyError(error.code, error.message), socket, 'puzzle');
+            }
           }
         } else {
-          const room = await RoomsService.getRoomById(action.roomId);
-          if (room !== undefined) {
+          try {
+            const room = await RoomsService.getRoomById(action.roomId);
             if (room) {
               joinRoom = {
                 _id: String(room._id),
@@ -71,49 +77,59 @@ class SocketService {
               };
               const jsonPuzzleData = joinRoom.puzzleData;
               if (jsonPuzzleData) {
-                let puzzleData;
-                try {
-                  puzzleData = JSON.parse(jsonPuzzleData);
-                  joinRoom.puzzle = new Puzzle(puzzleData.image);
-                  joinRoom.puzzle.init(puzzleData);
-                } catch (e) {
-                  return socket.emit("room", errorAction(4, ''));//какая-то ошибка тут
-                }
+                const puzzle = new Puzzle();
+                puzzle.createPuzzleFromJson(jsonPuzzleData);
+                joinRoom.puzzle = puzzle;
               }
               this.activeRooms.push(joinRoom);
             } else {
-              return socket.emit("puzzle", errorAction(404, 'Room not found.'));
+              return this.handleError(new MyError(404, 'Room not found.'), socket, 'puzzle');
             }
-          } else {
-            return socket.emit("puzzle", errorAction(500, 'Unable find room.'));
+          } catch (error) {
+            return this.handleError(new MyError(error.code, error.message), socket, 'puzzle');
           }
         }
         socket.roomId = action.roomId;
-        console.log(action.roomId);
         socket.join(action.roomId);
         break;
       }
     }
   }
 
-  puzzleHandlers(action: WebSocketClientActionsTypes, socket: SocketObject) {
+  puzzleRouters(action: WebSocketClientActionsTypes, socket: SocketObject) {
     const {io} = this;
     switch (action.type) {
-      case webSocketActionsTypes.GET_OPTIONS: {//проверять токен
+      case webSocketActionsTypes.GET_OPTIONS: {//проверять токен  //берет опции и создает новый объект пазла
+        try {
+          const roomId = socket.roomId;
+          this.checkIsJoin(roomId);
+          const room = this.activeRooms.find(activeRoom => activeRoom._id == roomId);
+          this.checkRoom(room);
+          const newPuzzle = new Puzzle();
+          newPuzzle.init(action.image);
+          room.puzzle = newPuzzle;
+          socket.emit("puzzle", optionsAction(newPuzzle.options));
+        } catch (error) {
+          return this.handleError(new MyError(error.code, error.message), socket, 'puzzle');
+        }
+
         const roomId = socket.roomId;
         if (roomId) {
           const room = this.activeRooms.find(activeRoom => activeRoom._id == roomId);
           if (room) {
-            const newPuzzle = new Puzzle(action.image);
-            room.puzzle = newPuzzle;
-            const options = newPuzzle.getPartsCountOptions();
-            //если что, отправлять ошибку, проверять входящие данные??
-            socket.emit("puzzle", optionsAction(options));
+            try {
+              const newPuzzle = new Puzzle();
+              newPuzzle.init(action.image);
+              room.puzzle = newPuzzle;
+              socket.emit("puzzle", optionsAction(newPuzzle.options));
+            } catch (error) {
+              return this.handleError(new MyError(error.code, error.message), socket, 'puzzle');
+            }
           } else {
-            return socket.emit("puzzle", errorAction(404, 'Room not found.'));
+            return this.handleError(new MyError(404, 'Room not found.'), socket, 'puzzle');
           }
         } else {
-          return socket.emit("puzzle", errorAction(4, ''));//какая-то ошибка тут
+          return this.handleError(new MyError(400, 'Did not join the room.'), socket, 'puzzle');
         }
         break;
       }
@@ -123,19 +139,21 @@ class SocketService {
           const room = this.activeRooms.find(activeRoom => activeRoom._id === roomId)
           if (room) {
             if (room.puzzle) {
-              room.puzzle.createPuzzle(action.option);
-              const gameData = room.puzzle.getGameData();
-              //если что, отправлять ошибку, проверять входящие данные??
-              // @ts-ignore
-              socket.emit("puzzle", gameDataAction(gameData));
+              try {
+                room.puzzle.createPuzzle(action.optionId);
+                const gameData = room.puzzle.getGameData();
+                socket.emit("puzzle", gameDataAction(gameData));
+              } catch (error) {
+                return this.handleError(new MyError(error.code, error.message), socket, 'puzzle');
+              }
             } else {
-              return socket.emit("puzzle", errorAction(4, ''));//какая-то ошибка тут
+              return this.handleError(new MyError(400, 'Puzzle not created.'), socket, 'puzzle');
             }
           } else {
-            return socket.emit("puzzle", errorAction(404, 'Room not found.'));
+            return this.handleError(new MyError(404, 'Room not found.'), socket, 'puzzle');
           }
         } else {
-          return socket.emit("puzzle", errorAction(4, ''));//какая-то ошибка тут
+          return this.handleError(new MyError(400, 'Did not join the room.'), socket, 'puzzle');
         }
         break;
       }
@@ -145,25 +163,45 @@ class SocketService {
           const room = this.activeRooms.find(activeRoom => activeRoom._id === roomId)
           if (room) {
             if (room.puzzle) {
-              //if room.puzzle.init  else
               const beforeIsSolved = room.puzzle.isSolved;
-              room.puzzle.update(action.update);
-              //если что, отправлять ошибку, проверять входящие данные??
+              try {
+                room.puzzle.update(action.update);
+              } catch (error) {
+                return this.handleError(new MyError(error.code, error.message), socket, 'puzzle');
+              }
               socket.broadcast.to(roomId).emit("puzzle", updateAction(action.update));
               if (!beforeIsSolved && room.puzzle.isSolved) {
                 io.to(roomId).emit("puzzle", solvedAction());
               }
             } else {
-              return socket.emit("puzzle", errorAction(4, ''));//какая-то ошибка тут
+              return this.handleError(new MyError(400, 'Puzzle not created.'), socket, 'puzzle');
             }
           } else {
-            return socket.emit("puzzle", errorAction(404, 'Room not found.'));
+            return this.handleError(new MyError(404, 'Room not found.'), socket, 'puzzle');
           }
         } else {
-          return socket.emit("puzzle", errorAction(4, ''));//какая-то ошибка тут
+          return this.handleError(new MyError(400, 'Did not join the room.'), socket, 'puzzle');
         }
         break;
       }
+    }
+  }
+
+  checkIsJoin(roomId: string | undefined) {
+    if (!roomId) throw new MyError(400, 'Did not join the room.');
+  }
+
+  checkRoom(room: activeRoomTypes | undefined) {
+    if (!room) return throw new MyError(404, 'Room not found.');
+  }
+
+  handleError (error: any, socket: SocketObject, ev: string) {
+    if (error instanceof MyError) {
+      return socket.emit(ev, errorAction(error.code, error.message));
+    } else if (error instanceof Error) {
+      return socket.emit(ev, errorAction(500, error.message));
+    } else {
+      return socket.emit(ev, errorAction(500, 'Server Error'));
     }
   }
 }

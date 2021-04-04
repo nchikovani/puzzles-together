@@ -28,14 +28,13 @@ class Room extends React.Component<PropsType, {}> {
     if (this.props.options && this.props.options !== prevProps.options) {
       let optionsText = 'Выбирай: ';
        this.props.options.forEach(option => {
-        if (!option.columnCount || !option.rowCount) return
         optionsText += `${option.columnCount * option.rowCount}, `
       })
 
       const result = prompt(optionsText);
 
-      const targetOption = this.props.options.find(option => Number(result) === option.partCount);
-      targetOption && this.props.socketService.createPuzzle(targetOption);
+      const targetOption = this.props.options.find(option => Number(result) === option.columnCount * option.rowCount);
+      targetOption && this.props.socketService.createPuzzle(targetOption.id);
     }
   }
 
