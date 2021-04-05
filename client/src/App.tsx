@@ -8,41 +8,59 @@ import ErrorService from "./service/errorService";
 import './styles/base.scss';
 import SocketService from "./service/socketService";
 import PersonalArea from "./pages/PersonalArea";
-import {useDispatch} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import {fetchGetUser} from "./store/actions/fetchActions";
+import {StoreTypes} from "./store/store.types";
 
 const errorService = new ErrorService();
 const socketService = new SocketService();
 
-function App() {
+interface AppPropsTypes {
+  userId: string | null;
+}
+
+function App(props: AppPropsTypes) {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchGetUser());
   }, []);
 
   return (
-    <BrowserRouter>
-      <Page>
-        <Switch>
-          <Route exact path="/">
-            <Main socketService={socketService}/>
-          </Route>
-          <Route path="/NotFound">
-            <NotFound/>
-          </Route>
-          <Route path="/room/:roomId">
-            <Room socketService={socketService}/>
-          </Route>
-          <Route path="/users/:userId/rooms">
-            <PersonalArea/>
-          </Route>
-          <Route>
-            <NotFound/>
-          </Route>
-        </Switch>
-      </Page>
-    </BrowserRouter>
+    <>
+      {
+        props.userId
+        ? <BrowserRouter>
+          <Page>
+            <Switch>
+              <Route exact path="/">
+                <Main socketService={socketService}/>
+              </Route>
+              <Route path="/NotFound">
+                <NotFound/>
+              </Route>
+              <Route path="/room/:roomId">
+                <Room socketService={socketService}/>
+              </Route>
+              <Route path="/users/:userId/rooms">
+                <PersonalArea/>
+              </Route>
+              <Route>
+                <NotFound/>
+              </Route>
+            </Switch>
+          </Page>
+        </BrowserRouter>
+        : null
+      }
+    </>
+
   );
 }
 
-export default App;
+const mapStateToProps = (store: StoreTypes) => {
+  return {
+    userId: store.user.id
+  }
+}
+
+export default connect(mapStateToProps)(App);

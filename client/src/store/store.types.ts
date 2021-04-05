@@ -7,6 +7,11 @@ export interface GameStateTypes {
   isSolved: boolean;
 }
 
+export interface RoomsTypes {
+  list: RoomTypes[];
+  isLoaded: boolean;
+}
+
 export interface RoomTypes {
   _id: string;
   owner: string;
@@ -22,5 +27,5 @@ export interface UserStateTypes {
 export interface StoreTypes {
   game: GameStateTypes;
   user: UserStateTypes;
-  rooms: RoomTypes[];
+  rooms: RoomsTypes;
 }

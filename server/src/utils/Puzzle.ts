@@ -1,5 +1,5 @@
 const shortid = require('shortid');
-import Error from "../utils/Error";
+import AppError from "../utils/AppError";
 
 import {ConnectionTypes, GameDataTypes, OptionTypes, PartTypes, UpdateTypes} from 'shared';
 const sizeOf = require('image-size');
@@ -46,7 +46,7 @@ class Puzzle {
       this._setPartsCountOptions();
       this.isInit = true;
     } catch (e) {
-      throw new Error(500, 'Image is not the correct format');
+      throw new AppError(500, 'Image is not the correct format');
     }
   }
 
@@ -58,7 +58,7 @@ class Puzzle {
       this.isInit = true;
       this.puzzleIsCreated = true;
     } catch (e) {
-      throw new Error(500, 'Incorrect saved data');
+      throw new AppError(500, 'Incorrect saved data');
     }
   }
 
@@ -86,11 +86,11 @@ class Puzzle {
 
   createPuzzle(optionId: string) {
     if (!this.isInit) {
-      throw new Error(400, 'Game is not initialized');
+      throw new AppError(400, 'Game is not initialized');
     }
     const option = this.options.find(option => option.id === optionId);
     if (!option) {
-      throw new Error(404, 'Option not found');
+      throw new AppError(404, 'Option not found');
     }
     this.columnCount = option.columnCount;
     this.rowCount = option.rowCount;
@@ -120,7 +120,7 @@ class Puzzle {
 
   getGameData(): GameDataTypes {
     if (!this.puzzleIsCreated) {
-      throw new Error(400, 'Puzzle is not created');
+      throw new AppError(400, 'Puzzle is not created');
     }
     return {
       image: this.image,
@@ -134,7 +134,7 @@ class Puzzle {
 
   update(update: UpdateTypes) {
     if (!this.puzzleIsCreated) {
-      throw new Error(400, 'Puzzle is not created');
+      throw new AppError(400, 'Puzzle is not created');
     }
     const {moves, connections} = update;
 

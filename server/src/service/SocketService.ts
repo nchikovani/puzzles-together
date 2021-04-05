@@ -6,10 +6,10 @@ import {SocketObject} from "../server.types";
 import * as webSocketServerActions from 'shared/webSocketServerActions';
 import * as webSocketActionsTypes from 'shared/webSocketActionsTypes';
 import {WebSocketClientActionsTypes} from 'shared';
-import MyError from '../utils/Error';
+import AppError from '../utils/AppError';
 const {gameDataAction, optionsAction, updateAction, errorAction, solvedAction} = webSocketServerActions;
 
-interface activeRoomTypes {
+interface ActiveRoomTypes {
   _id: string;
   owner: string;
   puzzleData: string | null;
@@ -19,7 +19,7 @@ interface activeRoomTypes {
 
 class SocketService {
   io: Server<DefaultEventsMap, DefaultEventsMap>;
-  activeRooms: activeRoomTypes[] = [];
+  activeRooms: ActiveRoomTypes[] = [];
 
   constructor(io: Server<DefaultEventsMap, DefaultEventsMap>) {
     this.io = io;
@@ -53,7 +53,7 @@ class SocketService {
     try {
       await router(action, socket);
     } catch (error: unknown) {
-      if (error instanceof MyError) {
+      if (error instanceof AppError) {
         socket.emit('puzzle', errorAction(error.code, error.message)); //ev может быть и другим
       } else if (error instanceof Error) {
         socket.emit('puzzle', errorAction(500, error.message));
@@ -66,7 +66,7 @@ class SocketService {
   async roomRouters(action: WebSocketClientActionsTypes, socket: SocketObject) {
     switch (action.type) {
       case webSocketActionsTypes.JOIN: {
-        let joinRoom: activeRoomTypes;
+        let joinRoom: ActiveRoomTypes;
         const activeRoom = this.activeRooms.find(activeRoom => activeRoom._id == action.roomId);
         if (activeRoom) {
           joinRoom = activeRoom;
@@ -77,7 +77,7 @@ class SocketService {
           }
         } else {
           const room = await RoomsService.getRoomById(action.roomId);
-          if (!room) throw new MyError(404, 'Room not found.');
+          if (!room) throw new AppError(404, 'Room not found.');
           joinRoom = {
             _id: String(room._id),
             owner: String(room.owner),
@@ -104,9 +104,9 @@ class SocketService {
     switch (action.type) {
       case webSocketActionsTypes.GET_OPTIONS: {//проверять токен  //берет опции и создает новый объект пазла
         const roomId = socket.roomId;
-        if (!roomId) throw new MyError(400, 'Did not join the room.');
+        if (!roomId) throw new AppError(400, 'Did not join the room.');
         const room = this.activeRooms.find(activeRoom => activeRoom._id == roomId);
-        if (!room) throw new MyError(404, 'Room not found.');
+        if (!room) throw new AppError(404, 'Room not found.');
         const newPuzzle = new Puzzle();
         newPuzzle.init(action.image);
         room.puzzle = newPuzzle;
@@ -115,10 +115,10 @@ class SocketService {
       }
       case webSocketActionsTypes.CREATE: {//проверять токен
         const roomId = socket.roomId;
-        if (!roomId) throw new MyError(400, 'Did not join the room.');
+        if (!roomId) throw new AppError(400, 'Did not join the room.');
         const room = this.activeRooms.find(activeRoom => activeRoom._id == roomId);
-        if (!room) throw new MyError(404, 'Room not found.');
-        if (!room.puzzle) throw new MyError(400, 'Puzzle not created.');
+        if (!room) throw new AppError(404, 'Room not found.');
+        if (!room.puzzle) throw new AppError(400, 'Puzzle not created.');
         room.puzzle.createPuzzle(action.optionId);
         const gameData = room.puzzle.getGameData();
         socket.emit("puzzle", gameDataAction(gameData));
@@ -126,10 +126,10 @@ class SocketService {
       }
       case webSocketActionsTypes.SET_UPDATE: {
         const roomId = socket.roomId;
-        if (!roomId) throw new MyError(400, 'Did not join the room.');
+        if (!roomId) throw new AppError(400, 'Did not join the room.');
         const room = this.activeRooms.find(activeRoom => activeRoom._id == roomId);
-        if (!room) throw new MyError(404, 'Room not found.');
-        if (!room.puzzle) throw new MyError(400, 'Puzzle not created.');
+        if (!room) throw new AppError(404, 'Room not found.');
+        if (!room.puzzle) throw new AppError(400, 'Puzzle not created.');
         const beforeIsSolved = room.puzzle.isSolved;
         room.puzzle.update(action.update);
         socket.broadcast.to(roomId).emit("puzzle", updateAction(action.update));

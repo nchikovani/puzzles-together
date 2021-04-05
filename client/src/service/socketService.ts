@@ -42,8 +42,8 @@ export default class socketService {
         store.dispatch(setIsSolved(true));
         break;
       case webSocketActionsTypes.ERROR:
-        console.log(action.error);
-        break;
+        throw new Error(action.error.message);
+        // break;
     }
   }
 

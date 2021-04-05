@@ -1,10 +1,10 @@
 import Users from "./user.model";
-import Error from "../utils/Error";
+import AppError from "../utils/AppError";
 import {Types} from "mongoose";
 
 class UsersService {
   async getUserById(id: string) {
-    if (!Types.ObjectId.isValid(id)) throw new Error(404, 'User not found.');
+    if (!Types.ObjectId.isValid(id)) throw new AppError(404, 'User not found.');
     return await Users.findById(id).exec();
   }
 
