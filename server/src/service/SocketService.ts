@@ -12,9 +12,7 @@ const {gameDataAction, optionsAction, updateAction, errorAction, solvedAction} =
 interface ActiveRoomTypes {
   _id: string;
   owner: string;
-  puzzleData: string | null;
   puzzle: Puzzle | null;
-
 }
 
 class SocketService {
@@ -26,6 +24,7 @@ class SocketService {
 
     this.roomRouters = this.roomRouters.bind(this);
     this.puzzleRouters = this.puzzleRouters.bind(this);
+    this.disconnectHandler = this.disconnectHandler.bind(this);
   }
 
   registerListener() {
@@ -33,25 +32,15 @@ class SocketService {
     io.on('connection', (socket: SocketObject) => {
       console.log('User connected to webSocket');
 
-      socket.on("room", async (action) => this.handleError(action, socket, this.roomRouters));
+      socket.on("room", (action) => this.handleError(action, socket, this.roomRouters));
       socket.on("puzzle", (action) => this.handleError(action, socket, this.puzzleRouters));
-
-      socket.on('disconnect', () => {
-        if (socket.roomId) {
-          const clients = io.sockets.adapter.rooms.get(socket.roomId);
-          if (!clients) {//Сохранять пазл и...
-            this.activeRooms = this.activeRooms.filter(room => room._id != socket.roomId);
-          }
-        }
-        socket.roomId && socket.leave(socket.roomId);
-        console.log('User disconnected from webSocket');
-      })
+      socket.on('disconnect', () => this.handleError(null, socket, this.disconnectHandler));
     });
   }
-
-  async handleError(action: WebSocketClientActionsTypes, socket: SocketObject, router: (action: WebSocketClientActionsTypes, socket: SocketObject) => void) {
+  async handleError(action: WebSocketClientActionsTypes | null, socket: SocketObject, router: (socket: SocketObject, action: WebSocketClientActionsTypes) => void) {
     try {
-      await router(action, socket);
+      // @ts-ignore
+      action ? await router(socket, action) : await router(socket);//нужно ли ждать для получения ошибки
     } catch (error: unknown) {
       if (error instanceof AppError) {
         socket.emit('puzzle', errorAction(error.code, error.message)); //ev может быть и другим
@@ -63,7 +52,28 @@ class SocketService {
     }
   }
 
-  async roomRouters(action: WebSocketClientActionsTypes, socket: SocketObject) {
+  async disconnectHandler(socket: SocketObject) {
+    if (socket.roomId) {
+      const clients = this.io.sockets.adapter.rooms.get(socket.roomId);
+      if (!clients) {
+        const activeRoom = this.activeRooms.find(room => room._id == socket.roomId);
+        if (activeRoom) {
+          const puzzle = activeRoom.puzzle;
+          if (puzzle) { //очень долго, поэтому connect проиходит быстрее, чем disconnect
+            const start = new Date().getTime();
+            const jsonPuzzle = puzzle.getJsonPuzzle();
+            await RoomsService.saveJsonPuzzle(socket.roomId, jsonPuzzle);//нужно ли ждать для получения ошибки
+            console.log(new Date().getTime() - start);
+          }
+          this.activeRooms = this.activeRooms.filter(room => room._id != socket.roomId);// в любом случае должно выполняться даж если Error, засунуть в finally?
+        }//а если нет, то плохо, останется в оперативке
+      }
+    }
+    socket.roomId && socket.leave(socket.roomId);
+    console.log('User disconnected from webSocket');
+  }
+
+  async roomRouters(socket: SocketObject, action: WebSocketClientActionsTypes) {
     switch (action.type) {
       case webSocketActionsTypes.JOIN: {
         let joinRoom: ActiveRoomTypes;
@@ -81,14 +91,15 @@ class SocketService {
           joinRoom = {
             _id: String(room._id),
             owner: String(room.owner),
-            puzzleData: room.puzzleData || null,
             puzzle: null,
           };
-          const jsonPuzzleData = joinRoom.puzzleData;
-          if (jsonPuzzleData) {
+          const jsonPuzzle = room.jsonPuzzle;
+          if (jsonPuzzle) {
             const puzzle = new Puzzle();
-            puzzle.createPuzzleFromJson(jsonPuzzleData);
+            puzzle.createPuzzleFromJson(jsonPuzzle);
+            const gameData = puzzle.getGameData();
             joinRoom.puzzle = puzzle;
+            socket.emit("puzzle", gameDataAction(gameData));
           }
           this.activeRooms.push(joinRoom);
         }
@@ -99,10 +110,10 @@ class SocketService {
     }
   }
 
-  puzzleRouters(action: WebSocketClientActionsTypes, socket: SocketObject) {
+  puzzleRouters(socket: SocketObject, action: WebSocketClientActionsTypes) {
     const {io} = this;
     switch (action.type) {
-      case webSocketActionsTypes.GET_OPTIONS: {//проверять токен  //берет опции и создает новый объект пазла
+      case webSocketActionsTypes.GET_OPTIONS: {//проверять токен  //берет опции и СОЗДАЕТ НОВЫЙ ОБЪЕКТ ПАЗЛА
         const roomId = socket.roomId;
         if (!roomId) throw new AppError(400, 'Did not join the room.');
         const room = this.activeRooms.find(activeRoom => activeRoom._id == roomId);

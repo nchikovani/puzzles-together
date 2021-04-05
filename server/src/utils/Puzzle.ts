@@ -46,20 +46,62 @@ class Puzzle {
       this._setPartsCountOptions();
       this.isInit = true;
     } catch (e) {
-      throw new AppError(500, 'Image is not the correct format');
+      throw new AppError(400, 'Image is not the correct format');
     }
   }
 
-  createPuzzleFromJson(jsonPuzzleData: string) {
+  createPuzzle(optionId: string) {
+    if (!this.isInit) {
+      throw new AppError(400, 'Game is not initialized');
+    }
+    const option = this.options.find(option => option.id === optionId);
+    if (!option) {
+      throw new AppError(404, 'Option not found');
+    }
+    this.columnCount = option.columnCount;
+    this.rowCount = option.rowCount;
+
+    this.partWidth = this.width / this.columnCount;
+    this.partHeight = this.height / this.rowCount;
+    this.parts = this._createParts();
+
+    this.connectionCount = this._getConnectionCount();
+    this.solvedConnectionCount = 0;
+    this.isSolved = false;
+    this.puzzleIsCreated = true;
+  }
+
+  createPuzzleFromJson(jsonPuzzle: string) {
     try {
-      const puzzleData = JSON.parse(jsonPuzzleData);
-
-
-      this.isInit = true;
-      this.puzzleIsCreated = true;
+      const puzzle = JSON.parse(jsonPuzzle);
+      //puzzle unknown, все проверять?
+      this.image = puzzle.image;
+      this.width = puzzle.width;
+      this.height = puzzle.height;
+      this.columnCount = puzzle.columnCount;
+      this.rowCount = puzzle.rowCount;
+      this.partWidth = puzzle.partWidth;
+      this.partHeight = puzzle.partHeight;
+      this.connectionCount = puzzle.connectionCount;
+      this.solvedConnectionCount = puzzle.solvedConnectionCount;
+      this.isSolved = puzzle.isSolved;
+      this.parts = puzzle.parts;
+      this.options = puzzle.options;
+      this.isInit = puzzle.isInit;
+      this.puzzleIsCreated = puzzle.puzzleIsCreated;
     } catch (e) {
       throw new AppError(500, 'Incorrect saved data');
     }
+  }
+
+  getJsonPuzzle() {
+    if (!this.isInit) {
+      throw new AppError(400, 'Game is not initialized');
+    }
+    if (!this.puzzleIsCreated) {
+      throw new AppError(400, 'Puzzle is not created');
+    }
+    return JSON.stringify(this);
   }
 
   _setPartsCountOptions () {
@@ -82,27 +124,6 @@ class Puzzle {
       i+=2;
     }
     this.options = options;
-  }
-
-  createPuzzle(optionId: string) {
-    if (!this.isInit) {
-      throw new AppError(400, 'Game is not initialized');
-    }
-    const option = this.options.find(option => option.id === optionId);
-    if (!option) {
-      throw new AppError(404, 'Option not found');
-    }
-    this.columnCount = option.columnCount;
-    this.rowCount = option.rowCount;
-
-    this.partWidth = this.width / this.columnCount;
-    this.partHeight = this.height / this.rowCount;
-    this.parts = this._createParts();
-
-    this.connectionCount = this._getConnectionCount();
-    this.solvedConnectionCount = 0;
-    this.isSolved = false;
-    this.puzzleIsCreated = true;
   }
 
   _getConnectionCount () {
