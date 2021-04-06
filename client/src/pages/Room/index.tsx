@@ -29,7 +29,7 @@ class Room extends React.Component<PropsType, {}> {
       let optionsText = 'Выбирай: ';
        this.props.options.forEach(option => {
         optionsText += `${option.columnCount * option.rowCount}, `
-      })
+      });
 
       const result = prompt(optionsText);
 

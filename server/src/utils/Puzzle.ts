@@ -71,11 +71,11 @@ class Puzzle {
     this.puzzleIsCreated = true;
   }
 
-  createPuzzleFromJson(jsonPuzzle: string) {
+  createPuzzleFromJson(image: string, jsonPuzzle: string) {
     try {
       const puzzle = JSON.parse(jsonPuzzle);
       //puzzle unknown, все проверять?
-      this.image = puzzle.image;
+      this.image = image;
       this.width = puzzle.width;
       this.height = puzzle.height;
       this.columnCount = puzzle.columnCount;
@@ -101,7 +101,9 @@ class Puzzle {
     if (!this.puzzleIsCreated) {
       throw new AppError(400, 'Puzzle is not created');
     }
-    return JSON.stringify(this);
+
+    const {image, ...jsonPuzzle} = this;
+    return JSON.stringify(jsonPuzzle);
   }
 
   _setPartsCountOptions () {

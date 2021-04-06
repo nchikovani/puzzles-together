@@ -7,12 +7,14 @@ import * as webSocketServerActions from 'shared/webSocketServerActions';
 import * as webSocketActionsTypes from 'shared/webSocketActionsTypes';
 import {WebSocketClientActionsTypes} from 'shared';
 import AppError from '../utils/AppError';
+import * as fs from "fs";
 const {gameDataAction, optionsAction, updateAction, errorAction, solvedAction} = webSocketServerActions;
 
 interface ActiveRoomTypes {
   _id: string;
   owner: string;
   puzzle: Puzzle | null;
+  isDisconnecting?: boolean;
 }
 
 class SocketService {
@@ -40,8 +42,9 @@ class SocketService {
   async handleError(action: WebSocketClientActionsTypes | null, socket: SocketObject, router: (socket: SocketObject, action: WebSocketClientActionsTypes) => void) {
     try {
       // @ts-ignore
-      action ? await router(socket, action) : await router(socket);//нужно ли ждать для получения ошибки
+      action ? await router(socket, action) : await router(socket);
     } catch (error: unknown) {
+      console.log(error);
       if (error instanceof AppError) {
         socket.emit('puzzle', errorAction(error.code, error.message)); //ev может быть и другим
       } else if (error instanceof Error) {
@@ -53,24 +56,28 @@ class SocketService {
   }
 
   async disconnectHandler(socket: SocketObject) {
+    console.log('User disconnected from webSocket');
     if (socket.roomId) {
       const clients = this.io.sockets.adapter.rooms.get(socket.roomId);
+      socket.leave(socket.roomId);
       if (!clients) {
         const activeRoom = this.activeRooms.find(room => room._id == socket.roomId);
         if (activeRoom) {
           const puzzle = activeRoom.puzzle;
+          activeRoom.isDisconnecting = true
           if (puzzle) { //очень долго, поэтому connect проиходит быстрее, чем disconnect
-            const start = new Date().getTime();
+            if (puzzle.isInit) {
+              const image = puzzle.image;
+              fs.writeFileSync(`./uploads/roomPuzzlesImage/${socket.roomId}`, image, {encoding: 'utf8'});//возможно стоит сохранять путь к файлу и расширение в бд
+            }
             const jsonPuzzle = puzzle.getJsonPuzzle();
-            await RoomsService.saveJsonPuzzle(socket.roomId, jsonPuzzle);//нужно ли ждать для получения ошибки
-            console.log(new Date().getTime() - start);
+            // await new Promise((resolve) => setTimeout(resolve, 4000));
+            await RoomsService.saveJsonPuzzle(socket.roomId, jsonPuzzle);
           }
           this.activeRooms = this.activeRooms.filter(room => room._id != socket.roomId);// в любом случае должно выполняться даж если Error, засунуть в finally?
         }//а если нет, то плохо, останется в оперативке
       }
     }
-    socket.roomId && socket.leave(socket.roomId);
-    console.log('User disconnected from webSocket');
   }
 
   async roomRouters(socket: SocketObject, action: WebSocketClientActionsTypes) {
@@ -79,6 +86,7 @@ class SocketService {
         let joinRoom: ActiveRoomTypes;
         const activeRoom = this.activeRooms.find(activeRoom => activeRoom._id == action.roomId);
         if (activeRoom) {
+          if (activeRoom.isDisconnecting) throw new AppError(500, 'The last room changes have not been saved yet.');
           joinRoom = activeRoom;
           const puzzle = joinRoom.puzzle;
           if (puzzle) {
@@ -96,7 +104,9 @@ class SocketService {
           const jsonPuzzle = room.jsonPuzzle;
           if (jsonPuzzle) {
             const puzzle = new Puzzle();
-            puzzle.createPuzzleFromJson(jsonPuzzle);
+            const image = fs.readFileSync(`./uploads/roomPuzzlesImage/${action.roomId}`, {encoding: 'utf8'});
+            puzzle.createPuzzleFromJson(image, jsonPuzzle);
+
             const gameData = puzzle.getGameData();
             joinRoom.puzzle = puzzle;
             socket.emit("puzzle", gameDataAction(gameData));

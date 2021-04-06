@@ -32,7 +32,7 @@ app.get("*", (req, res) => {
 const socketService = new SocketService(io);
 socketService.registerListener();
 
-mongoose.connect(config.mongoDbUri, { useNewUrlParser: true, useUnifiedTopology: true}, function(err){
+mongoose.connect(config.mongoDbUri, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false}, function(err){
   if(err) return console.log(err);
   server.listen(config.port, () => {
     console.log("Сервер ожидает подключения...");
