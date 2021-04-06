@@ -5,7 +5,7 @@ const config = {
   staticPath: path.join(__dirname, '../../client/build'),
   tokenKey: 'secret_key',
   tokenMaxAge: 2 * 24 * 60 * 60 * 1000,//days
-
+  roomJsonPuzzlePath: './uploads/roomJsonPuzzle/',
 }
 
 export default config;

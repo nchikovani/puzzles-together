@@ -24,10 +24,10 @@ class RoomsService {
     return await newRoom.save();
   }
 
-  async saveJsonPuzzle(id: string, jsonPuzzle: string) {
-    if (!Types.ObjectId.isValid(id)) throw new AppError(404, 'Room not found.');
-    return await Rooms.findByIdAndUpdate(id, {jsonPuzzle}).exec();
-  }
+  // async saveJsonPuzzle(id: string, jsonPuzzle: string) {
+  //   if (!Types.ObjectId.isValid(id)) throw new AppError(404, 'Room not found.');
+  //   return await Rooms.findByIdAndUpdate(id, {jsonPuzzle}).exec();
+  // }
 }
 
 export default new RoomsService()

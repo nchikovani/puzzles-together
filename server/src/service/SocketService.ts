@@ -9,6 +9,7 @@ import {WebSocketClientActionsTypes} from 'shared';
 import AppError from '../utils/AppError';
 import * as fs from "fs";
 const {gameDataAction, optionsAction, updateAction, errorAction, solvedAction} = webSocketServerActions;
+import config from '../config';
 
 interface ActiveRoomTypes {
   _id: string;
@@ -36,13 +37,28 @@ class SocketService {
 
       socket.on("room", (action) => this.handleError(action, socket, this.roomRouters));
       socket.on("puzzle", (action) => this.handleError(action, socket, this.puzzleRouters));
-      socket.on('disconnect', () => this.handleError(null, socket, this.disconnectHandler));
+      socket.on('disconnect', async () => {
+        try {
+          await this.disconnectHandler(socket)
+        } catch (error) {
+          console.log(error);
+          if (error instanceof AppError) {
+            socket.emit('puzzle', errorAction(error.code, error.message)); //ev может быть и другим
+          } else if (error instanceof Error) {
+            socket.emit('puzzle', errorAction(500, error.message));
+          } else {
+            socket.emit('puzzle', errorAction(500, 'Server Error'));
+          }
+        } finally {
+          this.activeRooms = this.activeRooms.filter(room => room._id != socket.roomId);
+        }
+      });
     });
   }
-  async handleError(action: WebSocketClientActionsTypes | null, socket: SocketObject, router: (socket: SocketObject, action: WebSocketClientActionsTypes) => void) {
+  async handleError(action: WebSocketClientActionsTypes, socket: SocketObject, router: (socket: SocketObject, action: WebSocketClientActionsTypes) => void) {
     try {
       // @ts-ignore
-      action ? await router(socket, action) : await router(socket);
+      await router(socket, action);
     } catch (error: unknown) {
       console.log(error);
       if (error instanceof AppError) {
@@ -65,17 +81,11 @@ class SocketService {
         if (activeRoom) {
           const puzzle = activeRoom.puzzle;
           activeRoom.isDisconnecting = true
-          if (puzzle) { //очень долго, поэтому connect проиходит быстрее, чем disconnect
-            if (puzzle.isInit) {
-              const image = puzzle.image;
-              fs.writeFileSync(`./uploads/roomPuzzlesImage/${socket.roomId}`, image, {encoding: 'utf8'});//возможно стоит сохранять путь к файлу и расширение в бд
-            }
+          if (puzzle) {
             const jsonPuzzle = puzzle.getJsonPuzzle();
-            // await new Promise((resolve) => setTimeout(resolve, 4000));
-            await RoomsService.saveJsonPuzzle(socket.roomId, jsonPuzzle);
+            fs.writeFileSync(`${config.roomJsonPuzzlePath}${socket.roomId}.json`, jsonPuzzle, {encoding: 'utf8'});
           }
-          this.activeRooms = this.activeRooms.filter(room => room._id != socket.roomId);// в любом случае должно выполняться даж если Error, засунуть в finally?
-        }//а если нет, то плохо, останется в оперативке
+        }
       }
     }
   }
@@ -101,11 +111,11 @@ class SocketService {
             owner: String(room.owner),
             puzzle: null,
           };
-          const jsonPuzzle = room.jsonPuzzle;
-          if (jsonPuzzle) {
+          if (fs.existsSync(`${config.roomJsonPuzzlePath}${room._id}.json`)) {
+            const jsonPuzzle = fs.readFileSync(`${config.roomJsonPuzzlePath}${room._id}.json`, {encoding: 'utf8'});
             const puzzle = new Puzzle();
-            const image = fs.readFileSync(`./uploads/roomPuzzlesImage/${action.roomId}`, {encoding: 'utf8'});
-            puzzle.createPuzzleFromJson(image, jsonPuzzle);
+
+            puzzle.createPuzzleFromJson(jsonPuzzle);
 
             const gameData = puzzle.getGameData();
             joinRoom.puzzle = puzzle;
