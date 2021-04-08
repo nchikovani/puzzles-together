@@ -4,6 +4,7 @@ import Page from './components/Page';
 import Room from './pages/Room';
 import Main from './pages/Main';
 import NotFound from './pages/NotFound';
+import PreLoading from './components/PreLoading';
 import ErrorService from "./service/errorService";
 import './styles/base.scss';
 import SocketService from "./service/socketService";
@@ -16,7 +17,7 @@ const errorService = new ErrorService();
 const socketService = new SocketService();
 
 interface AppPropsTypes {
-  userId: string | null;
+  userIsLoaded: boolean;
 }
 
 function App(props: AppPropsTypes) {
@@ -26,40 +27,35 @@ function App(props: AppPropsTypes) {
   }, []);
 
   return (
-    <>
-      {
-        props.userId
-        ? <BrowserRouter>
-          <Page>
-            <Switch>
-              <Route exact path="/">
-                <Main socketService={socketService}/>
-              </Route>
-              <Route path="/NotFound">
-                <NotFound/>
-              </Route>
-              <Route path="/room/:roomId">
-                <Room socketService={socketService}/>
-              </Route>
-              <Route path="/users/:userId/rooms">
-                <PersonalArea/>
-              </Route>
-              <Route>
-                <NotFound/>
-              </Route>
-            </Switch>
-          </Page>
-        </BrowserRouter>
-        : null
-      }
-    </>
-
+    <PreLoading loadingIsComplete={props.userIsLoaded}>
+      <BrowserRouter>
+        <Page>
+          <Switch>
+            <Route exact path="/">
+              <Main socketService={socketService}/>
+            </Route>
+            <Route path="/NotFound">
+              <NotFound/>
+            </Route>
+            <Route path="/room/:roomId">
+              <Room socketService={socketService}/>
+            </Route>
+            <Route path="/users/:userId/rooms">
+              <PersonalArea/>
+            </Route>
+            <Route>
+              <NotFound/>
+            </Route>
+          </Switch>
+        </Page>
+      </BrowserRouter>
+    </PreLoading>
   );
 }
 
 const mapStateToProps = (store: StoreTypes) => {
   return {
-    userId: store.user.id
+    userIsLoaded: store.user.isLoaded
   }
 }
 

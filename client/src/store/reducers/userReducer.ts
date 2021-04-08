@@ -5,6 +5,7 @@ import * as actions from "../actions";
 const initial: UserStateTypes = {
   id: null,
   registered: false,
+  isLoaded: false,
 }
 
 type InferValueTypes<T> = T extends { [key: string]: infer U} ? U : never;
@@ -15,7 +16,8 @@ function userReducer(state: UserStateTypes = initial, action: ActionTypes) {
     case actionTypes.SET_USER:
       return {
         id: action.id,
-        registered: action.registered
+        registered: action.registered,
+        isLoaded: action.isLoaded,
       };
 
     default:

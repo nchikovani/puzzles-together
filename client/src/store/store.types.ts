@@ -22,6 +22,7 @@ export interface RoomTypes {
 export interface UserStateTypes {
   id: string | null;
   registered: false;
+  isLoaded: boolean;
 }
 
 export interface StoreTypes {

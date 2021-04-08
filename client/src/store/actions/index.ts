@@ -4,12 +4,14 @@ import {GameDataTypes, UpdateTypes, OptionTypes} from 'shared';
 export const setUser = (id: string, registered: boolean) => (<const>{
   type: actionTypes.SET_USER,
   id,
-  registered
+  registered,
+  isLoaded: true,
 });
 
-export const setRooms = (rooms: any[]) => (<const>{
+export const setRooms = (rooms: any[], isLoaded: boolean) => (<const>{
   type: actionTypes.SET_ROOMS,
   rooms,
+  isLoaded
 });
 
 export const addRoom = (room: any) => (<const>{

@@ -3,9 +3,9 @@ import thunkMiddleware from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension'
 import rootReducer from './reducers';
 
-const composedEnhancer = applyMiddleware(thunkMiddleware);
+// const composedEnhancer = applyMiddleware(thunkMiddleware);
 
-// const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
+const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 const store = createStore(
 	rootReducer,
 	composedEnhancer

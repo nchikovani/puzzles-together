@@ -15,7 +15,7 @@ function roomsReducer(state: RoomsTypes = initial, action: ActionTypes) {
     case actionTypes.SET_ROOMS:
       return {
         list: action.rooms,
-        isLoaded: true,
+        isLoaded: action.isLoaded,
       }
     // case actionTypes.ADD_ROOM:
     //   return [

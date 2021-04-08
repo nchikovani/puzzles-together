@@ -1,19 +1,20 @@
 import * as userService from '../../service/userService';
-import {setUser, setRooms, addRoom} from './index';
+import {setUser, setRooms} from './index';
+import { History } from 'history';
+import {Dispatch} from "redux";
 
-export const fetchGetUser = () => async (dispatch: any) => {
+export const fetchGetUser = () => async (dispatch: Dispatch) => {
   const {id, registered} = await userService.getUser();
   typeof id === 'string' && dispatch(setUser(id, registered));
 };
 
-export const fetchGetRooms = (userId: string) => async (dispatch: any) => {
+export const fetchGetRooms = (userId: string) => async (dispatch: Dispatch) => {
   const {rooms} = await userService.getRooms(userId);
 
-  rooms && dispatch(setRooms(rooms));
+  rooms && dispatch(setRooms(rooms, true));
 };
 
-export const fetchAddRoom = (joinRoom: (id: string) => void) => async (dispatch: any) => {//addRoom
+export const fetchAddRoom = ( history: History) => async (dispatch: Dispatch) => {
   const {room} = await userService.addRoom();
-  joinRoom(room._id);
-  room && dispatch(addRoom(room));//открыть окошко
+  room && history.push(`/room/` + room._id);
 };
