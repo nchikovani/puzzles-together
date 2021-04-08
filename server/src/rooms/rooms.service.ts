@@ -4,6 +4,10 @@ import UsersService from '../users/users.service';
 import AppError from "../utils/AppError";
 
 class RoomsService {
+  async getRooms() {
+    return await Rooms.find({}).exec();
+  }
+
   async getRoomById(id: string) {
     if (!Types.ObjectId.isValid(id)) throw new AppError(404, 'Room not found.');
     return await Rooms.findById(id).exec();
@@ -13,7 +17,7 @@ class RoomsService {
     const user = await UsersService.getUserById(userId);
     if (!user) throw new AppError(404, 'User not found');
     return await Rooms.find({owner: user._id}).exec();
-}
+  }
 
   async addRoom(userId: string) {
     const user = await UsersService.getUserById(userId);
@@ -24,10 +28,15 @@ class RoomsService {
     return await newRoom.save();
   }
 
-  // async saveJsonPuzzle(id: string, jsonPuzzle: string) {
-  //   if (!Types.ObjectId.isValid(id)) throw new AppError(404, 'Room not found.');
-  //   return await Rooms.findByIdAndUpdate(id, {jsonPuzzle}).exec();
-  // }
+  async updateLastVisit(id: string) {
+    if (!Types.ObjectId.isValid(id)) throw new AppError(404, 'Room not found.');
+    return await Rooms.findByIdAndUpdate(id, {lastVisit: new Date()}).exec();
+  }
+
+  async deleteRoom(id: string) {
+    if (!Types.ObjectId.isValid(id)) throw new AppError(404, 'Room not found.');
+    return await Rooms.findByIdAndDelete(id).exec();
+  }
 }
 
 export default new RoomsService()

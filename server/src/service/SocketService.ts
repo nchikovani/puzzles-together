@@ -93,6 +93,7 @@ class SocketService {
   async roomRouters(socket: SocketObject, action: WebSocketClientActionsTypes) {
     switch (action.type) {
       case webSocketActionsTypes.JOIN: {
+        await RoomsService.updateLastVisit(action.roomId);
         let joinRoom: ActiveRoomTypes;
         const activeRoom = this.activeRooms.find(activeRoom => activeRoom._id == action.roomId);
         if (activeRoom) {

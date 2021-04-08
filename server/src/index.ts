@@ -10,6 +10,8 @@ import roomsRouters from './rooms/rooms.routers';
 import SocketService from "./service/SocketService";
 import errorHandler from "./middleware/errorHandler";
 import {checkToken} from "./middleware/checkToken";
+import cron = require('node-cron');
+import {deletingExpiredRooms} from './utils/deletingExpiredRooms';
 import config from './config';
 
 const app = express();
@@ -31,6 +33,8 @@ app.get("*", (req, res) => {
 
 const socketService = new SocketService(io);
 socketService.registerListener();
+
+cron.schedule('39 13 * * *', deletingExpiredRooms);
 
 mongoose.connect(config.mongoDbUri, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false}, function(err){
   if(err) return console.log(err);
