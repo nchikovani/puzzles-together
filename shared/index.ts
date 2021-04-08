@@ -1,6 +1,7 @@
 import * as webSocketClientActions from "./webSocketClientActions";
 import * as webSocketServerActions from "./webSocketServerActions";
 import * as webSocketActionsTypes from './webSocketActionsTypes';
+import ServerError from "./ServerError";
 
 import {ConnectionTypes, GameDataTypes, LinkTypes, MoveTypes, OptionTypes, PartTypes, UpdateTypes} from './Game.types';
 
@@ -12,7 +13,8 @@ type WebSocketServerActionsTypes = ReturnType<InferValueTypes<typeof webSocketSe
 export {
   webSocketActionsTypes,
   webSocketClientActions,
-  webSocketServerActions
+  webSocketServerActions,
+  ServerError,
 };
 export type {
   ConnectionTypes,

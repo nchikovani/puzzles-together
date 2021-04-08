@@ -1,5 +1,5 @@
 const shortid = require('shortid');
-import AppError from "../utils/AppError";
+import {ServerError} from 'shared';
 
 import {ConnectionTypes, GameDataTypes, OptionTypes, PartTypes, UpdateTypes} from 'shared';
 const sizeOf = require('image-size');
@@ -46,17 +46,17 @@ class Puzzle {
       this._setPartsCountOptions();
       this.isInit = true;
     } catch (e) {
-      throw new AppError(400, 'Image is not the correct format');
+      throw new ServerError(400, 'Image is not the correct format');
     }
   }
 
   createPuzzle(optionId: string) {
     if (!this.isInit) {
-      throw new AppError(400, 'Game is not initialized');
+      throw new ServerError(400, 'Game is not initialized');
     }
     const option = this.options.find(option => option.id === optionId);
     if (!option) {
-      throw new AppError(404, 'Option not found');
+      throw new ServerError(404, 'Option not found');
     }
     this.columnCount = option.columnCount;
     this.rowCount = option.rowCount;
@@ -90,13 +90,13 @@ class Puzzle {
       this.isInit = puzzle.isInit;
       this.puzzleIsCreated = puzzle.puzzleIsCreated;
     } catch (e) {
-      throw new AppError(500, 'Incorrect saved data');
+      throw new ServerError(500, 'Incorrect saved data');
     }
   }
 
   getJsonPuzzle() {
     if (!this.isInit) {
-      throw new AppError(400, 'Game is not initialized');
+      throw new ServerError(400, 'Game is not initialized');
     }
 
     return JSON.stringify(this);
@@ -139,7 +139,7 @@ class Puzzle {
 
   getGameData(): GameDataTypes {
     if (!this.puzzleIsCreated) {
-      throw new AppError(400, 'Puzzle is not created');
+      throw new ServerError(400, 'Puzzle is not created');
     }
     return {
       image: this.image,
@@ -153,7 +153,7 @@ class Puzzle {
 
   update(update: UpdateTypes) {
     if (!this.puzzleIsCreated) {
-      throw new AppError(400, 'Puzzle is not created');
+      throw new ServerError(400, 'Puzzle is not created');
     }
     const {moves, connections} = update;
 

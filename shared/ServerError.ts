@@ -1,5 +1,5 @@
 
-class AppError extends Error{
+class ServerError extends Error{
   code: number;
   message: string;
   constructor(code: number, message: string) {
@@ -9,4 +9,4 @@ class AppError extends Error{
   }
 }
 
-export default AppError;
+export default ServerError;

@@ -1,3 +1,4 @@
+import {ServerError} from "shared";
 
 export const getUser = async () => {
   const response = await fetch('/users/authenticate', {
@@ -7,6 +8,10 @@ export const getUser = async () => {
     },
     mode: 'same-origin',
   });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new ServerError(response.status, message);
+  }
 
   return await response.json();
 }
@@ -19,6 +24,10 @@ export const getRooms = async (userId: string) => {
     },
     mode: 'same-origin',
   });
+  if (!response.ok) {
+   const message = await response.text();
+   throw new ServerError(response.status, message);
+  }
 
   return await response.json();
 }
@@ -31,6 +40,10 @@ export const addRoom = async () => {
     },
     mode: 'same-origin',
   });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new ServerError(response.status, message);
+  }
 
   return await response.json();
 }

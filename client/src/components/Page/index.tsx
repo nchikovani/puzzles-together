@@ -1,22 +1,14 @@
 import React, {FunctionComponent} from 'react';
 import './style.scss';
-import { useHistory } from "react-router-dom";
 import {StoreTypes} from "../../store/store.types";
 import {connect} from "react-redux";
 import {Link} from 'react-router-dom';
 
 interface PagePropsTypes {
   userId: string | null;
-  // notFound: boolean;
 }
 
 const Page: FunctionComponent<PagePropsTypes> = (props) => {
-  const history = useHistory();
-  //
-  // useEffect(() => {
-  //  props.roomId && history.push(`/Room/${props.roomId}`);
-  //  props.notFound && history.push(`/notFound`);
-  // }, [props.roomId, props.notFound]);
 
   return (
     <React.Fragment>

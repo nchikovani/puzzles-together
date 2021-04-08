@@ -1,6 +1,6 @@
 import {io} from "socket.io-client";
 import {UpdateTypes, WebSocketServerActionsTypes} from 'shared';
-import {webSocketActionsTypes, webSocketClientActions} from 'shared';
+import {webSocketActionsTypes, webSocketClientActions, ServerError} from 'shared';
 import store from '../store';
 import {setGameData, setUpdate, setOptions, setIsSolved} from '../store/actions';
 
@@ -42,8 +42,7 @@ export default class socketService {
         store.dispatch(setIsSolved(true));
         break;
       case webSocketActionsTypes.ERROR:
-        throw new Error(action.error.message);
-        // break;
+        throw new ServerError(action.error.code, action.error.message);
     }
   }
 

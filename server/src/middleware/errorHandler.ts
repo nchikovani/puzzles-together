@@ -1,9 +1,9 @@
 
 import {NextFunction, Request, Response} from 'express';
-import AppError from "../utils/AppError";
+import {ServerError} from 'shared';
 const errorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
-  if (err instanceof AppError) {
+  if (err instanceof ServerError) {
     return res.status(err.code).json(err.message);
   }
   if (err instanceof Error) {

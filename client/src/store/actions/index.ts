@@ -1,6 +1,14 @@
 import * as actionTypes from '../actionTypes';
 import {GameDataTypes, UpdateTypes, OptionTypes} from 'shared';
 
+export const setError = (isError: boolean, showType?: string, message?: string, statusCode?: number) => (<const>{
+  type: actionTypes.SET_ERROR,
+  isError,
+  showType,
+  message,
+  statusCode,
+});
+
 export const setUser = (id: string, registered: boolean) => (<const>{
   type: actionTypes.SET_USER,
   id,
@@ -40,19 +48,5 @@ export function setIsSolved(isSolved: boolean) {
   return <const>{
     type: actionTypes.SET_IS_SOLVED,
     isSolved,
-  }
-}
-
-export function setRoomId(roomId: string) {
-  return <const>{
-    type: actionTypes.SET_ROOM_ID,
-    roomId,
-  }
-}
-
-export function setNotFound(isNotFound: boolean) {
-  return <const>{
-    type: actionTypes.SET_NOT_FOUND,
-    isNotFound,
   }
 }

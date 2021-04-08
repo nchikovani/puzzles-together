@@ -1,0 +1,19 @@
+.error-page {
+  width: 100%;
+  height: 100vh;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.error-content {
+  &__error-title {
+    font-weight: bold;
+    font-size: 30px;
+    margin-bottom: 10px;
+  }
+  &__error-message {
+    font-size: 18px;
+    text-align: center;
+  }
+}

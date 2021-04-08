@@ -25,8 +25,16 @@ export interface UserStateTypes {
   isLoaded: boolean;
 }
 
+export interface ErrorStateTypes {
+  isError: boolean,
+  showType: string | null,
+  message: string | null,
+  statusCode: number | null,
+}
+
 export interface StoreTypes {
   game: GameStateTypes;
   user: UserStateTypes;
   rooms: RoomsTypes;
+  error: ErrorStateTypes;
 }
