@@ -116,10 +116,14 @@ class SocketService {
             const puzzle = new Puzzle();
 
             puzzle.createPuzzleFromJson(jsonPuzzle);
+            if (puzzle.puzzleIsCreated) {
+              const gameData = puzzle.getGameData();
+              socket.emit("puzzle", gameDataAction(gameData));
+            }else if (puzzle.isInit) {// пока else
+              socket.emit("puzzle", optionsAction(puzzle.options));
+            }
 
-            const gameData = puzzle.getGameData();
             joinRoom.puzzle = puzzle;
-            socket.emit("puzzle", gameDataAction(gameData));
           }
           this.activeRooms.push(joinRoom);
         }
