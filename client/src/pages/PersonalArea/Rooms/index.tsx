@@ -32,9 +32,8 @@ function Rooms (props: UserRoomsTypes) {
     dispatch(fetchAddRoom(history))
   }
 
-  return (
-    <PreLoading loadingIsComplete={props.rooms.isLoaded}>
-      <div className="room-list">
+  return props.rooms.isLoaded
+    ? <div className="room-list">
         <div
           className="room-list__item room-list__create-room"
           onClick={createRoom}
@@ -50,9 +49,7 @@ function Rooms (props: UserRoomsTypes) {
             {room.name || room._id}
           </div>)
         }
-      </div>
-    </PreLoading>
-  )
+      </div> : null
 }
 const mapStateToProps = (store: StoreTypes) => {
   return {

@@ -1,14 +1,23 @@
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useEffect} from 'react';
 import './style.scss';
-import {StoreTypes} from "../../store/store.types";
-import {connect} from "react-redux";
+import {StoreTypes, ErrorStateTypes} from "../../store/store.types";
+import {connect, useDispatch} from "react-redux";
 import {Link} from 'react-router-dom';
+import {useRouteMatch} from "react-router-dom";
+import Error from "../../pages/Error";
+import {setError} from '../../store/actions'
 
 interface PagePropsTypes {
   userId: string | null;
+  error: ErrorStateTypes;
 }
 
 const Page: FunctionComponent<PagePropsTypes> = (props) => {
+  const match = useRouteMatch();
+  const dispatch = useDispatch();
+  useEffect(() => {
+   dispatch(setError(false));
+  }, [match.url]);
 
   return (
     <React.Fragment>
@@ -21,7 +30,11 @@ const Page: FunctionComponent<PagePropsTypes> = (props) => {
         </div>
       </header>
       <div className="page-wrapper">
-        {props.children}
+        {
+          props.error.isError && props.error.showType === 'page'
+          ? <Error message={props.error.message} statusCode={props.error.statusCode}/>
+          : props.children
+        }
       </div>
     </React.Fragment>
   )
@@ -29,7 +42,8 @@ const Page: FunctionComponent<PagePropsTypes> = (props) => {
 
 const mapStateToProps = (store: StoreTypes) => {
   return {
-    userId: store.user.id
+    userId: store.user.id,
+    error: store.error
   }
 }
 

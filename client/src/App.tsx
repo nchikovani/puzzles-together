@@ -8,7 +8,7 @@ import PreLoading from './components/PreLoading';
 import ErrorService from "./service/errorService";
 import './styles/base.scss';
 import SocketService from "./service/socketService";
-import PersonalArea from "./pages/PersonalArea";
+import Rooms from "./pages/PersonalArea/Rooms";
 import {connect, useDispatch} from "react-redux";
 import {fetchGetUser} from "./store/actions/fetchActions";
 import {StoreTypes, ErrorStateTypes} from "./store/store.types";
@@ -31,30 +31,26 @@ function App(props: AppPropsTypes) {
   return (
     <PreLoading loadingIsComplete={props.userIsLoaded}>
       <BrowserRouter>
-        {
-          props.error.isError && props.error.showType === 'page'
-          ? <Error message={props.error.message} statusCode={props.error.statusCode}/>
-          : <Switch>
-            <Route exact path="/">
-              <Page>
-                <Main socketService={socketService}/>
-              </Page>
-            </Route>
-            <Route path="/room/:roomId">
-              <Page>
-                <Room socketService={socketService}/>
-              </Page>
-            </Route>
-            <Route path="/users/:userId/rooms">
-              <Page>
-                <PersonalArea/>
-              </Page>
-            </Route>
-            <Route>
-              <Error message={'Page not found.'} statusCode={404}/>
-            </Route>
-          </Switch>
-        }
+        <Switch>
+          <Route exact path="/">
+            <Page>
+              <Main socketService={socketService}/>
+            </Page>
+          </Route>
+          <Route path="/room/:roomId">
+            <Page>
+              <Room socketService={socketService}/>
+            </Page>
+          </Route>
+          <Route path="/users/:userId/rooms">
+            <Page>
+              <Rooms/>
+            </Page>
+          </Route>
+          <Route>
+            <Error message={'Page not found.'} statusCode={404}/>
+          </Route>
+        </Switch>
       </BrowserRouter>
       <ErrorWindow error={props.error}/>
     </PreLoading>
