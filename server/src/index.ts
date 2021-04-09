@@ -31,8 +31,7 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(config.staticPath, 'index.html'));
 });
 
-const socketService = new SocketService(io);
-socketService.registerListener();
+new SocketService(io);
 
 cron.schedule('39 13 * * *', deletingExpiredRooms);
 
