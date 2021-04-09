@@ -21,7 +21,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  maxHttpBufferSize: config.socketBufferSize,
+});
 
 app.use('/users', usersRouters);
 app.use('/rooms', checkToken, roomsRouters);

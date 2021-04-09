@@ -7,6 +7,7 @@ const config = {
   tokenMaxAge: 1000 * 60 * 60 * 24 * 2, //days
   roomJsonPuzzlePath: './uploads/roomJsonPuzzle/',
   roomLifeWithoutVisits: 1000 * 60 * 60 * 24 * 2, //days
+  socketBufferSize: 3e6,
 }
 
 export default config;

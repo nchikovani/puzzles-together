@@ -45,6 +45,7 @@ class Room extends React.Component<PropsType, {}> {
   handleImage(e: React.ChangeEvent<HTMLInputElement>) {
     let file = e.target && e.target.files && e.target.files[0];
     if (!file) return;
+    if (file.size >= 3e6) throw new Error('Image size should not exceed 3mb');
 
     let reader = new FileReader();
     reader.addEventListener('load', (e) => {
@@ -57,7 +58,7 @@ class Room extends React.Component<PropsType, {}> {
   render() {
     return (
       <div className="App" style={{width: '100%'}}>
-        <input type="file" onChange={(e) => this.handleImage(e)} style={{display: 'block'}}/>
+        <input type="file" accept="image/*" onChange={(e) => this.handleImage(e)} style={{display: 'block'}}/>
         <div className="room-game">
           <div className="room-game__game">
             <Game socketService={this.props.socketService}/>
