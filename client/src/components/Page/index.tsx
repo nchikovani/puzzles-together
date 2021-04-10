@@ -29,13 +29,13 @@ const Page: FunctionComponent<PagePropsTypes> = (props) => {
           <Link to={`/users/${props.userId}/rooms`} className="header__rooms-link">Личный кабинет</Link>
         </div>
       </header>
-      <div className="page-wrapper">
-        {
-          props.error.isError && props.error.showType === 'page'
-          ? <Error message={props.error.message} statusCode={props.error.statusCode}/>
-          : props.children
-        }
-      </div>
+      {
+        props.error.isError && props.error.showType === 'page'
+        ? <Error message={props.error.message} statusCode={props.error.statusCode}/>
+        : <div className="page-wrapper">
+          {props.children}
+        </div>
+      }
     </React.Fragment>
   )
 }

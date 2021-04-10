@@ -3,9 +3,10 @@
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   background: $primary;
-  padding: 20px 30px;
-
+  padding: 0 30px;
+  height: $header-height;
   &__title {
     font-size: 1.3em;
     color: $white;
