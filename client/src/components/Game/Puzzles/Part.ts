@@ -124,7 +124,15 @@ class Part {
     ctx.clip();
     const imgXDiff = x - xIndex * width;
     const imgYDiff = y - yIndex * height;
-    ctx.drawImage(this.puzzles.image, imgXDiff, imgYDiff, this.puzzles.width, this.puzzles.height);
+    const rowCount = this.puzzles.height / this.puzzles.partHeight;
+    const columnCount = this.puzzles.width / this.puzzles.partWidth;
+    ctx.drawImage(
+      this.puzzles.image,
+      imgXDiff - lineWidth / 2,
+      imgYDiff - lineWidth / 2,
+      this.puzzles.width + (columnCount - xIndex) * lineWidth,
+      this.puzzles.height + (rowCount - yIndex) * lineWidth
+    );
 
     function drawProtrusion(side: string) {
       if (!ctx) return;
