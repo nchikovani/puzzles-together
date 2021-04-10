@@ -36,6 +36,13 @@ class Puzzle {
       const buffer = Buffer.from(image.substring(image.indexOf(',') + 1), 'base64');
       const dimensions = sizeOf(buffer);
 
+      // const imageProportions = dimensions.width / dimensions.height;
+      //
+      // const width = Math.pow(imageProportions * canvasVolume * puzzleVolumeOfCanvas, 1/2);
+      // const height = width / imageProportions;
+      // this.width = width;
+      // this.height = height;
+
       if (dimensions.width / canvasWidth > dimensions.height / canvasHeight) {
         this.width = maxWidth;
         this.height = maxWidth * dimensions.height / dimensions.width;
