@@ -4,7 +4,7 @@ import {SocketObject, ActiveRoomTypes} from "./SocketService.types";
 import * as webSocketServerActions from 'shared/webSocketServerActions';
 import * as webSocketActionsTypes from 'shared/webSocketActionsTypes';
 import {WebSocketClientActionsTypes} from 'shared';
-import {ServerError} from 'shared';
+import {ServerError, serverErrorMessages} from 'shared';
 import * as fs from "fs";
 import config from '../../config';
 import ActiveRoomsService from "./ActiveRoomsService";
@@ -22,12 +22,16 @@ export default async function roomRouters(action: WebSocketClientActionsTypes, i
         joinRoom = activeRoom;
         const puzzle = joinRoom.puzzle;
         if (puzzle) {
-          const gameData = puzzle.getGameData();
-          socket.emit("puzzle", gameDataAction(gameData));
+          if (puzzle.puzzleIsCreated) {//повторение
+            const gameData = puzzle.getGameData();
+            socket.emit("puzzle", gameDataAction(gameData));
+          } else if (puzzle.isInit) {// пока else
+            socket.emit("puzzle", optionsAction(puzzle.options));
+          }
         }
       } else {
         const room = await RoomsService.getRoomById(action.roomId);
-        if (!room) throw new ServerError(404, 'Room not found.');
+        if (!room) throw new ServerError(404, serverErrorMessages.roomNotFound);
         joinRoom = {
           _id: String(room._id),
           owner: String(room.owner),
@@ -38,7 +42,7 @@ export default async function roomRouters(action: WebSocketClientActionsTypes, i
           const puzzle = new Puzzle();
 
           puzzle.createPuzzleFromJson(jsonPuzzle);
-          if (puzzle.puzzleIsCreated) {
+          if (puzzle.puzzleIsCreated) {//повторение
             const gameData = puzzle.getGameData();
             socket.emit("puzzle", gameDataAction(gameData));
           }else if (puzzle.isInit) {// пока else

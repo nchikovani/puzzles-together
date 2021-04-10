@@ -1,7 +1,7 @@
 import UsersService from './users.service';
 import {NextFunction, Request, Response} from 'express';
 import jwt = require("jsonwebtoken");
-import {ServerError} from 'shared';
+import {ServerError, serverErrorMessages} from 'shared';
 import config from "../config";
 
 class UsersController {
@@ -17,7 +17,7 @@ class UsersController {
             return res.status(200).json({id: user._id, registered: user.registered});
           } else {
             res.clearCookie('token');
-            return next(new ServerError(404, 'User not found.'));
+            return next(new ServerError(404, serverErrorMessages.userNotFound));
           }
         } catch (error) {
           res.clearCookie('token');

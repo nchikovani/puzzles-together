@@ -4,7 +4,7 @@ import ActiveRoomsService from './ActiveRoomsService';
 import * as webSocketServerActions from 'shared/webSocketServerActions';
 import * as webSocketActionsTypes from 'shared/webSocketActionsTypes';
 import {WebSocketClientActionsTypes} from 'shared';
-import {ServerError} from 'shared';
+import {ServerError, serverErrorMessages} from 'shared';
 import {Server} from "socket.io";
 import {DefaultEventsMap} from "socket.io/dist/typed-events";
 const {gameDataAction, optionsAction, updateAction, solvedAction} = webSocketServerActions;
@@ -13,9 +13,9 @@ export default async function puzzleRouter(action: WebSocketClientActionsTypes, 
   switch (action.type) {
     case webSocketActionsTypes.GET_OPTIONS: {//проверять токен  //берет опции и СОЗДАЕТ НОВЫЙ ОБЪЕКТ ПАЗЛА
       const roomId = socket.roomId;
-      if (!roomId) throw new ServerError(400, 'Did not join the room.');
+      if (!roomId) throw new ServerError(400, serverErrorMessages.didNotJoin);
       const room = activeRoomsService.findRoom(roomId);
-      if (!room) throw new ServerError(404, 'Room not found.');
+      if (!room) throw new ServerError(404, serverErrorMessages.roomNotFound);
       const newPuzzle = new Puzzle();
       newPuzzle.init(action.image);
       room.puzzle = newPuzzle;
@@ -24,10 +24,10 @@ export default async function puzzleRouter(action: WebSocketClientActionsTypes, 
     }
     case webSocketActionsTypes.CREATE: {//проверять токен
       const roomId = socket.roomId;
-      if (!roomId) throw new ServerError(400, 'Did not join the room.');
+      if (!roomId) throw new ServerError(400, serverErrorMessages.didNotJoin);
       const room = activeRoomsService.findRoom(roomId);
-      if (!room) throw new ServerError(404, 'Room not found.');
-      if (!room.puzzle) throw new ServerError(400, 'Puzzle not created.');
+      if (!room) throw new ServerError(404, serverErrorMessages.roomNotFound);
+      if (!room.puzzle) throw new ServerError(400, serverErrorMessages.puzzleNotCreated);
       room.puzzle.createPuzzle(action.optionId);
       const gameData = room.puzzle.getGameData();
       io.to(roomId).emit("puzzle", gameDataAction(gameData));
@@ -35,10 +35,10 @@ export default async function puzzleRouter(action: WebSocketClientActionsTypes, 
     }
     case webSocketActionsTypes.SET_UPDATE: {
       const roomId = socket.roomId;
-      if (!roomId) throw new ServerError(400, 'Did not join the room.');
+      if (!roomId) throw new ServerError(400, serverErrorMessages.didNotJoin);
       const room = activeRoomsService.findRoom(roomId);
-      if (!room) throw new ServerError(404, 'Room not found.');
-      if (!room.puzzle) throw new ServerError(400, 'Puzzle not created.');
+      if (!room) throw new ServerError(404, serverErrorMessages.roomNotFound);
+      if (!room.puzzle) throw new ServerError(400, serverErrorMessages.puzzleNotCreated);
       const beforeIsSolved = room.puzzle.isSolved;
       room.puzzle.update(action.update);
       socket.broadcast.to(roomId).emit("puzzle", updateAction(action.update));

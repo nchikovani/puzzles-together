@@ -1,0 +1,30 @@
+{
+  "header": {
+    "personalArea": "Личный кабинет"
+  },
+
+  "rooms": {
+    "createRoom": "Создать комнату"
+  },
+
+  "error": {
+    "error": "Ошибка",
+    "imageTooBig": "Размер изображения не должен превышать 3мб.",
+
+    "serverError": "Ошибка сервера.",
+    "roomNotFound": "Комната не найдена.",
+    "didNotJoin": "Не было выполненно подключение к комнате.",
+    "puzzleNotCreated": "Пазл не был создан.",
+    "imageNotCorrect": "Изображение имеет неверный формат.",
+    "gameNotInit": "Игра не была инициализированна.",
+    "optionNotFound": "Вариант не был найден.",
+    "incorrectSavedData": "Неверные сохраненные данные.",
+    "userNotFound": "Пользователь не найден.",
+    "accessIsDenied": "Нет права доступа к странице.",
+    "invalidToken": "Неверный токе."
+  },
+
+  "common": {
+    "ok": "ок"
+  }
+}

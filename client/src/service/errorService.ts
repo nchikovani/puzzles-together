@@ -1,6 +1,7 @@
 import {ServerError} from 'shared';
 import store from "../store";
 import {setError} from '../store/actions';
+
 export default class ErrorService {
   constructor() {
     window.onerror = (event, source, lineno, colno, error) => {
@@ -11,7 +12,7 @@ export default class ErrorService {
     }
   }
 
-  throwError = (error: unknown) => {
+  throwError(error: unknown) {
     let statusCode;
     let message;
     let showType;

@@ -1,10 +1,10 @@
 import Users from "./user.model";
-import {ServerError} from 'shared';
+import {ServerError, serverErrorMessages} from 'shared';
 import {Types} from "mongoose";
 
 class UsersService {
   async getUserById(id: string) {
-    if (!Types.ObjectId.isValid(id)) throw new ServerError(404, 'User not found.');
+    if (!Types.ObjectId.isValid(id)) throw new ServerError(404, serverErrorMessages.userNotFound);
     return await Users.findById(id).exec();
   }
 

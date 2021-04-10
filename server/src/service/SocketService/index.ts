@@ -4,7 +4,7 @@ import {SocketObject} from "./SocketService.types";
 import ActiveRoomsService from './ActiveRoomsService';
 import * as webSocketServerActions from 'shared/webSocketServerActions';
 import {WebSocketClientActionsTypes} from 'shared';
-import {ServerError} from 'shared';
+import {ServerError, serverErrorMessages} from 'shared';
 import * as fs from "fs";
 import config from '../../config';
 import roomRouters from './roomRouters';
@@ -73,7 +73,7 @@ class SocketService {
     } else if (error instanceof Error) {
       socket.emit('puzzle', errorAction(500, error.message));
     } else {
-      socket.emit('puzzle', errorAction(500, 'Server Error'));
+      socket.emit('puzzle', errorAction(500, serverErrorMessages.serverError));
     }
   }
 }

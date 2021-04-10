@@ -9,7 +9,7 @@ export const getUser = async () => {
     mode: 'same-origin',
   });
   if (!response.ok) {
-    const message = await response.text();
+    const {message} = await response.json();
     throw new ServerError(response.status, message);
   }
 
@@ -25,7 +25,7 @@ export const getRooms = async (userId: string) => {
     mode: 'same-origin',
   });
   if (!response.ok) {
-   const message = await response.text();
+    const {message} = await response.json();
    throw new ServerError(response.status, message);
   }
 
@@ -41,7 +41,7 @@ export const addRoom = async () => {
     mode: 'same-origin',
   });
   if (!response.ok) {
-    const message = await response.text();
+    const {message} = await response.json();
     throw new ServerError(response.status, message);
   }
 

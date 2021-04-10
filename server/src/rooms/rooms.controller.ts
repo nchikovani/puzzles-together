@@ -1,6 +1,6 @@
 import RoomsService from './rooms.service';
-import {ServerError} from 'shared';
-import {NextFunction, Request, Response} from 'express';
+import {ServerError, serverErrorMessages} from 'shared';
+import {Request, Response} from 'express';
 
 class RoomsController {
   async getRooms(req: Request, res: Response) {
@@ -8,7 +8,7 @@ class RoomsController {
     // @ts-ignore
     const userIdFromToken = req.userId;
     const rooms = await RoomsService.getRoomsByUserId(userId);
-    if (userId !== userIdFromToken) throw new ServerError(403, 'Access to the page is denied.')
+    if (userId !== userIdFromToken) throw new ServerError(403, serverErrorMessages.accessIsDenied);
     return res.status(200).json({rooms});
   }
 

@@ -1,5 +1,5 @@
 const shortid = require('shortid');
-import {ServerError} from 'shared';
+import {ServerError, serverErrorMessages} from 'shared';
 
 import {ConnectionTypes, GameDataTypes, OptionTypes, PartTypes, UpdateTypes} from 'shared';
 const sizeOf = require('image-size');
@@ -53,17 +53,17 @@ class Puzzle {
       this._setPartsCountOptions();
       this.isInit = true;
     } catch (e) {
-      throw new ServerError(400, 'Image is not the correct format');
+      throw new ServerError(400, serverErrorMessages.imageNotCorrect);
     }
   }
 
   createPuzzle(optionId: string) {
     if (!this.isInit) {
-      throw new ServerError(400, 'Game is not initialized');
+      throw new ServerError(400, serverErrorMessages.gameNotInit);
     }
     const option = this.options.find(option => option.id === optionId);
     if (!option) {
-      throw new ServerError(404, 'Option not found');
+      throw new ServerError(404, serverErrorMessages.optionNotFound);
     }
     this.columnCount = option.columnCount;
     this.rowCount = option.rowCount;
@@ -97,13 +97,13 @@ class Puzzle {
       this.isInit = puzzle.isInit;
       this.puzzleIsCreated = puzzle.puzzleIsCreated;
     } catch (e) {
-      throw new ServerError(500, 'Incorrect saved data');
+      throw new ServerError(500, serverErrorMessages.incorrectSavedData);
     }
   }
 
   getJsonPuzzle() {
     if (!this.isInit) {
-      throw new ServerError(400, 'Game is not initialized');
+      throw new ServerError(400, serverErrorMessages.gameNotInit);
     }
 
     return JSON.stringify(this);
@@ -146,7 +146,7 @@ class Puzzle {
 
   getGameData(): GameDataTypes {
     if (!this.puzzleIsCreated) {
-      throw new ServerError(400, 'Puzzle is not created');
+      throw  new ServerError(400, serverErrorMessages.puzzleNotCreated);
     }
     return {
       image: this.image,
@@ -160,7 +160,7 @@ class Puzzle {
 
   update(update: UpdateTypes) {
     if (!this.puzzleIsCreated) {
-      throw new ServerError(400, 'Puzzle is not created');
+      throw new ServerError(400, serverErrorMessages.puzzleNotCreated);
     }
     const {moves, connections} = update;
 

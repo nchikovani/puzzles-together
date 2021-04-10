@@ -1,7 +1,7 @@
 import * as webSocketClientActions from "./webSocketClientActions";
 import * as webSocketServerActions from "./webSocketServerActions";
 import * as webSocketActionsTypes from './webSocketActionsTypes';
-import ServerError from "./ServerError";
+import ServerError, {serverErrorMessages} from "./ServerError";
 
 import {ConnectionTypes, GameDataTypes, LinkTypes, MoveTypes, OptionTypes, PartTypes, UpdateTypes} from './Game.types';
 
@@ -15,6 +15,7 @@ export {
   webSocketClientActions,
   webSocketServerActions,
   ServerError,
+  serverErrorMessages,
 };
 export type {
   ConnectionTypes,

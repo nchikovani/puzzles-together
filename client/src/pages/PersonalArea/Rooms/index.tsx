@@ -6,7 +6,7 @@ import {fetchAddRoom, fetchGetRooms} from '../../../store/actions/fetchActions';
 import {RoomsTypes, StoreTypes} from "../../../store/store.types";
 import {useRouteMatch} from "react-router-dom";
 import {setRooms} from '../../../store/actions';
-import PreLoading from "../../../components/PreLoading";
+import {useTranslation} from "react-i18next";
 
 interface UserRoomsTypes {
   rooms: RoomsTypes;
@@ -16,6 +16,7 @@ function Rooms (props: UserRoomsTypes) {
   const match = useRouteMatch();
   const dispatch = useDispatch();
   const history = useHistory();
+  const {t} = useTranslation();
 
   useEffect(() => {
     // @ts-ignore
@@ -38,7 +39,7 @@ function Rooms (props: UserRoomsTypes) {
           className="room-list__item room-list__create-room"
           onClick={createRoom}
         >
-          Создать комнату
+          {t('rooms.createRoom')}
         </div>
         {
           props.rooms.list.map(room => <div

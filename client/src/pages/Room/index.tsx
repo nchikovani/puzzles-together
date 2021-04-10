@@ -2,6 +2,7 @@ import React from 'react';
 import Game from "../../components/Game";
 import SocketService from '../../service/socketService';
 import {connect} from "react-redux";
+import {WithTranslation, withTranslation} from 'react-i18next';
 import {withRouter, RouteComponentProps} from "react-router";
 import {OptionTypes} from 'shared'
 import {StoreTypes} from '../../store/store.types';
@@ -11,7 +12,7 @@ type PathParamsType = {
   roomId: string,
 }
 
-type PropsType = RouteComponentProps<PathParamsType> & {
+type PropsType = RouteComponentProps<PathParamsType> & WithTranslation & {
   socketService: SocketService;
   options: OptionTypes[] | null;
 }
@@ -45,7 +46,7 @@ class Room extends React.Component<PropsType, {}> {
   handleImage(e: React.ChangeEvent<HTMLInputElement>) {
     let file = e.target && e.target.files && e.target.files[0];
     if (!file) return;
-    if (file.size >= 3e6) throw new Error('Image size should not exceed 3mb');
+    if (file.size >= 3e6) throw new Error(this.props.t("error.imageTooBig"));
 
     let reader = new FileReader();
     reader.addEventListener('load', (e) => {
@@ -76,4 +77,4 @@ const mapStateToProps = (store: StoreTypes) => {
   }
 }
 
-export default connect(mapStateToProps)(withRouter(Room));
+export default connect(mapStateToProps)(withRouter(withTranslation()(Room)));

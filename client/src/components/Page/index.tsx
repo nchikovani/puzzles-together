@@ -6,6 +6,7 @@ import {Link} from 'react-router-dom';
 import {useRouteMatch} from "react-router-dom";
 import Error from "../../pages/Error";
 import {setError} from '../../store/actions'
+import { useTranslation } from "react-i18next";
 
 interface PagePropsTypes {
   userId: string | null;
@@ -15,9 +16,11 @@ interface PagePropsTypes {
 const Page: FunctionComponent<PagePropsTypes> = (props) => {
   const match = useRouteMatch();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   useEffect(() => {
    dispatch(setError(false));
   }, [match.url]);
+
 
   return (
     <React.Fragment>
@@ -26,7 +29,7 @@ const Page: FunctionComponent<PagePropsTypes> = (props) => {
           <Link to={`/`}><h1 className="header__title">Puzzles together</h1></Link>
         </div>
         <div>
-          <Link to={`/users/${props.userId}/rooms`} className="header__rooms-link">Личный кабинет</Link>
+          <Link to={`/users/${props.userId}/rooms`} className="header__rooms-link">{t("header.personalArea")}</Link>
         </div>
       </header>
       {
