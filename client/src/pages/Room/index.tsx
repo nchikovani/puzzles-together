@@ -6,7 +6,9 @@ import {WithTranslation, withTranslation} from 'react-i18next';
 import {withRouter, RouteComponentProps} from "react-router";
 import {OptionTypes} from 'shared'
 import {StoreTypes} from '../../store/store.types';
+import {Helmet} from "react-helmet";
 import './style.scss';
+
 
 type PathParamsType = {
   roomId: string,
@@ -59,6 +61,9 @@ class Room extends React.Component<PropsType, {}> {
   render() {
     return (
       <div className="App" style={{width: '100%'}}>
+        <Helmet
+          title={`${this.props.t('room.room')}: ${this.props.match.params.roomId}`}
+        />
         <input type="file" accept="image/*" onChange={(e) => this.handleImage(e)} style={{display: 'block'}}/>
         <div className="room-game">
           <div className="room-game__game">

@@ -7,6 +7,7 @@ import {RoomsTypes, StoreTypes} from "../../../store/store.types";
 import {useRouteMatch} from "react-router-dom";
 import {setRooms} from '../../../store/actions';
 import {useTranslation} from "react-i18next";
+import {Helmet} from "react-helmet";
 
 interface UserRoomsTypes {
   rooms: RoomsTypes;
@@ -33,8 +34,13 @@ function Rooms (props: UserRoomsTypes) {
     dispatch(fetchAddRoom(history))
   }
 
-  return props.rooms.isLoaded
-    ? <div className="room-list">
+  return <>
+    <Helmet
+      title={`${t('rooms.myRooms')}`}
+    />
+    {
+      props.rooms.isLoaded
+      ? <div className="room-list">
         <div
           className="room-list__item room-list__create-room"
           onClick={createRoom}
@@ -50,7 +56,11 @@ function Rooms (props: UserRoomsTypes) {
             {room.name || room._id}
           </div>)
         }
-      </div> : null
+      </div>
+      : null
+    }
+  </>
+
 }
 const mapStateToProps = (store: StoreTypes) => {
   return {
