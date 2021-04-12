@@ -8,7 +8,7 @@ import PreLoading from './components/PreLoading';
 import ErrorService from "./service/errorService";
 import './styles/base.scss';
 import SocketService from "./service/socketService";
-import Rooms from "./pages/PersonalArea/Rooms";
+import Rooms from "./pages/Rooms";
 import {connect, useDispatch} from "react-redux";
 import {fetchGetUser} from "./store/actions/fetchActions";
 import {IStore, IErrorState} from "./store/store.types";

@@ -2,10 +2,10 @@ import React, {useEffect} from 'react';
 import {useHistory} from 'react-router-dom'
 import './style.scss';
 import {connect, useDispatch} from "react-redux";
-import {fetchAddRoom, fetchGetRooms} from '../../../store/actions/fetchActions';
-import {IRoomsState, IStore} from "../../../store/store.types";
+import {fetchAddRoom, fetchGetRooms} from '../../store/actions/fetchActions';
+import {IRoomsState, IStore} from "../../store/store.types";
 import {useRouteMatch} from "react-router-dom";
-import {setRooms} from '../../../store/actions';
+import {setRooms} from '../../store/actions';
 import {useTranslation} from "react-i18next";
 import {Helmet} from "react-helmet";
 
@@ -13,11 +13,11 @@ interface IMatchParams {
   userId: string;
 }
 
-interface IUserRooms {
+interface IRoomsProps {
   rooms: IRoomsState;
 }
 
-const Rooms: React.FC<IUserRooms> = ({rooms}) => {
+const Rooms: React.FC<IRoomsProps> = ({rooms}) => {
   const match = useRouteMatch<IMatchParams>();
   const dispatch = useDispatch();
   const history = useHistory();

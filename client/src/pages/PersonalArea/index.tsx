@@ -4,7 +4,7 @@ import React from 'react';
 // import {useRouteMatch} from "react-router-dom";
 // import {fetchGetPersonalArea} from "../../store/actions/fetchActions";
 
-import Rooms from './Rooms';
+import Rooms from '../Rooms';
 
 // interface PersonalAreaPropsTypes {
 //   personalArea: PersonalAreaTypes;
