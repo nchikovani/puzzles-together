@@ -1,17 +1,13 @@
 import * as actionTypes from '../actionTypes';
-import {UserStateTypes} from "../store.types";
-import * as actions from "../actions";
+import {IUserState, ActionType} from "../store.types";
 
-const initial: UserStateTypes = {
+const initial: IUserState = {
   id: null,
   registered: false,
   isLoaded: false,
 }
 
-type InferValueTypes<T> = T extends { [key: string]: infer U} ? U : never;
-type ActionTypes = ReturnType<InferValueTypes<typeof actions>>;
-
-function userReducer(state: UserStateTypes = initial, action: ActionTypes) {
+function userReducer(state: IUserState = initial, action: ActionType) {
   switch (action.type) {
     case actionTypes.SET_USER:
       return {

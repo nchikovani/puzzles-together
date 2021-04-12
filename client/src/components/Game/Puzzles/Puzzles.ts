@@ -1,22 +1,22 @@
 import Part from './Part';
-import {MoveTypes, ConnectionTypes, UpdateTypes, GameDataTypes} from 'shared';
+import {IMove, IConnection, IUpdate, IGameData} from 'shared';
 import {playKnock} from '../utils';
 import {maxZoom, connectionDistance, zoomDifferenceBuffersUpdating} from './puzzleConstants';
 
 class Puzzles {
   parts: Part[];
-  ctx: CanvasRenderingContext2D;
-  _partHeight: number;
-  _partWidth: number;
-  _height: number;
-  _width: number;
+  readonly ctx: CanvasRenderingContext2D;
+  readonly _partHeight: number;
+  readonly _partWidth: number;
+  readonly _height: number;
+  readonly _width: number;
   xIndent: number = 0;
   yIndent: number = 0;
   zoom: number = 1;
   updateBuffersZoom: number = 1;
-  image: HTMLImageElement;
+  readonly image: HTMLImageElement;
 
-  constructor(gameData: GameDataTypes, ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
+  constructor(gameData: IGameData, ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
     this.ctx = ctx;
     this.image = img;
     this._partHeight = gameData.partHeight;
@@ -126,7 +126,7 @@ class Puzzles {
     return this.parts.find(part => part.id === id);
   }
 
-  setUpdate(update: UpdateTypes) {
+  setUpdate(update: IUpdate) {
     const {moves, connections} = update;
     const movedParts: Part[] = [];
 
@@ -143,9 +143,9 @@ class Puzzles {
     })
     this.parts = this.parts.concat(movedParts);
 
-    const connect = (connection: ConnectionTypes) => {
+    const connect = (connection: IConnection) => {
       const part = this.getPartById(connection.id);
-      // @ts-ignore
+
       const link = part && part[connection.link];
       if (link) link.connected = true;
     };
@@ -158,8 +158,8 @@ class Puzzles {
   }
 
   getUpdate(movablePart: Part, x: number, y: number) {
-    const moves: MoveTypes[] = [];
-    let connections: ConnectionTypes[][] = [];
+    const moves: IMove[] = [];
+    let connections: IConnection[][] = [];
     let diffX = 0;
     let diffY = 0;
     let inCanvas = true;
@@ -225,8 +225,8 @@ class Puzzles {
     return inCanvas ? {moves, connections} : {moves: [], connections: []};
   }
 
-  getConnections(movablePart: Part, x: number, y: number):ConnectionTypes[][] {
-    const connections: ConnectionTypes[][] = [];
+  getConnections(movablePart: Part, x: number, y: number):IConnection[][] {
+    const connections: IConnection[][] = [];
     const topPartId = movablePart.topLink?.id;
     const bottomPartId = movablePart.bottomLink?.id;
     const rightPartId = movablePart.rightLink?.id;

@@ -1,4 +1,4 @@
-import {PartTypes, LinkTypes} from 'shared';
+import {IPart, ILink} from 'shared';
 import Puzzles from "./Puzzles";
 import {lineWidthProportion, diffControlPointBottom, diffControlPointTop, protrusionLength, protrusionWidth} from './puzzleConstants';
 
@@ -9,14 +9,14 @@ class Part {
   _y: number;
   xIndex: number;
   yIndex: number;
-  topLink: LinkTypes | null;
-  leftLink: LinkTypes | null;
-  rightLink: LinkTypes | null;
-  bottomLink: LinkTypes | null;
+  topLink: ILink | null;
+  leftLink: ILink | null;
+  rightLink: ILink | null;
+  bottomLink: ILink | null;
   puzzles: Puzzles;
   buffer: HTMLCanvasElement;
 
-  constructor(part: PartTypes, puzzles: Puzzles) {
+  constructor(part: IPart, puzzles: Puzzles) {
     this.id = part.id;
     this._x = part.x;
     this._y = part.y;

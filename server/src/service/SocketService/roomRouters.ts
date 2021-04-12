@@ -1,9 +1,9 @@
 import Puzzle from "../../utils/Puzzle";
 import RoomsService from '../../rooms/rooms.service';
-import {SocketObject, ActiveRoomTypes} from "./SocketService.types";
+import {SocketObject, IActionRoom} from "./SocketService.types";
 import * as webSocketServerActions from 'shared/webSocketServerActions';
 import * as webSocketActionsTypes from 'shared/webSocketActionsTypes';
-import {WebSocketClientActionsTypes} from 'shared';
+import {WebSocketClientActionsType} from 'shared';
 import {ServerError, serverErrorMessages} from 'shared';
 import * as fs from "fs";
 import config from '../../config';
@@ -12,11 +12,11 @@ import {Server} from "socket.io";
 import {DefaultEventsMap} from "socket.io/dist/typed-events";
 const {gameDataAction, optionsAction} = webSocketServerActions;
 
-export default async function roomRouters(action: WebSocketClientActionsTypes, io: Server<DefaultEventsMap, DefaultEventsMap>, socket: SocketObject, activeRoomsService: ActiveRoomsService) {
+export default async function roomRouters(action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>, socket: SocketObject, activeRoomsService: ActiveRoomsService) {
   switch (action.type) {
     case webSocketActionsTypes.JOIN: {
       await RoomsService.updateLastVisit(action.roomId);
-      let joinRoom: ActiveRoomTypes;
+      let joinRoom: IActionRoom;
       const activeRoom = activeRoomsService.findRoom(action.roomId);
       if (activeRoom) {
         joinRoom = activeRoom;

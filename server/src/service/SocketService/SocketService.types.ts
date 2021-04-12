@@ -1,7 +1,7 @@
 import Puzzle from "../../utils/Puzzle";
 import {Socket} from "socket.io";
 
-export interface ActiveRoomTypes {
+export interface IActionRoom {
   _id: string;
   owner: string;
   puzzle: Puzzle | null;

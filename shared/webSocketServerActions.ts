@@ -1,16 +1,16 @@
-import {GameDataTypes, OptionTypes, UpdateTypes} from "./Game.types";
+import {IGameData, IOption, IUpdate} from "./Game.types";
 import * as actionTypes from './webSocketActionsTypes';
 
 //server
-export const gameDataAction = (gameData: GameDataTypes) => (<const>{
+export const gameDataAction = (gameData: IGameData) => (<const>{
   type: actionTypes.GAME_DATA,
   gameData,
 });
-export const optionsAction = (options: OptionTypes[]) => (<const>{
+export const optionsAction = (options: IOption[]) => (<const>{
   type: actionTypes.OPTIONS,
   options,
 });
-export const updateAction = (update: UpdateTypes) => (<const>{
+export const updateAction = (update: IUpdate) => (<const>{
   type: actionTypes.UPDATE,
   update,
 });

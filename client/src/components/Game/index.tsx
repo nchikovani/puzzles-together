@@ -1,21 +1,21 @@
 import React, {createRef, RefObject} from 'react';
 import Puzzles from "./Puzzles/Puzzles";
 import Part from './Puzzles/Part';
-import {GameDataTypes, UpdateTypes} from "shared";
-import {StoreTypes} from "../../store/store.types";
+import {IGameData, IUpdate} from "shared";
+import {IStore} from "../../store/store.types";
 import SocketService from '../../service/socketService';
 import './style.scss';
 import {connect} from "react-redux";
 import {fps, canvasProportions} from './Puzzles/puzzleConstants';
 
-interface GamePropsTypes {
-  gameData: GameDataTypes | null;
-  update: UpdateTypes | null;
+interface IGameProps {
+  gameData: IGameData | null;
+  update: IUpdate | null;
   isSolved: boolean;
   socketService: SocketService;
 }
 
-class Game extends React.Component<GamePropsTypes, any>{
+class Game extends React.Component<IGameProps, {}>{
   puzzles: Puzzles | null = null;
   canvasRef: RefObject<HTMLCanvasElement>;
   mouseX: number = 0;
@@ -26,12 +26,12 @@ class Game extends React.Component<GamePropsTypes, any>{
   movablePartYDiff: number = 0;
   startXMovingCanvas: number = 0;
   startYMovingCanvas: number = 0;
-  oldUpdateFromServer: UpdateTypes | null = null;
+  oldUpdateFromServer: IUpdate | null = null;
   zoomIsChanged: boolean = false;
   ctx: CanvasRenderingContext2D | null = null;
   setIntervalId: number | null = null;
 
-  constructor(props: GamePropsTypes) {
+  constructor(props: IGameProps) {
     super(props);
     this.canvasRef = createRef();
 
@@ -43,7 +43,7 @@ class Game extends React.Component<GamePropsTypes, any>{
     this.finishMoves = this.finishMoves.bind(this);
   }
 
-  componentDidUpdate(prevProps: Readonly<GamePropsTypes>, prevState: Readonly<any>, snapshot?: any) {
+  componentDidUpdate(prevProps: Readonly<IGameProps>) {
     const {gameData} = this.props;
     if (gameData && gameData !== prevProps.gameData) {
       let image = new Image();
@@ -72,7 +72,7 @@ class Game extends React.Component<GamePropsTypes, any>{
     window.removeEventListener(`resize`, this.resizeHandler);
   }
 
-  initGame(gameData: GameDataTypes, image: HTMLImageElement) {
+  initGame(gameData: IGameData, image: HTMLImageElement) {
     if (!this.ctx) return;
     this.puzzles = new Puzzles(gameData, this.ctx, image);
 
@@ -83,7 +83,7 @@ class Game extends React.Component<GamePropsTypes, any>{
   updateCanvas() {
     if (!this.puzzles) return;
     if (!this.canvasIsMoving && !this.movablePart && this.oldUpdateFromServer === this.props.update && !this.zoomIsChanged) return;
-    const fullUpdate: UpdateTypes = {
+    const fullUpdate: IUpdate = {
       moves: [],
       connections: [],
     };
@@ -177,7 +177,7 @@ class Game extends React.Component<GamePropsTypes, any>{
 
 }
 
-const mapStateToProps = (store: StoreTypes) => {
+const mapStateToProps = (store: IStore) => {
   return {
     gameData: store.game.gameData,
     update: store.game.update,

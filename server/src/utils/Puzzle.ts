@@ -1,7 +1,7 @@
 const shortid = require('shortid');
 import {ServerError, serverErrorMessages} from 'shared';
 
-import {ConnectionTypes, GameDataTypes, OptionTypes, PartTypes, UpdateTypes} from 'shared';
+import {IConnection, IGameData, IOption, IPart, ILink, IUpdate} from 'shared';
 const sizeOf = require('image-size');
 
 const canvasProportions = 1.7;
@@ -25,8 +25,8 @@ class Puzzle {
   connectionCount: number = 0;
   solvedConnectionCount: number = 0;
   isSolved: boolean = false;
-  parts: PartTypes[] = [];
-  options: OptionTypes[] = [];
+  parts: IPart[] = [];
+  options: IOption[] = [];
   isInit: boolean = false;
   puzzleIsCreated: boolean = false;
 
@@ -110,7 +110,7 @@ class Puzzle {
   }
 
   _setPartsCountOptions () {
-    const options: OptionTypes[] = []
+    const options: IOption[] = []
     const smallSide = this.width > this.height ? 'height' : 'width';
     const bigSide = smallSide === 'height' ? 'width' : 'height';
 
@@ -144,7 +144,7 @@ class Puzzle {
     return connectionCount;
   }
 
-  getGameData(): GameDataTypes {
+  getGameData(): IGameData {
     if (!this.puzzleIsCreated) {
       throw  new ServerError(400, serverErrorMessages.puzzleNotCreated);
     }
@@ -158,7 +158,7 @@ class Puzzle {
     };
   }
 
-  update(update: UpdateTypes) {
+  update(update: IUpdate) {
     if (!this.puzzleIsCreated) {
       throw new ServerError(400, serverErrorMessages.puzzleNotCreated);
     }
@@ -172,10 +172,10 @@ class Puzzle {
       }
     });
 
-    const connect = (connection: ConnectionTypes) => {
+    const connect = (connection: IConnection) => {
       const targetPart = this.parts.find((part) => part && part.id === connection.id);
       const link = targetPart && targetPart[connection.link];
-      if (link && link.connected === false) {
+      if (link && !link.connected) {
         link.connected = true;
         this.solvedConnectionCount++
         if (this.solvedConnectionCount === this.connectionCount) {
@@ -191,14 +191,18 @@ class Puzzle {
 
 
   _createParts() {
-    const parts: PartTypes[] = [];
+    const parts: IPart[] = [];
     const getRandomLinkType = () => {
       return Math.random() > 0.5 ? 'concave': 'convex';
     }
 
     for (let i = 0; i < this.columnCount; i++) {
       for (let j = 0; j < this.rowCount; j++) {
-        let topLink = null, rightLink = null, leftLink = null, bottomLink = null;
+        type LinkTypesOrNull = ILink | null;
+        let topLink: LinkTypesOrNull= null;
+        let rightLink: LinkTypesOrNull = null;
+        let leftLink: LinkTypesOrNull = null;
+        let bottomLink: LinkTypesOrNull = null;
         const id = shortid.generate();
         if (j !== 0) {
           const connectingPart = parts.find((part) => part.xIndex === i && part.yIndex === j - 1);

@@ -1,18 +1,14 @@
 import * as actionTypes from '../actionTypes';
-import {ErrorStateTypes} from "../store.types";
-import * as actions from "../actions";
+import {IErrorState, ActionType} from "../store.types";
 
-const initial: ErrorStateTypes = {
+const initial: IErrorState = {
   isError: false,
   showType: null,
   message: null,
   statusCode: null,
 }
 
-type InferValueTypes<T> = T extends { [key: string]: infer U} ? U : never;
-type ActionTypes = ReturnType<InferValueTypes<typeof actions>>;
-
-function errorReducer(state: ErrorStateTypes = initial, action: ActionTypes) {
+function errorReducer(state: IErrorState = initial, action: ActionType) {
   switch (action.type) {
     case actionTypes.SET_ERROR:
       return {

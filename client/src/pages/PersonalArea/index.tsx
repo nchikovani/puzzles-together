@@ -10,14 +10,7 @@ import Rooms from './Rooms';
 //   personalArea: PersonalAreaTypes;
 // }
 
-function PersonalArea () {
-  // const match = useRouteMatch();
-  // const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   // @ts-ignore
-  //   dispatch(fetchGetPersonalArea(match.params.userId));
-  // }, [dispatch, match.params]);
+const PersonalArea = () => {
 
   return (
     <div>

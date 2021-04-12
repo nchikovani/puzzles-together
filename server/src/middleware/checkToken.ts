@@ -10,7 +10,6 @@ export const checkToken = (req: Request, res: Response, next: NextFunction) => {
     if(err){
       return res.status(401 ).json({message: serverErrorMessages.invalidToken});
     } else if (data.id){
-      // @ts-ignore
       req.userId = data.id;
       next();
     }

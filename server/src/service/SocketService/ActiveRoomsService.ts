@@ -1,13 +1,13 @@
-import {ActiveRoomTypes} from "./SocketService.types";
+import {IActionRoom} from "./SocketService.types";
 
 class ActiveRoomsService {
-  activeRooms: ActiveRoomTypes[] = [];
+  activeRooms: IActionRoom[] = [];
 
   findRoom(roomId: string) {
     return this.activeRooms.find(activeRoom => activeRoom._id == roomId);
   }
 
-  addRoom(room: ActiveRoomTypes) {
+  addRoom(room: IActionRoom) {
     this.activeRooms.push(room);
   }
 

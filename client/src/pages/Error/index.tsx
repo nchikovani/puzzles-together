@@ -6,12 +6,12 @@ import './style.scss';
 import {useTranslation} from "react-i18next";
 import getServerMessageTranslation from '../../utils/getServerMessageTranslation';
 
-interface ErrorPropsTypes {
+interface IErrorProps {
   message: string | null;
   statusCode: number | null;
 }
 
-function Error(props: ErrorPropsTypes) {
+const Error: React.FC<IErrorProps> = ({message, statusCode}) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const {t} = useTranslation();
@@ -20,17 +20,17 @@ function Error(props: ErrorPropsTypes) {
     history.push('/');
   }
 
-  let message;
-  if (props.statusCode) {
-    message = getServerMessageTranslation(props.message, t);
+  let messageTranslation;
+  if (statusCode) {
+    messageTranslation = getServerMessageTranslation(message, t);
   } else {
-    message = props.message;
+    messageTranslation = message;
   }
   return (
     <div className="error-page" onClick={goToMainPage}>
       <div className="error-page__error-content error-content">
-        <div className="error-content__error-title">{t("error.error")} {props.statusCode}</div>
-        <div className="error-content__error-message">{message}</div>
+        <div className="error-content__error-title">{t("error.error")} {statusCode}</div>
+        <div className="error-content__error-message">{messageTranslation}</div>
       </div>
     </div>
   )

@@ -3,13 +3,13 @@ import {SocketObject} from "./SocketService.types";
 import ActiveRoomsService from './ActiveRoomsService';
 import * as webSocketServerActions from 'shared/webSocketServerActions';
 import * as webSocketActionsTypes from 'shared/webSocketActionsTypes';
-import {WebSocketClientActionsTypes} from 'shared';
+import {WebSocketClientActionsType} from 'shared';
 import {ServerError, serverErrorMessages} from 'shared';
 import {Server} from "socket.io";
 import {DefaultEventsMap} from "socket.io/dist/typed-events";
 const {gameDataAction, optionsAction, updateAction, solvedAction} = webSocketServerActions;
 
-export default async function puzzleRouter(action: WebSocketClientActionsTypes, io: Server<DefaultEventsMap, DefaultEventsMap>, socket: SocketObject, activeRoomsService: ActiveRoomsService) {
+export default async function puzzleRouter(action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>, socket: SocketObject, activeRoomsService: ActiveRoomsService) {
   switch (action.type) {
     case webSocketActionsTypes.GET_OPTIONS: {//проверять токен  //берет опции и СОЗДАЕТ НОВЫЙ ОБЪЕКТ ПАЗЛА
       const roomId = socket.roomId;

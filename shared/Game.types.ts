@@ -1,46 +1,46 @@
-export interface GameDataTypes {
+export interface IGameData {
   image: string;
   partWidth: number;
   partHeight: number;
-  parts: PartTypes[];
+  parts: IPart[];
   width: number;
   height: number;
 }
 
-export interface PartTypes {
+export interface IPart {
   id: string;
   xIndex: number;
   yIndex: number;
   x: number;
   y: number;
-  topLink: LinkTypes | null;
-  leftLink: LinkTypes | null;
-  rightLink: LinkTypes | null;
-  bottomLink: LinkTypes | null;
+  topLink: ILink | null;
+  leftLink: ILink | null;
+  rightLink: ILink | null;
+  bottomLink: ILink | null;
 }
 
-export interface LinkTypes {
-  type: string;
+export interface ILink {
+  type: 'concave' | 'convex';
   connected: boolean;
   id: string;
 }
-export interface UpdateTypes {
-  moves: MoveTypes[];
-  connections: ConnectionTypes[][];
+export interface IUpdate {
+  moves: IMove[];
+  connections: IConnection[][];
 }
 
-export interface MoveTypes {
+export interface IMove {
   id: string;
   x: number;
   y: number;
 }
 
-export interface ConnectionTypes {
+export interface IConnection {
   id: string;
   link: 'topLink' | 'bottomLink' | 'rightLink' | 'leftLink';
 }
 
-export interface OptionTypes {
+export interface IOption {
   columnCount: number;
   rowCount: number;
   id: string;

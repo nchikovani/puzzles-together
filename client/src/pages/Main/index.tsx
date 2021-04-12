@@ -3,11 +3,11 @@ import SocketService from "../../service/socketService";
 import {Helmet} from "react-helmet";
 import {useTranslation} from "react-i18next";
 
-interface MainPropsTypes {
+interface IMainProps {
   socketService: SocketService;
 }
 
-function Main(props: MainPropsTypes) {
+const Main: React.FC<IMainProps> = () => {
   const {t} = useTranslation();
   // const createRoom = () => {
   //   props.socketService.createRoom();

@@ -3,7 +3,7 @@ import {DefaultEventsMap} from "socket.io/dist/typed-events";
 import {SocketObject} from "./SocketService.types";
 import ActiveRoomsService from './ActiveRoomsService';
 import * as webSocketServerActions from 'shared/webSocketServerActions';
-import {WebSocketClientActionsTypes} from 'shared';
+import {WebSocketClientActionsType} from 'shared';
 import {ServerError, serverErrorMessages} from 'shared';
 import * as fs from "fs";
 import config from '../../config';
@@ -56,8 +56,8 @@ class SocketService {
     }
   }
 
-  asyncMiddleware (fn: (action: WebSocketClientActionsTypes, io: Server<DefaultEventsMap, DefaultEventsMap>,  socket: SocketObject, activeRoomsService: ActiveRoomsService) => void) {
-    return async (action: WebSocketClientActionsTypes, socket: SocketObject) => {
+  asyncMiddleware (fn: (action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>,  socket: SocketObject, activeRoomsService: ActiveRoomsService) => void) {
+    return async (action: WebSocketClientActionsType, socket: SocketObject) => {
       try {
         await fn(action, this.io, socket, this.activeRoomsService);
       } catch (error) {

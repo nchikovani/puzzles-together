@@ -1,6 +1,6 @@
 import { model, Schema, Model, Document } from 'mongoose';
 
-export interface UserTypes extends Document {
+export interface IUser extends Document {
   registered: boolean;
 }
 
@@ -10,6 +10,6 @@ const UsersSchema = new Schema({
   // salt: String,
 });
 
-const Users: Model<UserTypes> = model('Users', UsersSchema);
+const Users: Model<IUser> = model('Users', UsersSchema);
 
 export default Users;

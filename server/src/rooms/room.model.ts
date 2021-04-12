@@ -1,6 +1,6 @@
 import { model, Schema, Model, Document } from 'mongoose';
 
-export interface RoomTypes extends Document {
+export interface IRoom extends Document {
   owner: any;
   name: string;
   lastVisit: Date;
@@ -12,6 +12,6 @@ const RoomsSchema = new Schema({
   lastVisit: {type: Date, required: true, default: new Date() }
 });
 
-const Rooms: Model<RoomTypes> = model('Rooms', RoomsSchema);
+const Rooms: Model<IRoom> = model('Rooms', RoomsSchema);
 
 export default Rooms;

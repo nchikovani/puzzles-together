@@ -1,16 +1,12 @@
 import * as actionTypes from '../actionTypes';
-import {RoomsTypes} from "../store.types";
-import * as actions from "../actions";
+import {IRoomsState, ActionType} from "../store.types";
 
 const initial = {
   list: [],
   isLoaded: false,
 }
 
-type InferValueTypes<T> = T extends { [key: string]: infer U} ? U : never;
-type ActionTypes = ReturnType<InferValueTypes<typeof actions>>;
-
-function roomsReducer(state: RoomsTypes = initial, action: ActionTypes) {
+function roomsReducer(state: IRoomsState = initial, action: ActionType) {
   switch (action.type) {
     case actionTypes.SET_ROOMS:
       return {

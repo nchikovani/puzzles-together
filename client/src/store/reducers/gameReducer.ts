@@ -1,18 +1,14 @@
 import * as actionTypes from '../actionTypes';
-import {GameStateTypes} from "../store.types";
-import * as actions from "../actions";
+import {IGameState, ActionType} from "../store.types";
 
-const initial: GameStateTypes = {
+const initial: IGameState = {
 	gameData: null,
   update: null,
   options: null,
   isSolved: false,
 }
 
-type InferValueTypes<T> = T extends { [key: string]: infer U} ? U : never;
-type ActionTypes = ReturnType<InferValueTypes<typeof actions>>;
-
-function gameReducer(state: GameStateTypes = initial, action: ActionTypes) {
+function gameReducer(state: IGameState = initial, action: ActionType) {
   switch (action.type) {
     case actionTypes.SET_GAME_DATA:
       return {

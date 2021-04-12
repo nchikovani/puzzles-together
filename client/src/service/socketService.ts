@@ -1,5 +1,5 @@
 import {io} from "socket.io-client";
-import {UpdateTypes, WebSocketServerActionsTypes} from 'shared';
+import {IUpdate, WebSocketServerActionsType} from 'shared';
 import {webSocketActionsTypes, webSocketClientActions, ServerError} from 'shared';
 import store from '../store';
 import {setGameData, setUpdate, setOptions, setIsSolved} from '../store/actions';
@@ -27,7 +27,7 @@ export default class socketService {
     this.socket.disconnect();
   }
 
-  puzzleHandlers(action: WebSocketServerActionsTypes) {
+  puzzleHandlers(action: WebSocketServerActionsType) {
     switch (action.type) {
       case webSocketActionsTypes.OPTIONS:
         store.dispatch(setOptions(action.options));
@@ -58,7 +58,7 @@ export default class socketService {
     this.socket.emit('puzzle', createAction(optionId));
   }
 
-  sendUpdate (update: UpdateTypes) {
+  sendUpdate (update: IUpdate) {
     this.socket.emit('puzzle', setUpdateAction(update));
   }
 }

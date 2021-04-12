@@ -1,5 +1,5 @@
 import * as actionTypes from '../actionTypes';
-import {GameDataTypes, UpdateTypes, OptionTypes} from 'shared';
+import {IGameData, IUpdate, IOption} from 'shared';
 
 export const setError = (isError: boolean, showType?: string, message?: string, statusCode?: number) => (<const>{
   type: actionTypes.SET_ERROR,
@@ -27,17 +27,17 @@ export const addRoom = (room: any) => (<const>{
   room,
 });
 
-export const setGameData = (gameData: GameDataTypes) => (<const>{
+export const setGameData = (gameData: IGameData) => (<const>{
   type: actionTypes.SET_GAME_DATA,
   gameData,
 });
 
-export const setOptions = (options: OptionTypes[]) =>  (<const>{
+export const setOptions = (options: IOption[]) =>  (<const>{
   type: actionTypes.SET_OPTIONS,
   options,
 });
 
-export function setUpdate(update: UpdateTypes) {
+export function setUpdate(update: IUpdate) {
   return <const>{
     type: actionTypes.SET_UPDATE,
     update,

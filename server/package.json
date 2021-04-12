@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "startDev": "ts-node-dev src/index.ts",
+    "start": "ts-node --files src/index.ts",
+    "startDev": "ts-node-dev --files src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tslint": "tslint --project tsconfig.json --config tslint.json",
     "tslint-fix": "tslint --project tsconfig.json --config tslint.json --fix",

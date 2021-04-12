@@ -3,12 +3,12 @@ import * as webSocketServerActions from "./webSocketServerActions";
 import * as webSocketActionsTypes from './webSocketActionsTypes';
 import ServerError, {serverErrorMessages} from "./ServerError";
 
-import {ConnectionTypes, GameDataTypes, LinkTypes, MoveTypes, OptionTypes, PartTypes, UpdateTypes} from './Game.types';
+import {IConnection, IGameData, ILink, IMove, IOption, IPart, IUpdate} from './Game.types';
 
 type InferValueTypes<T> = T extends { [key: string]: infer U} ? U : never;
 
-type WebSocketClientActionsTypes = ReturnType<InferValueTypes<typeof webSocketClientActions>>;
-type WebSocketServerActionsTypes = ReturnType<InferValueTypes<typeof webSocketServerActions>>;
+type WebSocketClientActionsType = ReturnType<InferValueTypes<typeof webSocketClientActions>>;
+type WebSocketServerActionsType = ReturnType<InferValueTypes<typeof webSocketServerActions>>;
 
 export {
   webSocketActionsTypes,
@@ -18,14 +18,14 @@ export {
   serverErrorMessages,
 };
 export type {
-  ConnectionTypes,
-  GameDataTypes,
-  LinkTypes,
-  MoveTypes,
-  OptionTypes,
-  PartTypes,
-  UpdateTypes,
+  IConnection,
+  IGameData,
+  ILink,
+  IMove,
+  IOption,
+  IPart,
+  IUpdate,
 
-  WebSocketClientActionsTypes,
-  WebSocketServerActionsTypes
+  WebSocketClientActionsType,
+  WebSocketServerActionsType
 };

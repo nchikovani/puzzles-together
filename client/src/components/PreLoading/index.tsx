@@ -1,17 +1,17 @@
-import React, {FunctionComponent} from 'react';
+import React from 'react';
 import './style.scss'
 
-interface PreLoadingPropsTypes {
+interface IPreLoadingProps {
   loadingIsComplete: boolean
 }
 
-const PreLoading: FunctionComponent<PreLoadingPropsTypes> = (props) => {
+const PreLoading: React.FC<IPreLoadingProps> = ({loadingIsComplete, children}) => {
 
   return (
     <>
       {
-        props.loadingIsComplete
-        ? props.children
+        loadingIsComplete
+        ? children
         : <div className='pre-loading'>
             <div className="lds-roller">
               <div></div>

@@ -1,40 +1,44 @@
-import {GameDataTypes, UpdateTypes, OptionTypes} from 'shared'
+import {IGameData, IUpdate, IOption} from 'shared'
+import * as actions from "./actions";
 
-export interface GameStateTypes {
-  gameData: GameDataTypes | null;
-  update: UpdateTypes | null;
-  options: OptionTypes[] | null;
+export interface IGameState {
+  gameData: IGameData | null;
+  update: IUpdate | null;
+  options: IOption[] | null;
   isSolved: boolean;
 }
 
-export interface RoomsTypes {
-  list: RoomTypes[];
+export interface IRoomsState {
+  list: IRoomState[];
   isLoaded: boolean;
 }
 
-export interface RoomTypes {
+export interface IRoomState {
   _id: string;
   owner: string;
   name?: string;
   puzzle?: string;
 }
 
-export interface UserStateTypes {
+export interface IUserState {
   id: string | null;
   registered: false;
   isLoaded: boolean;
 }
 
-export interface ErrorStateTypes {
+export interface IErrorState {
   isError: boolean,
   showType: string | null,
   message: string | null,
   statusCode: number | null,
 }
 
-export interface StoreTypes {
-  game: GameStateTypes;
-  user: UserStateTypes;
-  rooms: RoomsTypes;
-  error: ErrorStateTypes;
+export interface IStore {
+  game: IGameState;
+  user: IUserState;
+  rooms: IRoomsState;
+  error: IErrorState;
 }
+
+type InferValueTypes<T> = T extends { [key: string]: infer U} ? U : never;
+export type ActionType = ReturnType<InferValueTypes<typeof actions>>;

@@ -4,30 +4,30 @@ import SocketService from '../../service/socketService';
 import {connect} from "react-redux";
 import {WithTranslation, withTranslation} from 'react-i18next';
 import {withRouter, RouteComponentProps} from "react-router";
-import {OptionTypes} from 'shared'
-import {StoreTypes} from '../../store/store.types';
+import {IOption} from 'shared'
+import {IStore} from '../../store/store.types';
 import {Helmet} from "react-helmet";
 import './style.scss';
 
 
-type PathParamsType = {
-  roomId: string,
+interface IMatchParams {
+  roomId: string;
 }
 
-type PropsType = RouteComponentProps<PathParamsType> & WithTranslation & {
+interface IRoomProps extends RouteComponentProps<IMatchParams>, WithTranslation {
   socketService: SocketService;
-  options: OptionTypes[] | null;
+  options: IOption[] | null;
 }
 
-class Room extends React.Component<PropsType, {}> {
-  constructor(props: PropsType) {
+class Room extends React.Component<IRoomProps, {}> {
+  constructor(props: IRoomProps) {
     super(props);
     const roomId = props.match.params.roomId;
     props.socketService.connect();
     props.socketService.joinRoom(roomId);
   }
 
-  componentDidUpdate(prevProps: Readonly<PropsType>) {
+  componentDidUpdate(prevProps: Readonly<IRoomProps>) {
     if (this.props.options && this.props.options !== prevProps.options) {
       let optionsText = 'Выбирай: ';
        this.props.options.forEach(option => {
@@ -52,8 +52,9 @@ class Room extends React.Component<PropsType, {}> {
 
     let reader = new FileReader();
     reader.addEventListener('load', (e) => {
-      // @ts-ignore
-      this.props.socketService.getOptions(e.target.result);
+      if (e.target && typeof e.target.result === 'string') {
+        this.props.socketService.getOptions(e.target.result);
+      }
     });
     reader.readAsDataURL(file);
   }
@@ -76,7 +77,7 @@ class Room extends React.Component<PropsType, {}> {
   }
 }
 
-const mapStateToProps = (store: StoreTypes) => {
+const mapStateToProps = (store: IStore) => {
   return {
     options: store.game.options
   }

@@ -1,6 +1,6 @@
 import React, {FunctionComponent, useEffect} from 'react';
 import './style.scss';
-import {StoreTypes, ErrorStateTypes} from "../../store/store.types";
+import {IStore, IErrorState} from "../../store/store.types";
 import {connect, useDispatch} from "react-redux";
 import {Link} from 'react-router-dom';
 import {useRouteMatch} from "react-router-dom";
@@ -8,12 +8,12 @@ import Error from "../../pages/Error";
 import {setError} from '../../store/actions'
 import { useTranslation } from "react-i18next";
 
-interface PagePropsTypes {
+interface IPageProps {
   userId: string | null;
-  error: ErrorStateTypes;
+  error: IErrorState;
 }
 
-const Page: FunctionComponent<PagePropsTypes> = (props) => {
+const Page: FunctionComponent<IPageProps> = ({userId, error, children}) => {
   const match = useRouteMatch();
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -29,21 +29,21 @@ const Page: FunctionComponent<PagePropsTypes> = (props) => {
           <Link to={`/`}><h1 className="header__title">Puzzles together</h1></Link>
         </div>
         <div>
-          <Link to={`/users/${props.userId}/rooms`} className="header__rooms-link">{t("header.personalArea")}</Link>
+          <Link to={`/users/${userId}/rooms`} className="header__rooms-link">{t("header.personalArea")}</Link>
         </div>
       </header>
       {
-        props.error.isError && props.error.showType === 'page'
-        ? <Error message={props.error.message} statusCode={props.error.statusCode}/>
+        error.isError && error.showType === 'page'
+        ? <Error message={error.message} statusCode={error.statusCode}/>
         : <div className="page-wrapper">
-          {props.children}
+          {children}
         </div>
       }
     </React.Fragment>
   )
 }
 
-const mapStateToProps = (store: StoreTypes) => {
+const mapStateToProps = (store: IStore) => {
   return {
     userId: store.user.id,
     error: store.error
