@@ -18,7 +18,7 @@ const Page: FunctionComponent<IPageProps> = ({userId, error, children}) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   useEffect(() => {
-   dispatch(setError(false));
+   error.isError && dispatch(setError(false));
   }, [match.url]);
 
 
