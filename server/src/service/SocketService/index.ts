@@ -12,8 +12,8 @@ import puzzleRouters from './puzzleRouters';
 const {errorAction} = webSocketServerActions;
 
 class SocketService {
-  io: Server<DefaultEventsMap, DefaultEventsMap>;
-  activeRoomsService: ActiveRoomsService;
+  readonly io: Server<DefaultEventsMap, DefaultEventsMap>;
+  readonly activeRoomsService: ActiveRoomsService;
 
   constructor(io: Server<DefaultEventsMap, DefaultEventsMap>) {
     this.io = io;
@@ -38,7 +38,7 @@ class SocketService {
     });
   }
 
-  async disconnectHandler(socket: SocketObject) {
+  private async disconnectHandler(socket: SocketObject) {
     if (socket.roomId) {
       const clients = this.io.sockets.adapter.rooms.get(socket.roomId);
       socket.leave(socket.roomId);
@@ -56,7 +56,7 @@ class SocketService {
     }
   }
 
-  asyncMiddleware (fn: (action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>,  socket: SocketObject, activeRoomsService: ActiveRoomsService) => void) {
+  private asyncMiddleware (fn: (action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>,  socket: SocketObject, activeRoomsService: ActiveRoomsService) => void) {
     return async (action: WebSocketClientActionsType, socket: SocketObject) => {
       try {
         await fn(action, this.io, socket, this.activeRoomsService);
@@ -66,7 +66,7 @@ class SocketService {
     };
   }
 
-  errorHandler(error: unknown, socket: SocketObject) {
+  private errorHandler(error: unknown, socket: SocketObject) {
     console.log(error);
     if (error instanceof ServerError) {
       socket.emit('puzzle', errorAction(error.code, error.message)); //ev может быть и другим

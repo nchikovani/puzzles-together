@@ -4,17 +4,17 @@ import {playKnock} from '../utils';
 import {maxZoom, connectionDistance, zoomDifferenceBuffersUpdating} from './puzzleConstants';
 
 class Puzzles {
-  parts: Part[];
+  readonly parts: Part[];
   readonly ctx: CanvasRenderingContext2D;
   readonly _partHeight: number;
   readonly _partWidth: number;
   readonly _height: number;
   readonly _width: number;
-  xIndent: number = 0;
-  yIndent: number = 0;
-  zoom: number = 1;
-  updateBuffersZoom: number = 1;
   readonly image: HTMLImageElement;
+  private _xIndent: number = 0;
+  private _yIndent: number = 0;
+  private _zoom: number = 1;
+  private latestUpdateBuffersZoom: number = 1;
 
   constructor(gameData: IGameData, ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
     this.ctx = ctx;
@@ -27,72 +27,84 @@ class Puzzles {
   }
 
   get partWidth() {
-    return this._partWidth * this.zoom * this.ctx.canvas.width;
+    return this._partWidth * this._zoom * this.ctx.canvas.width;
   }
 
   get partHeight() {
-    return this._partHeight * this.zoom * this.ctx.canvas.width;
+    return this._partHeight * this._zoom * this.ctx.canvas.width;
   }
 
   get width() {
-    return this._width * this.zoom * this.ctx.canvas.width;
+    return this._width * this._zoom * this.ctx.canvas.width;
   }
 
   get height() {
-    return this._height * this.zoom * this.ctx.canvas.width;
+    return this._height * this._zoom * this.ctx.canvas.width;
+  }
+
+  get xIndent() {
+    return this._xIndent;
+  }
+
+  get yIndent() {
+    return this._yIndent;
+  }
+
+  get zoom() {
+    return this._zoom;
   }
 
   zoomIncrement(mouseX: number, mouseY: number) {
-    if (this.zoom >= maxZoom) return;
-    const newZoom = this.zoom * 1.1 > maxZoom ? maxZoom : this.zoom * 1.1;
-    this.xIndent -= (mouseX - this.xIndent) * (newZoom - this.zoom) / this.zoom;
-    this.yIndent -= (mouseY - this.yIndent) * (newZoom - this.zoom) / this.zoom;
-    this.zoom = newZoom;
+    if (this._zoom >= maxZoom) return;
+    const newZoom = this._zoom * 1.1 > maxZoom ? maxZoom : this._zoom * 1.1;
+    this._xIndent -= (mouseX - this._xIndent) * (newZoom - this._zoom) / this._zoom;
+    this._yIndent -= (mouseY - this._yIndent) * (newZoom - this._zoom) / this._zoom;
+    this._zoom = newZoom;
   }
 
   zoomDecrement(mouseX: number, mouseY: number) {
-    if (this.zoom <= 1) return;
-    const newZoom = this.zoom / 1.1 < 1 ? 1 : this.zoom / 1.1;
-    this.xIndent += (mouseX - this.xIndent) * (this.zoom - newZoom) / this.zoom;
-    this.yIndent += (mouseY - this.yIndent) * (this.zoom - newZoom) / this.zoom;
-    if (this.xIndent > 0) this.xIndent = 0;
-    if (this.yIndent > 0) this.yIndent = 0;
+    if (this._zoom <= 1) return;
+    const newZoom = this._zoom / 1.1 < 1 ? 1 : this._zoom / 1.1;
+    this._xIndent += (mouseX - this._xIndent) * (this._zoom - newZoom) / this._zoom;
+    this._yIndent += (mouseY - this._yIndent) * (this._zoom - newZoom) / this._zoom;
+    if (this._xIndent > 0) this._xIndent = 0;
+    if (this._yIndent > 0) this._yIndent = 0;
 
-    this.zoom = newZoom < 1 ? 1 : newZoom;
+    this._zoom = newZoom < 1 ? 1 : newZoom;
     const canvasWidth = this.ctx.canvas.width;
     const canvasHeight = this.ctx.canvas.height;
 
-    if ((canvasWidth - this.xIndent) / this.zoom > canvasWidth) {
-      this.xIndent = canvasWidth - canvasWidth * this.zoom;
+    if ((canvasWidth - this._xIndent) / this._zoom > canvasWidth) {
+      this._xIndent = canvasWidth - canvasWidth * this._zoom;
     }
-    if ((canvasHeight - this.yIndent) / this.zoom > canvasHeight) {
-      this.yIndent = canvasHeight - canvasHeight * this.zoom;
+    if ((canvasHeight - this._yIndent) / this._zoom > canvasHeight) {
+      this._yIndent = canvasHeight - canvasHeight * this._zoom;
     }
   }
 
   incrementIndent (xIncrement: number, yIncrement: number) {
-    const newXIndent = this.xIndent + xIncrement;
-    const newYIndent = this.yIndent + yIncrement;
+    const newXIndent = this._xIndent + xIncrement;
+    const newYIndent = this._yIndent + yIncrement;
 
-    const xMin = -this.ctx.canvas.width * (this.zoom - 1);
-    const yMin = -this.ctx.canvas.height * (this.zoom - 1);
+    const xMin = -this.ctx.canvas.width * (this._zoom - 1);
+    const yMin = -this.ctx.canvas.height * (this._zoom - 1);
     const xMax = 0;
     const yMax = 0;
 
     if (newXIndent > xMax) {
-      this.xIndent = xMax;
+      this._xIndent = xMax;
     } else if (newXIndent < xMin){
-      this.xIndent = xMin
+      this._xIndent = xMin
     } else {
-      this.xIndent = newXIndent;
+      this._xIndent = newXIndent;
     }
 
     if (newYIndent > yMax) {
-      this.yIndent = yMax;
+      this._yIndent = yMax;
     } else if (newYIndent < yMin){
-      this.yIndent = yMin
+      this._yIndent = yMin
     } else {
-      this.yIndent = newYIndent;
+      this._yIndent = newYIndent;
     }
   }
 
@@ -102,10 +114,10 @@ class Puzzles {
 
   drawPuzzles() {
     const {ctx} = this;
-    if (this.updateBuffersZoom / this.zoom  > zoomDifferenceBuffersUpdating || (this.zoom === 1 && this.updateBuffersZoom !== 1) ||
-      this.zoom / this.updateBuffersZoom > zoomDifferenceBuffersUpdating || (this.zoom === maxZoom && this.updateBuffersZoom !== maxZoom)) {
+    if (this.latestUpdateBuffersZoom / this._zoom  > zoomDifferenceBuffersUpdating || (this._zoom === 1 && this.latestUpdateBuffersZoom !== 1) ||
+      this._zoom / this.latestUpdateBuffersZoom > zoomDifferenceBuffersUpdating || (this._zoom === maxZoom && this.latestUpdateBuffersZoom !== maxZoom)) {
       this.updatePartsBuffers();
-      this.updateBuffersZoom = this.zoom;
+      this.latestUpdateBuffersZoom = this._zoom;
     }
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -137,11 +149,19 @@ class Puzzles {
         movedParts.push(targetPart);
       }
     });
-
-    this.parts = this.parts.filter(part => {
-      return !movedParts.includes(part);
-    })
-    this.parts = this.parts.concat(movedParts);
+    this.parts.sort((part1, part2) => {
+      if (!movedParts.includes(part1) && movedParts.includes(part2)) {
+        return -1;
+      }
+      if (movedParts.includes(part1) && !movedParts.includes(part2)) {
+        return 1;
+      }
+      return 0;
+    });
+    // this.parts = this.parts.filter(part => {
+    //   return !movedParts.includes(part);
+    // })
+    // this.parts = this.parts.concat(movedParts);
 
     const connect = (connection: IConnection) => {
       const part = this.getPartById(connection.id);
@@ -173,8 +193,8 @@ class Puzzles {
 
     const loop =(movablePart: Part, x: number, y: number) => {
       if (!inCanvas) return;
-      const newX = (x - this.xIndent) / (this.zoom * this.ctx.canvas.width);
-      const newY = (y - this.yIndent) / (this.zoom * this.ctx.canvas.width);
+      const newX = (x - this._xIndent) / (this._zoom * this.ctx.canvas.width);
+      const newY = (y - this._yIndent) / (this._zoom * this.ctx.canvas.width);
 
       diffX = getDiff(newX, this.ctx.canvas.width / this.ctx.canvas.width - this._partWidth, diffX);
       diffY = getDiff(newY, this.ctx.canvas.height / this.ctx.canvas.width - this._partHeight, diffY);
@@ -225,7 +245,7 @@ class Puzzles {
     return inCanvas ? {moves, connections} : {moves: [], connections: []};
   }
 
-  getConnections(movablePart: Part, x: number, y: number):IConnection[][] {
+  private getConnections(movablePart: Part, x: number, y: number):IConnection[][] {
     const connections: IConnection[][] = [];
     const topPartId = movablePart.topLink?.id;
     const bottomPartId = movablePart.bottomLink?.id;

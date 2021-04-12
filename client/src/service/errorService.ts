@@ -12,7 +12,7 @@ export default class ErrorService {
     }
   }
 
-  throwError(error: unknown) {
+  private throwError(error: unknown) {
     let statusCode;
     let message;
     let showType;

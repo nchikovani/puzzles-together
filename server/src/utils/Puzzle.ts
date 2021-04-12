@@ -15,20 +15,36 @@ const maxWidth = canvasWidth * puzzlePartOfSize;
 const maxHeight = canvasHeight * puzzlePartOfSize;
 
 class Puzzle {
-  image: string = '';
-  width: number = 0;
-  height: number = 0;
-  columnCount: number = 0;
-  rowCount: number = 0;
-  partWidth: number = 0;
-  partHeight: number = 0;
-  connectionCount: number = 0;
-  solvedConnectionCount: number = 0;
-  isSolved: boolean = false;
-  parts: IPart[] = [];
-  options: IOption[] = [];
-  isInit: boolean = false;
-  puzzleIsCreated: boolean = false;
+  private image: string = '';
+  private width: number = 0;
+  private height: number = 0;
+  private columnCount: number = 0;
+  private rowCount: number = 0;
+  private partWidth: number = 0;
+  private partHeight: number = 0;
+  private connectionCount: number = 0;
+  private solvedConnectionCount: number = 0;
+  private parts: IPart[] = [];
+  private _options: IOption[] = [];
+  private _isInit: boolean = false;
+  private _puzzleIsCreated: boolean = false;
+  private _isSolved: boolean = false;
+
+  get options() {
+    return this._options;
+  }
+
+  get isInit() {
+    return this._isInit;
+  }
+
+  get puzzleIsCreated() {
+    return this._puzzleIsCreated;
+  }
+
+  get isSolved() {
+    return this._isSolved;
+  }
 
   init(image: string) {
     this.image = image;
@@ -50,8 +66,8 @@ class Puzzle {
         this.height = maxHeight;
         this.width = maxHeight * dimensions.width / dimensions.height;
       }
-      this._setPartsCountOptions();
-      this.isInit = true;
+      this.setPartsCountOptions();
+      this._isInit = true;
     } catch (e) {
       throw new ServerError(400, serverErrorMessages.imageNotCorrect);
     }
@@ -70,12 +86,12 @@ class Puzzle {
 
     this.partWidth = this.width / this.columnCount;
     this.partHeight = this.height / this.rowCount;
-    this.parts = this._createParts();
+    this.parts = this.createParts();
 
-    this.connectionCount = this._getConnectionCount();
+    this.connectionCount = this.getConnectionCount();
     this.solvedConnectionCount = 0;
-    this.isSolved = false;
-    this.puzzleIsCreated = true;
+    this._isSolved = false;
+    this._puzzleIsCreated = true;
   }
 
   createPuzzleFromJson(jsonData: string) {
@@ -91,11 +107,11 @@ class Puzzle {
       this.partHeight = puzzle.partHeight;
       this.connectionCount = puzzle.connectionCount;
       this.solvedConnectionCount = puzzle.solvedConnectionCount;
-      this.isSolved = puzzle.isSolved;
+      this._isSolved = puzzle.isSolved;
       this.parts = puzzle.parts;
-      this.options = puzzle.options;
-      this.isInit = puzzle.isInit;
-      this.puzzleIsCreated = puzzle.puzzleIsCreated;
+      this._options = puzzle.options;
+      this._isInit = puzzle.isInit;
+      this._puzzleIsCreated = puzzle.puzzleIsCreated;
     } catch (e) {
       throw new ServerError(500, serverErrorMessages.incorrectSavedData);
     }
@@ -109,7 +125,7 @@ class Puzzle {
     return JSON.stringify(this);
   }
 
-  _setPartsCountOptions () {
+  private setPartsCountOptions () {
     const options: IOption[] = []
     const smallSide = this.width > this.height ? 'height' : 'width';
     const bigSide = smallSide === 'height' ? 'width' : 'height';
@@ -128,10 +144,10 @@ class Puzzle {
       });
       i+=2;
     }
-    this.options = options;
+    this._options = options;
   }
 
-  _getConnectionCount () {
+  private getConnectionCount () {
     let connectionCount = 0;
     for (let i = 0; i < this.rowCount; i++) {
       for (let j = 0; j < this.columnCount; j++) {
@@ -179,7 +195,7 @@ class Puzzle {
         link.connected = true;
         this.solvedConnectionCount++
         if (this.solvedConnectionCount === this.connectionCount) {
-          this.isSolved = true;
+          this._isSolved = true;
         }
       }
     };
@@ -190,7 +206,7 @@ class Puzzle {
   }
 
 
-  _createParts() {
+  private createParts() {
     const parts: IPart[] = [];
     const getRandomLinkType = () => {
       return Math.random() > 0.5 ? 'concave': 'convex';

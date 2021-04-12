@@ -4,17 +4,17 @@ import {lineWidthProportion, diffControlPointBottom, diffControlPointTop, protru
 
 
 class Part {
-  id: string;
-  _x: number;
-  _y: number;
-  xIndex: number;
-  yIndex: number;
-  topLink: ILink | null;
-  leftLink: ILink | null;
-  rightLink: ILink | null;
-  bottomLink: ILink | null;
-  puzzles: Puzzles;
-  buffer: HTMLCanvasElement;
+  readonly id: string;
+  private _x: number;
+  private _y: number;
+  readonly xIndex: number;
+  readonly yIndex: number;
+  readonly topLink: ILink | null;
+  readonly leftLink: ILink | null;
+  readonly rightLink: ILink | null;
+  readonly bottomLink: ILink | null;
+  readonly puzzles: Puzzles;
+  private buffer: HTMLCanvasElement;
 
   constructor(part: IPart, puzzles: Puzzles) {
     this.id = part.id;

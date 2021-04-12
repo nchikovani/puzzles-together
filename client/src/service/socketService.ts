@@ -9,7 +9,7 @@ const SERVER_URL = 'http://localhost:8080';
 
 
 export default class socketService {
-  socket;
+  readonly socket;
   constructor() {
     this.socket = io(SERVER_URL, {
       transports: ['websocket', 'polling', 'flashsocket'],
@@ -27,7 +27,7 @@ export default class socketService {
     this.socket.disconnect();
   }
 
-  puzzleHandlers(action: WebSocketServerActionsType) {
+  private puzzleHandlers(action: WebSocketServerActionsType) {
     switch (action.type) {
       case webSocketActionsTypes.OPTIONS:
         store.dispatch(setOptions(action.options));
