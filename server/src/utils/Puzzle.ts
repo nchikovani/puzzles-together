@@ -107,18 +107,18 @@ class Puzzle {
       this.partHeight = puzzle.partHeight;
       this.connectionCount = puzzle.connectionCount;
       this.solvedConnectionCount = puzzle.solvedConnectionCount;
-      this._isSolved = puzzle.isSolved;
+      this._isSolved = puzzle._isSolved;
       this.parts = puzzle.parts;
-      this._options = puzzle.options;
-      this._isInit = puzzle.isInit;
-      this._puzzleIsCreated = puzzle.puzzleIsCreated;
+      this._options = puzzle._options;
+      this._isInit = puzzle._isInit;
+      this._puzzleIsCreated = puzzle._puzzleIsCreated;
     } catch (e) {
       throw new ServerError(500, serverErrorMessages.incorrectSavedData);
     }
   }
 
   getJsonPuzzle() {
-    if (!this.isInit) {
+    if (!this._isInit) {
       throw new ServerError(400, serverErrorMessages.gameNotInit);
     }
 
