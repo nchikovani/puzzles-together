@@ -14,7 +14,7 @@ const canvasHeight = canvasWidth / canvasProportions;
 const maxWidth = canvasWidth * puzzlePartOfSize;
 const maxHeight = canvasHeight * puzzlePartOfSize;
 
-class Puzzle {
+export class Puzzle {
   private image: string = '';
   private width: number = 0;
   private height: number = 0;
@@ -25,18 +25,8 @@ class Puzzle {
   private connectionCount: number = 0;
   private solvedConnectionCount: number = 0;
   private parts: IPart[] = [];
-  private _options: IOption[] = [];
-  private _isInit: boolean = false;
   private _puzzleIsCreated: boolean = false;
   private _isSolved: boolean = false;
-
-  get options() {
-    return this._options;
-  }
-
-  get isInit() {
-    return this._isInit;
-  }
 
   get puzzleIsCreated() {
     return this._puzzleIsCreated;
@@ -46,41 +36,10 @@ class Puzzle {
     return this._isSolved;
   }
 
-  init(image: string) {
+  createPuzzle(image: string, width: number, height: number, option: IOption) {
     this.image = image;
-    try {
-      const buffer = Buffer.from(image.substring(image.indexOf(',') + 1), 'base64');
-      const dimensions = sizeOf(buffer);
-
-      // const imageProportions = dimensions.width / dimensions.height;
-      //
-      // const width = Math.pow(imageProportions * canvasVolume * puzzleVolumeOfCanvas, 1/2);
-      // const height = width / imageProportions;
-      // this.width = width;
-      // this.height = height;
-
-      if (dimensions.width / canvasWidth > dimensions.height / canvasHeight) {
-        this.width = maxWidth;
-        this.height = maxWidth * dimensions.height / dimensions.width;
-      } else {
-        this.height = maxHeight;
-        this.width = maxHeight * dimensions.width / dimensions.height;
-      }
-      this.setPartsCountOptions();
-      this._isInit = true;
-    } catch (e) {
-      throw new ServerError(400, serverErrorMessages.imageNotCorrect);
-    }
-  }
-
-  createPuzzle(optionId: string) {
-    if (!this.isInit) {
-      throw new ServerError(400, serverErrorMessages.gameNotInit);
-    }
-    const option = this.options.find(option => option.id === optionId);
-    if (!option) {
-      throw new ServerError(404, serverErrorMessages.optionNotFound);
-    }
+    this.width = width;
+    this.height = height;
     this.columnCount = option.columnCount;
     this.rowCount = option.rowCount;
 
@@ -109,8 +68,6 @@ class Puzzle {
       this.solvedConnectionCount = puzzle.solvedConnectionCount;
       this._isSolved = puzzle._isSolved;
       this.parts = puzzle.parts;
-      this._options = puzzle._options;
-      this._isInit = puzzle._isInit;
       this._puzzleIsCreated = puzzle._puzzleIsCreated;
     } catch (e) {
       throw new ServerError(500, serverErrorMessages.incorrectSavedData);
@@ -118,33 +75,7 @@ class Puzzle {
   }
 
   getJsonPuzzle() {
-    if (!this._isInit) {
-      throw new ServerError(400, serverErrorMessages.gameNotInit);
-    }
-
     return JSON.stringify(this);
-  }
-
-  private setPartsCountOptions () {
-    const options: IOption[] = []
-    const smallSide = this.width > this.height ? 'height' : 'width';
-    const bigSide = smallSide === 'height' ? 'width' : 'height';
-
-    let i = 2;
-    while (true) {
-      const smallSidePartCount = i;
-      const smallSidePartSize = this[smallSide] / smallSidePartCount;
-      const bigSidePartCount = Math.ceil(this[bigSide] / smallSidePartSize);
-      const partCount = smallSidePartCount * bigSidePartCount;
-      if (partCount > maxPartCount) break;
-      options.push({
-        id: shortid.generate(),
-        columnCount: smallSide === 'width' ? smallSidePartCount : bigSidePartCount,
-        rowCount: smallSide === 'height' ? smallSidePartCount : bigSidePartCount,
-      });
-      i+=2;
-    }
-    this._options = options;
   }
 
   private getConnectionCount () {
@@ -274,7 +205,81 @@ class Puzzle {
   }
 }
 
+export class PuzzleOptions {
+  readonly _image: string;
+  readonly _width: number;
+  readonly _height: number;
+  private _options: IOption[] = [];
 
+  get image() {
+    return this._image;
+  }
 
+  get width() {
+    return this._width;
+  }
 
-export default Puzzle;
+  get height() {
+    return this._height;
+  }
+
+  get options() {
+    return this._options;
+  }
+
+  constructor(image: string) {
+    this._image = image;
+    try {
+      const buffer = Buffer.from(image.substring(image.indexOf(',') + 1), 'base64');
+      const dimensions = sizeOf(buffer);
+
+      // const imageProportions = dimensions.width / dimensions.height;
+      //
+      // const width = Math.pow(imageProportions * canvasVolume * puzzleVolumeOfCanvas, 1/2);
+      // const height = width / imageProportions;
+      // this.width = width;
+      // this.height = height;
+
+      if (dimensions.width / canvasWidth > dimensions.height / canvasHeight) {
+        this._width = maxWidth;
+        this._height = maxWidth * dimensions.height / dimensions.width;
+      } else {
+        this._height = maxHeight;
+        this._width = maxHeight * dimensions.width / dimensions.height;
+      }
+      this.setPartsCountOptions();
+    } catch (e) {
+      throw new ServerError(400, serverErrorMessages.imageNotCorrect);
+    }
+  }
+
+  private setPartsCountOptions () {
+    const options: IOption[] = []
+    const smallSide = this._width > this._height ? 'height' : 'width';
+    const bigSide = smallSide === 'height' ? 'width' : 'height';
+
+    let i = 2;
+    while (true) {
+      const smallSidePartCount = i;
+      const smallSidePartSize = this[smallSide] / smallSidePartCount;
+      const bigSidePartCount = Math.ceil(this[bigSide] / smallSidePartSize);
+      const partCount = smallSidePartCount * bigSidePartCount;
+      if (partCount > maxPartCount) break;
+      options.push({
+        id: shortid.generate(),
+        columnCount: smallSide === 'width' ? smallSidePartCount : bigSidePartCount,
+        rowCount: smallSide === 'height' ? smallSidePartCount : bigSidePartCount,
+      });
+      i+=2;
+    }
+    this._options = options;
+  }
+
+  getOption (optionId: string) {
+    const option = this._options.find(option => option.id === optionId);
+    if (!option) {
+      throw new ServerError(404, serverErrorMessages.optionNotFound);
+    }
+    return option;
+  }
+}

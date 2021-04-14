@@ -47,7 +47,7 @@ class SocketService {
         this.activeRoomsService.removeRoom(socket.roomId);
         if (activeRoom) {
           const puzzle = activeRoom.puzzle;
-          if (puzzle) {
+          if (puzzle && puzzle.puzzleIsCreated) {
             const jsonPuzzle = puzzle.getJsonPuzzle();
             fs.writeFileSync(`${config.roomJsonPuzzlePath}${socket.roomId}.json`, jsonPuzzle, {encoding: 'utf8'});
           }

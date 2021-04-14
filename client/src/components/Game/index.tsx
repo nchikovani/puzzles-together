@@ -52,6 +52,10 @@ class Game extends React.Component<IGameProps, {}>{
       };
       image.src = gameData.image;
     }
+    if (gameData === null && this.ctx) {
+      console.log(gameData);
+      this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    }
     if (this.props.isSolved !== prevProps.isSolved && this.props.isSolved) {
       this.puzzles && this.puzzles.parts && alert(`Ураа, ты собрал пазл из ${this.puzzles.parts.length} кусков. Так держать!`);
     }

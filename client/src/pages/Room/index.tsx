@@ -1,5 +1,6 @@
 import React from 'react';
 import Game from "../../components/Game";
+import RoomControl from '../../components/RoomControl';
 import SocketService from '../../service/socketService';
 import {connect} from "react-redux";
 import {WithTranslation, withTranslation} from 'react-i18next';
@@ -27,50 +28,27 @@ class Room extends React.Component<IRoomProps, {}> {
     props.socketService.joinRoom(roomId);
   }
 
-  componentDidUpdate(prevProps: Readonly<IRoomProps>) {
-    if (this.props.options && this.props.options !== prevProps.options) {
-      let optionsText = 'Выбирай: ';
-       this.props.options.forEach(option => {
-        optionsText += `${option.columnCount * option.rowCount}, `
-      });
 
-      const result = prompt(optionsText);
-
-      const targetOption = this.props.options.find(option => Number(result) === option.columnCount * option.rowCount);
-      targetOption && this.props.socketService.createPuzzle(targetOption.id);
-    }
-  }
 
   componentWillUnmount() {
     this.props.socketService.disconnect();
   }
-
-  handleImage(e: React.ChangeEvent<HTMLInputElement>) {
-    let file = e.target && e.target.files && e.target.files[0];
-    if (!file) return;
-    if (file.size >= 3e6) throw new Error(this.props.t("error.imageTooBig"));
-
-    let reader = new FileReader();
-    reader.addEventListener('load', (e) => {
-      if (e.target && typeof e.target.result === 'string') {
-        this.props.socketService.getOptions(e.target.result);
-      }
-    });
-    reader.readAsDataURL(file);
-  }
-
   render() {
     return (
       <div className="App" style={{width: '100%'}}>
         <Helmet
           title={`${this.props.t('room.room')}: ${this.props.match.params.roomId}`}
         />
-        <input type="file" accept="image/*" onChange={(e) => this.handleImage(e)} style={{display: 'block'}}/>
         <div className="room-game">
           <div className="room-game__game">
             <Game socketService={this.props.socketService}/>
           </div>
-          <div className="room-game__chat"/>
+          <aside className="room-game__sidebar">
+            <div className="room-game__room-control">
+              <RoomControl socketService={this.props.socketService}/>
+            </div>
+            <div className="room-game__chat"/>
+          </aside>
         </div>
       </div>
     )

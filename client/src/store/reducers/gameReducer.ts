@@ -30,6 +30,13 @@ function gameReducer(state: IGameState = initial, action: ActionType) {
         ...state,
         options: action.options,
       };
+    case actionTypes.CLEAR_GAME:
+      return {
+        gameData: null,
+        update: null,
+        options: null,
+        isSolved: false,
+      };
     default:
       return state;
   }

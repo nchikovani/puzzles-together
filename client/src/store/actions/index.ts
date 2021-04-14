@@ -27,17 +27,17 @@ export const addRoom = (room: any) => (<const>{
   room,
 });
 
-export const setGameData = (gameData: IGameData) => (<const>{
+export const setGameData = (gameData: IGameData | null) => (<const>{
   type: actionTypes.SET_GAME_DATA,
   gameData,
 });
 
-export const setOptions = (options: IOption[]) =>  (<const>{
+export const setOptions = (options: IOption[] | null) =>  (<const>{
   type: actionTypes.SET_OPTIONS,
   options,
 });
 
-export function setUpdate(update: IUpdate) {
+export function setUpdate(update: IUpdate | null) {
   return <const>{
     type: actionTypes.SET_UPDATE,
     update,
@@ -50,3 +50,7 @@ export function setIsSolved(isSolved: boolean) {
     isSolved,
   }
 }
+
+export const clearGame = () =>  (<const>{
+  type: actionTypes.CLEAR_GAME,
+});

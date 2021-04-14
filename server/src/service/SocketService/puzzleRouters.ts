@@ -1,4 +1,4 @@
-import Puzzle from "../../utils/Puzzle";
+import {Puzzle, PuzzleOptions} from "../../utils/Puzzle";
 import {SocketObject} from "./SocketService.types";
 import ActiveRoomsService from './ActiveRoomsService';
 import * as webSocketServerActions from 'shared/webSocketServerActions';
@@ -11,15 +11,14 @@ const {gameDataAction, optionsAction, updateAction, solvedAction} = webSocketSer
 
 export default async function puzzleRouter(action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>, socket: SocketObject, activeRoomsService: ActiveRoomsService) {
   switch (action.type) {
-    case webSocketActionsTypes.GET_OPTIONS: {//проверять токен  //берет опции и СОЗДАЕТ НОВЫЙ ОБЪЕКТ ПАЗЛА
+    case webSocketActionsTypes.GET_OPTIONS: {//проверять токен?
       const roomId = socket.roomId;
       if (!roomId) throw new ServerError(400, serverErrorMessages.didNotJoin);
       const room = activeRoomsService.findRoom(roomId);
       if (!room) throw new ServerError(404, serverErrorMessages.roomNotFound);
-      const newPuzzle = new Puzzle();
-      newPuzzle.init(action.image);
-      room.puzzle = newPuzzle;
-      socket.emit("puzzle", optionsAction(newPuzzle.options));
+      const puzzleOptions = new PuzzleOptions(action.image);
+      socket.puzzleOptions = puzzleOptions;
+      socket.emit("puzzle", optionsAction(puzzleOptions.options));
       break;
     }
     case webSocketActionsTypes.CREATE: {//проверять токен
@@ -27,8 +26,12 @@ export default async function puzzleRouter(action: WebSocketClientActionsType, i
       if (!roomId) throw new ServerError(400, serverErrorMessages.didNotJoin);
       const room = activeRoomsService.findRoom(roomId);
       if (!room) throw new ServerError(404, serverErrorMessages.roomNotFound);
-      if (!room.puzzle) throw new ServerError(400, serverErrorMessages.puzzleNotCreated);
-      room.puzzle.createPuzzle(action.optionId);
+      if (!socket.puzzleOptions) throw new ServerError(400, serverErrorMessages.optionsNotCreated);
+      const newPuzzle = new Puzzle();
+      const option = socket.puzzleOptions.getOption(action.optionId);
+      newPuzzle.createPuzzle(socket.puzzleOptions.image, socket.puzzleOptions.width, socket.puzzleOptions.height, option);
+      delete socket.puzzleOptions;
+      room.puzzle = newPuzzle;
       const gameData = room.puzzle.getGameData();
       io.to(roomId).emit("puzzle", gameDataAction(gameData));
       break;

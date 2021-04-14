@@ -1,4 +1,4 @@
-import Puzzle from "../../utils/Puzzle";
+import {Puzzle} from "../../utils/Puzzle";
 import RoomsService from '../../rooms/rooms.service';
 import {SocketObject, IActionRoom} from "./SocketService.types";
 import * as webSocketServerActions from 'shared/webSocketServerActions';
@@ -10,7 +10,7 @@ import config from '../../config';
 import ActiveRoomsService from "./ActiveRoomsService";
 import {Server} from "socket.io";
 import {DefaultEventsMap} from "socket.io/dist/typed-events";
-const {gameDataAction, optionsAction} = webSocketServerActions;
+const {gameDataAction} = webSocketServerActions;
 
 export default async function roomRouters(action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>, socket: SocketObject, activeRoomsService: ActiveRoomsService) {
   switch (action.type) {
@@ -21,13 +21,9 @@ export default async function roomRouters(action: WebSocketClientActionsType, io
       if (activeRoom) {
         joinRoom = activeRoom;
         const puzzle = joinRoom.puzzle;
-        if (puzzle) {
-          if (puzzle.puzzleIsCreated) {//повторение
-            const gameData = puzzle.getGameData();
-            socket.emit("puzzle", gameDataAction(gameData));
-          } else if (puzzle.isInit) {// пока else
-            socket.emit("puzzle", optionsAction(puzzle.options));
-          }
+        if (puzzle && puzzle.puzzleIsCreated) {
+          const gameData = puzzle.getGameData();
+          socket.emit("puzzle", gameDataAction(gameData));
         }
       } else {
         const room = await RoomsService.getRoomById(action.roomId);
@@ -42,11 +38,9 @@ export default async function roomRouters(action: WebSocketClientActionsType, io
           const puzzle = new Puzzle();
 
           puzzle.createPuzzleFromJson(jsonPuzzle);
-          if (puzzle.puzzleIsCreated) {//повторение
+          if (puzzle.puzzleIsCreated) {
             const gameData = puzzle.getGameData();
             socket.emit("puzzle", gameDataAction(gameData));
-          }else if (puzzle.isInit) {// пока else
-            socket.emit("puzzle", optionsAction(puzzle.options));
           }
 
           joinRoom.puzzle = puzzle;

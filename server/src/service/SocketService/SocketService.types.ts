@@ -1,4 +1,4 @@
-import Puzzle from "../../utils/Puzzle";
+import {Puzzle, PuzzleOptions} from "../../utils/Puzzle";
 import {Socket} from "socket.io";
 
 export interface IActionRoom {
@@ -9,4 +9,5 @@ export interface IActionRoom {
 
 export interface SocketObject extends Socket{
   roomId?: string;
+  puzzleOptions?: PuzzleOptions;
 }

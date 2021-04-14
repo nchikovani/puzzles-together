@@ -11,17 +11,17 @@ const PreLoading: React.FC<IPreLoadingProps> = ({loadingIsComplete, children}) =
     <>
       {
         loadingIsComplete
-        ? children
-        : <div className='pre-loading'>
+          ? children
+          : <div className='pre-loading'>
             <div className="lds-roller">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
+              <div/>
+              <div/>
+              <div/>
+              <div/>
+              <div/>
+              <div/>
+              <div/>
+              <div/>
             </div>
           </div>
       }
