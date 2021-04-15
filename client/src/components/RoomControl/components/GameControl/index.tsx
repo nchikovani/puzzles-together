@@ -8,7 +8,7 @@ import {connect, useDispatch} from "react-redux";
 import SocketService from "../../../../service/socketService";
 import {IOption} from "../../../../../../shared";
 import {useTranslation} from "react-i18next";
-import {clearGame, setOptions} from '../../../../store/actions';
+import {setOptions} from '../../../../store/actions';
 
 interface IGameControlProps {
   socketService: SocketService;
@@ -25,9 +25,6 @@ const GameControl: React.FC<IGameControlProps> = ({socketService, options}) => {
   useEffect(() => {
     if (!options || !options[0]) return;
     setSelectedOption(options[0].id);
-    return () => {
-      dispatch(clearGame());
-    }
   }, [options]);
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {

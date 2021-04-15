@@ -7,6 +7,8 @@ import SocketService from '../../service/socketService';
 import './style.scss';
 import {connect} from "react-redux";
 import {fps, canvasProportions} from './Puzzles/puzzleConstants';
+import {clearGame} from "../../store/actions";
+import store from "../../store";
 
 interface IGameProps {
   gameData: IGameData | null;
@@ -53,7 +55,6 @@ class Game extends React.Component<IGameProps, {}>{
       image.src = gameData.image;
     }
     if (gameData === null && this.ctx) {
-      console.log(gameData);
       this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
     if (this.props.isSolved !== prevProps.isSolved && this.props.isSolved) {
@@ -74,6 +75,7 @@ class Game extends React.Component<IGameProps, {}>{
   componentWillUnmount() {
     this.canvasRef.current && this.canvasRef.current.removeEventListener('wheel', this.mouseWheelHandler);
     window.removeEventListener(`resize`, this.resizeHandler);
+    store.dispatch(clearGame());
   }
 
   initGame(gameData: IGameData, image: HTMLImageElement) {
