@@ -28,6 +28,11 @@ class RoomsService {
     return await newRoom.save();
   }
 
+  async setSettings(id: string, name: string, createPuzzleOnlyOwner: boolean) {
+    if (!Types.ObjectId.isValid(id)) throw new ServerError(404, serverErrorMessages.roomNotFound);
+    return await Rooms.findByIdAndUpdate(id, {name, createPuzzleOnlyOwner}).exec();
+  }
+
   async updateLastVisit(id: string) {
     if (!Types.ObjectId.isValid(id)) throw new ServerError(404, serverErrorMessages.roomNotFound);
     return await Rooms.findByIdAndUpdate(id, {lastVisit: new Date()}).exec();

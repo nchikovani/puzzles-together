@@ -6,6 +6,10 @@ export const joinAction = (roomId: string) => (<const>{
   type: actionTypes.JOIN,
   roomId,
 });
+export const setRoomSettingsAction = (settings: {name: string; createPuzzleOnlyOwner: boolean}) => (<const>{
+  type: actionTypes.SET_ROOM_SETTINGS,
+  settings,
+});
 export const setUpdateAction = (update: IUpdate) => (<const>{
   type: actionTypes.SET_UPDATE,
   update,

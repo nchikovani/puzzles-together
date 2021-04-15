@@ -10,6 +10,8 @@ import config from '../../config';
 import roomRouters from './roomRouters';
 import puzzleRouters from './puzzleRouters';
 const {errorAction} = webSocketServerActions;
+import jwt = require("jsonwebtoken");
+const cookieParser = require('socket.io-cookie-parser');
 
 class SocketService {
   readonly io: Server<DefaultEventsMap, DefaultEventsMap>;
@@ -20,6 +22,8 @@ class SocketService {
     this.activeRoomsService = new ActiveRoomsService();
 
     this.disconnectHandler = this.disconnectHandler.bind(this);
+    io.use(cookieParser());
+    io.use(this.authenticationHandler);
 
     io.on('connection', (socket: SocketObject) => {
       console.log('User connected to webSocket');
@@ -30,7 +34,7 @@ class SocketService {
       socket.on('disconnect', async () => {
         console.log('User disconnected from webSocket');
         try {
-          await this.disconnectHandler(socket)
+          this.disconnectHandler(socket)
         } catch (error) {
           this.errorHandler(error, socket);
         }
@@ -38,7 +42,20 @@ class SocketService {
     });
   }
 
-  private async disconnectHandler(socket: SocketObject) {
+  private authenticationHandler(socket: SocketObject, next: any) {
+    if (!socket.request.cookies) return next(new Error(serverErrorMessages.invalidToken));
+    const token = socket.request.cookies['token'];
+    jwt.verify(token, config.tokenKey, (err: any, data: any) => {
+      if (err) {
+        return next(new Error(serverErrorMessages.invalidToken));
+      } else if (data.id) {
+        socket.userId = data.id;
+        next();
+      }
+    });
+  }
+
+  private disconnectHandler(socket: SocketObject) {
     if (socket.roomId) {
       const clients = this.io.sockets.adapter.rooms.get(socket.roomId);
       socket.leave(socket.roomId);

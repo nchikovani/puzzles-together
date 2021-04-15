@@ -33,10 +33,26 @@ export const setRooms = (rooms: any[], isLoaded: boolean) => (<const>{
   isLoaded
 });
 
-export const addRoom = (room: any) => (<const>{
-  type: actionTypes.ADD_ROOM,
-  room,
+
+
+export const setRoom = (id: string, owner: string, name: string | undefined, createPuzzleOnlyOwner: boolean) => (<const>{
+  type: actionTypes.SET_ROOM,
+  id,
+  owner,
+  name,
+  createPuzzleOnlyOwner,
 });
+
+export const setRoomSettings = (name: string, createPuzzleOnlyOwner: boolean) => (<const>{
+  type: actionTypes.SET_ROOM_SETTINGS,
+  name,
+  createPuzzleOnlyOwner,
+});
+
+export const clearRoom = () => (<const>{
+  type: actionTypes.CLEAR_ROOM,
+});
+
 
 export const setGameData = (gameData: IGameData | null) => (<const>{
   type: actionTypes.SET_GAME_DATA,
@@ -48,7 +64,7 @@ export const setOptions = (options: IOption[] | null) =>  (<const>{
   options,
 });
 
-export function setUpdate(update: IUpdate | null) {
+export function setUpdate(update: IUpdate | null) {//только комната
   return <const>{
     type: actionTypes.SET_UPDATE,
     update,

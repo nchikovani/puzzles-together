@@ -1,7 +1,7 @@
 import * as actionTypes from '../actionTypes';
 import {IRoomsState, ActionType} from "../store.types";
 
-const initial = {
+const initial: IRoomsState = {
   list: [],
   isLoaded: false,
 }

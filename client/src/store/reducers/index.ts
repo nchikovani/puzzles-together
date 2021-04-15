@@ -3,12 +3,14 @@ import gameReducer from './gameReducer';
 import errorReducer from './errorReducer';
 import userReducer from './userReducer';
 import roomsReducer from './roomsReducer';
+import roomReducer from './roomReducer';
 import modalWindowReducer from './modalWindowReducer';
 
 export default combineReducers({
     game: gameReducer,
     user: userReducer,
     rooms: roomsReducer,
+    room: roomReducer,
     error: errorReducer,
     modalWindow: modalWindowReducer,
 })

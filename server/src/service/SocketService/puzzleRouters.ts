@@ -11,7 +11,7 @@ const {gameDataAction, optionsAction, updateAction, solvedAction} = webSocketSer
 
 export default async function puzzleRouter(action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>, socket: SocketObject, activeRoomsService: ActiveRoomsService) {
   switch (action.type) {
-    case webSocketActionsTypes.GET_OPTIONS: {//проверять токен?
+    case webSocketActionsTypes.GET_OPTIONS: {
       const roomId = socket.roomId;
       if (!roomId) throw new ServerError(400, serverErrorMessages.didNotJoin);
       const room = activeRoomsService.findRoom(roomId);

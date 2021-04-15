@@ -22,6 +22,7 @@ export const serverErrorMessages = {
   userNotFound: 'User not Found',
   accessIsDenied: 'Access to the page is denied',
   invalidToken: 'Invalid token',
+  noAccessRights: 'NO_ACCESS_RIGHTS',
 };
 
 

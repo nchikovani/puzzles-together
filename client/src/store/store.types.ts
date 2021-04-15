@@ -10,15 +10,23 @@ export interface IGameState {
 }
 
 export interface IRoomsState {
-  list: IRoomState[];
+  list: IRoomItemState[];
   isLoaded: boolean;
 }
 
-export interface IRoomState {
+export interface IRoomItemState {
   _id: string;
   owner: string;
   name?: string;
-  puzzle?: string;
+  puzzle?: string;//?
+}
+
+export interface IRoomState {
+  id: string | null;
+  owner: string | null;
+  name: string | null;
+  createPuzzleOnlyOwner: boolean;
+  isLoaded: boolean;
 }
 
 export interface IUserState {
@@ -42,6 +50,7 @@ export interface IModalWindowState {
 }
 
 export interface IStore {
+  room: IRoomState;
   game: IGameState;
   user: IUserState;
   rooms: IRoomsState;

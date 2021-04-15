@@ -2,9 +2,9 @@ import {io} from "socket.io-client";
 import {IUpdate, WebSocketServerActionsType} from 'shared';
 import {webSocketActionsTypes, webSocketClientActions, ServerError} from 'shared';
 import store from '../store';
-import {setGameData, setUpdate, setOptions, setIsSolved} from '../store/actions';
+import {setGameData, setUpdate, setOptions, setIsSolved, setRoom, setRoomSettings} from '../store/actions';
 
-const {createAction, getOptionsAction, joinAction, setUpdateAction} = webSocketClientActions;
+const {createAction, getOptionsAction, joinAction, setUpdateAction, setRoomSettingsAction} = webSocketClientActions;
 const SERVER_URL = 'http://localhost:8080';
 
 
@@ -16,8 +16,14 @@ export default class socketService {
       autoConnect: false,
     });
     this.puzzleHandlers = this.puzzleHandlers.bind(this);
+    this.roomHandlers = this.roomHandlers.bind(this);
 
     this.socket.on("puzzle", this.puzzleHandlers);
+    this.socket.on("room", this.roomHandlers);
+
+    this.socket.on('connect_error', (error) => {
+      throw new ServerError(500, error.message);
+    });
   }
   connect() {
     this.socket.connect();
@@ -25,6 +31,20 @@ export default class socketService {
 
   disconnect() {
     this.socket.disconnect();
+  }
+
+  private roomHandlers(action: WebSocketServerActionsType) {
+    switch (action.type) {
+      case webSocketActionsTypes.ROOM:
+        store.dispatch(setGameData(action.gameData));
+        store.dispatch(setRoom(action.id, action.owner, action.name, action.createPuzzleOnlyOwner));
+        break;
+      case webSocketActionsTypes.ROOM_SETTINGS:
+        store.dispatch(setRoomSettings(action.name, action.createPuzzleOnlyOwner));
+        break;
+      case webSocketActionsTypes.ERROR:
+        throw new ServerError(action.error.code || 500, action.error.message);
+    }
   }
 
   private puzzleHandlers(action: WebSocketServerActionsType) {
@@ -42,12 +62,16 @@ export default class socketService {
         store.dispatch(setIsSolved(true));
         break;
       case webSocketActionsTypes.ERROR:
-        throw new ServerError(action.error.code, action.error.message);
+        throw new ServerError(action.error.code || 500, action.error.message);
     }
   }
 
   joinRoom(roomId: string) {
     this.socket.emit('room', joinAction(roomId));
+  }
+
+  setRoomSettings(roomSettings: {name: string; createPuzzleOnlyOwner: boolean}) {
+    this.socket.emit('room', setRoomSettingsAction(roomSettings));
   }
 
   getOptions(image: string) {

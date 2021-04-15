@@ -1,7 +1,10 @@
 export const SET_USER = 'SET_USER';
 export const SET_ROOMS = 'SET_ROOMS';
-export const ADD_ROOM = 'ADD_ROOM';
+// export const ADD_ROOM = 'ADD_ROOM';
 
+export const SET_ROOM = 'SET_ROOM';
+export const SET_ROOM_SETTINGS = 'SET_ROOM_SETTINGS';
+export const CLEAR_ROOM = 'CLEAR_ROOM';
 export const SET_GAME_DATA = 'SET_GAME_DATA';
 export const SET_OPTIONS = 'SET_OPTIONS';
 export const SET_UPDATE = 'SET_UPDATE';
