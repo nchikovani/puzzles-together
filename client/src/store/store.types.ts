@@ -1,5 +1,6 @@
 import {IGameData, IUpdate, IOption} from 'shared'
 import * as actions from "./actions";
+import React from "react";
 
 export interface IGameState {
   gameData: IGameData | null;
@@ -28,9 +29,16 @@ export interface IUserState {
 
 export interface IErrorState {
   isError: boolean,
-  showType: string | null,
+  showType: ErrorShowType,
   message: string | null,
   statusCode: number | null,
+}
+
+export type ErrorShowType = 'page' | "modalWindow" | null;
+
+export interface IModalWindowState {
+  isOpen: boolean;
+  content: React.ComponentElement<any, any> | null;
 }
 
 export interface IStore {
@@ -38,6 +46,7 @@ export interface IStore {
   user: IUserState;
   rooms: IRoomsState;
   error: IErrorState;
+  modalWindow: IModalWindowState;
 }
 
 type InferValueTypes<T> = T extends { [key: string]: infer U} ? U : never;

@@ -9,3 +9,6 @@ export const SET_IS_SOLVED = 'SET_IS_SOLVED';
 export const CLEAR_GAME = 'CLEAR_GAME';
 
 export const SET_ERROR = 'SET_ERROR';
+
+export const OPEN_MODAL_WINDOW = 'OPEN_MODAL_WINDOW';
+export const CLOSE_MODAL_WINDOW = 'CLOSE_MODAL_WINDOW';

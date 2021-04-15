@@ -1,12 +1,23 @@
 import * as actionTypes from '../actionTypes';
 import {IGameData, IUpdate, IOption} from 'shared';
+import React from "react";
+import {ErrorShowType} from '../store.types';
 
-export const setError = (isError: boolean, showType?: string, message?: string, statusCode?: number) => (<const>{
+export const setError = (isError: boolean, showType?: ErrorShowType, message?: string, statusCode?: number) => (<const>{
   type: actionTypes.SET_ERROR,
   isError,
   showType,
   message,
   statusCode,
+});
+
+export const openModalWindow = (content: React.ComponentElement<any, any>) => (<const>{
+  type: actionTypes.OPEN_MODAL_WINDOW,
+  content: content,
+});
+
+export const closeModalWindow = () => (<const>{
+  type: actionTypes.CLOSE_MODAL_WINDOW,
 });
 
 export const setUser = (id: string, registered: boolean) => (<const>{

@@ -5,8 +5,10 @@ import {connect, useDispatch} from "react-redux";
 import {Link} from 'react-router-dom';
 import {useRouteMatch} from "react-router-dom";
 import Error from "../../pages/Error";
-import {setError} from '../../store/actions'
+import {openModalWindow, setError} from '../../store/actions'
 import { useTranslation } from "react-i18next";
+import ModalWindow from "../ModalWindow";
+import ErrorWindow from "../ErrorWindow";
 
 interface IPageProps {
   userId: string | null;
@@ -20,6 +22,10 @@ const Page: FunctionComponent<IPageProps> = ({userId, error, children}) => {
   useEffect(() => {
    error.isError && dispatch(setError(false));
   }, [match.url]);
+
+  useEffect(() => {
+    error.isError && error.showType === 'modalWindow' && dispatch(openModalWindow(<ErrorWindow/>));
+  }, [error]);
 
 
   return (
@@ -39,6 +45,7 @@ const Page: FunctionComponent<IPageProps> = ({userId, error, children}) => {
           {children}
         </div>
       }
+      <ModalWindow/>
     </React.Fragment>
   )
 }

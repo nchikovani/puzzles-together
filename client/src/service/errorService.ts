@@ -1,5 +1,6 @@
 import {ServerError} from 'shared';
 import store from "../store";
+import {ErrorShowType} from '../store/store.types';
 import {setError} from '../store/actions';
 
 export default class ErrorService {
@@ -15,7 +16,7 @@ export default class ErrorService {
   private throwError(error: unknown) {
     let statusCode;
     let message;
-    let showType;
+    let showType: ErrorShowType;
     if (error instanceof ServerError) {
       statusCode = error.code;
       message = error.message;
@@ -25,7 +26,7 @@ export default class ErrorService {
     if (statusCode === 404 || statusCode === 403 || statusCode === 401) {
       showType = 'page';
     } else {
-      showType = 'popWindow';
+      showType = 'modalWindow';
     }
     store.dispatch(setError(true, showType, message, statusCode))
   }

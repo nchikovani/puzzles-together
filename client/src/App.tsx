@@ -11,18 +11,16 @@ import SocketService from "./service/socketService";
 import Rooms from "./pages/Rooms";
 import {connect, useDispatch} from "react-redux";
 import {fetchGetUser} from "./store/actions/fetchActions";
-import {IStore, IErrorState} from "./store/store.types";
-import ErrorWindow from './components/ErrorWindow';
+import {IStore} from "./store/store.types";
 
 new ErrorService();
 const socketService = new SocketService();
 
 interface IAppProps {
   userIsLoaded: boolean;
-  error: IErrorState;
 }
 
-const App: React.FC<IAppProps> = ({userIsLoaded, error}) => {
+const App: React.FC<IAppProps> = ({userIsLoaded}) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchGetUser());
@@ -52,7 +50,6 @@ const App: React.FC<IAppProps> = ({userIsLoaded, error}) => {
           </Route>
         </Switch>
       </BrowserRouter>
-      <ErrorWindow error={error}/>
     </PreLoading>
   );
 }
@@ -60,7 +57,6 @@ const App: React.FC<IAppProps> = ({userIsLoaded, error}) => {
 const mapStateToProps = (store: IStore) => {
   return {
     userIsLoaded: store.user.isLoaded,
-    error: store.error
   }
 }
 

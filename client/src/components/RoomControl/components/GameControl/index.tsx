@@ -21,7 +21,6 @@ const GameControl: React.FC<IGameControlProps> = ({socketService, options}) => {
   const {t} = useTranslation();
   const inputFileRef = useRef<HTMLInputElement>(null);
 
-
   useEffect(() => {
     if (!options || !options[0]) return;
     setSelectedOption(options[0].id);
