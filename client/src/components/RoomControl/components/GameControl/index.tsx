@@ -2,20 +2,22 @@ import React, {useEffect, useRef, useState} from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import ConfirmWindow from "../../../ConfirmWindow";
 import './style.scss';
 import {IStore} from "../../../../store/store.types";
 import {connect, useDispatch} from "react-redux";
 import SocketService from "../../../../service/socketService";
 import {IOption} from "../../../../../../shared";
 import {useTranslation} from "react-i18next";
-import {setOptions} from '../../../../store/actions';
+import {setOptions, openModalWindow} from '../../../../store/actions';
 
 interface IGameControlProps {
   socketService: SocketService;
   options: IOption[] | null;
+  puzzleIsCreated: boolean;
 }
 
-const GameControl: React.FC<IGameControlProps> = ({socketService, options}) => {
+const GameControl: React.FC<IGameControlProps> = ({socketService, options, puzzleIsCreated}) => {
   const [selectedOption, setSelectedOption] = useState('');
   const dispatch = useDispatch();
   const {t} = useTranslation();
@@ -48,6 +50,13 @@ const GameControl: React.FC<IGameControlProps> = ({socketService, options}) => {
     dispatch(setOptions(null));
   }
 
+  const confirmCreatePuzzle = () => {
+    if (puzzleIsCreated) {
+      return dispatch(openModalWindow(<ConfirmWindow message={t('confirm.createPuzzle')} confirmAction={createPuzzle}/>))
+    }
+    return createPuzzle()
+  }
+
   return (
     <div className="game-control">
       <input ref={inputFileRef} type="file" accept="image/*" onChange={(e) => handleImage(e)} style={{display: 'none'}}/>
@@ -74,7 +83,7 @@ const GameControl: React.FC<IGameControlProps> = ({socketService, options}) => {
         }
       </TextField>
       <Button
-        onClick={() => createPuzzle()}
+        onClick={() => confirmCreatePuzzle()}
         disabled={!selectedOption}
         size="small"
         variant="contained"
@@ -85,7 +94,8 @@ const GameControl: React.FC<IGameControlProps> = ({socketService, options}) => {
 }
 const mapStateToProps = (store: IStore) => {
   return {
-    options: store.game.options
+    options: store.game.options,
+    puzzleIsCreated: !!store.game.gameData,
   }
 }
 
