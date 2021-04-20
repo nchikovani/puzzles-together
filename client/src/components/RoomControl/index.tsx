@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import GameControl from './components/GameControl';
 import Settings from './components/Settings';
 import './style.scss';
@@ -21,6 +21,12 @@ const RoomControl: React.FC<IRoomControlProps> = ({socketService, owner, createP
   type activeControlType = 'game' | 'settings' | 'share';
   const initialActiveControl = (owner === userId || !createPuzzleOnlyOwner) ? 'game' : 'share';
   const [activeControl, setActiveControl] = useState<activeControlType>(initialActiveControl);
+
+  useEffect(() => {
+    if (createPuzzleOnlyOwner && userId !== owner) {
+      setActiveControl('share');
+    }
+  }, [createPuzzleOnlyOwner]);
 
   const getControl = () => {
     let controlComponent;

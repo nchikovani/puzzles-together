@@ -48,11 +48,7 @@ class Game extends React.Component<IGameProps, {}>{
   componentDidUpdate(prevProps: Readonly<IGameProps>) {
     const {gameData} = this.props;
     if (gameData && gameData !== prevProps.gameData) {
-      let image = new Image();
-      image.onload = () => {
-        this.initGame(gameData, image);
-      };
-      image.src = gameData.image;
+      this.initGame(gameData);
     }
     if (gameData === null && this.ctx) {
       this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
@@ -70,6 +66,9 @@ class Game extends React.Component<IGameProps, {}>{
     this.ctx.canvas.height = this.ctx.canvas.offsetWidth / canvasProportions;
     this.canvasRef.current && this.canvasRef.current.addEventListener('wheel', this.mouseWheelHandler);
     window.addEventListener(`resize`, this.resizeHandler);
+    if (this.props.gameData) {
+      this.initGame(this.props.gameData);
+    }
   }
 
   componentWillUnmount() {
@@ -78,12 +77,16 @@ class Game extends React.Component<IGameProps, {}>{
     store.dispatch(clearGame());
   }
 
-  initGame(gameData: IGameData, image: HTMLImageElement) {
-    if (!this.ctx) return;
-    this.puzzles = new Puzzles(gameData, this.ctx, image);
+  initGame(gameData: IGameData) {
+    let image = new Image();
+    image.onload = () => {
+      if (!this.ctx) return;
+      this.puzzles = new Puzzles(gameData, this.ctx, image);
 
-    this.puzzles.drawPuzzles();
-    this.setIntervalId = window.setInterval(this.updateCanvas, 1000 / fps);
+      this.puzzles.drawPuzzles();
+      this.setIntervalId = window.setInterval(this.updateCanvas, 1000 / fps);
+    };
+    image.src = gameData.image;
   }
 
   updateCanvas() {

@@ -1,7 +1,7 @@
 import {Server} from "socket.io";
 import {DefaultEventsMap} from "socket.io/dist/typed-events";
 import {SocketObject} from "./SocketService.types";
-import ActiveRoomsService from './ActiveRoomsService';
+import ActivePuzzlesService from './ActivePuzzlesService';
 import * as webSocketServerActions from 'shared/webSocketServerActions';
 import {WebSocketClientActionsType} from 'shared';
 import {ServerError, serverErrorMessages} from 'shared';
@@ -15,11 +15,11 @@ const cookieParser = require('socket.io-cookie-parser');
 
 class SocketService {
   readonly io: Server<DefaultEventsMap, DefaultEventsMap>;
-  readonly activeRoomsService: ActiveRoomsService;
+  readonly activePuzzlesService: ActivePuzzlesService;
 
   constructor(io: Server<DefaultEventsMap, DefaultEventsMap>) {
     this.io = io;
-    this.activeRoomsService = new ActiveRoomsService();
+    this.activePuzzlesService = new ActivePuzzlesService();
 
     this.disconnectHandler = this.disconnectHandler.bind(this);
     io.use(cookieParser());
@@ -60,23 +60,20 @@ class SocketService {
       const clients = this.io.sockets.adapter.rooms.get(socket.roomId);
       socket.leave(socket.roomId);
       if (!clients) {
-        const activeRoom = this.activeRoomsService.findRoom(socket.roomId);
-        this.activeRoomsService.removeRoom(socket.roomId);
-        if (activeRoom) {
-          const puzzle = activeRoom.puzzle;
-          if (puzzle && puzzle.puzzleIsCreated) {
-            const jsonPuzzle = puzzle.getJsonPuzzle();
-            fs.writeFileSync(`${config.roomJsonPuzzlePath}${socket.roomId}.json`, jsonPuzzle, {encoding: 'utf8'});
-          }
+        const activePuzzle = this.activePuzzlesService.findPuzzle(socket.roomId);
+        this.activePuzzlesService.removePuzzle(socket.roomId);
+        if (activePuzzle && activePuzzle.puzzleIsCreated) {
+          const jsonPuzzle = activePuzzle.getJsonPuzzle();
+          fs.writeFileSync(`${config.roomJsonPuzzlePath}${socket.roomId}.json`, jsonPuzzle, {encoding: 'utf8'});
         }
       }
     }
   }
 
-  private asyncMiddleware (fn: (action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>,  socket: SocketObject, activeRoomsService: ActiveRoomsService) => void) {
+  private asyncMiddleware (fn: (action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>,  socket: SocketObject, activeRoomsService: ActivePuzzlesService) => void) {
     return async (action: WebSocketClientActionsType, socket: SocketObject) => {
       try {
-        await fn(action, this.io, socket, this.activeRoomsService);
+        await fn(action, this.io, socket, this.activePuzzlesService);
       } catch (error) {
         this.errorHandler(error, socket)
       }
