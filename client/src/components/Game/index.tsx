@@ -1,8 +1,11 @@
 import React, {createRef, RefObject} from 'react';
 import Puzzles from "./Puzzles/Puzzles";
 import Part from './Puzzles/Part';
+import IconButton from '@material-ui/core/IconButton';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import {IGameData, IUpdate} from "shared";
 import {IStore} from "../../store/store.types";
 import SocketService from '../../service/socketService';
@@ -165,8 +168,8 @@ class Game extends React.Component<IGameProps, IGameState>{
   mouseMoveHandler(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
     const canvasElement = this.canvasRef.current;
     if (!canvasElement) return;
-    this.mouseX = e.pageX - canvasElement.offsetLeft - canvasElement.clientLeft;
-    this.mouseY = e.pageY - canvasElement.offsetTop - canvasElement.clientTop;
+    this.mouseX = e.pageX - canvasElement.getBoundingClientRect().left;
+    this.mouseY = e.pageY - canvasElement.getBoundingClientRect().top;
 
     if (!this.puzzles || this.canvasIsMoving) return;
     const isOverPart = !!this.puzzles.getPartInCoords(this.mouseX, this.mouseY);
@@ -206,9 +209,10 @@ class Game extends React.Component<IGameProps, IGameState>{
 
   fullScreen() {
     this.canvasResizeFullScreen();
-    this.canvasResize();
     this.setState({
       sizeIsFull: true,
+    }, () => {
+      this.canvasResize();
     });
   }
 
@@ -216,9 +220,10 @@ class Game extends React.Component<IGameProps, IGameState>{
     if (!this.ctx) return;
     this.ctx.canvas.style.width = '100%';
     this.ctx.canvas.style.height = 'auto';
-    this.canvasResize();
     this.setState({
       sizeIsFull: false,
+    }, () => {
+      this.canvasResize();
     });
   }
 
@@ -228,22 +233,33 @@ class Game extends React.Component<IGameProps, IGameState>{
         <div className={`${this.state.sizeIsFull ? 'canvas-container__fixed-wrap' : ''}`}>
           <canvas
             ref={this.canvasRef}
-            className={`canvas`}
+            className="canvas"
             onMouseDown={this.mouseDownHandler}
             onMouseMove={this.mouseMoveHandler}
             onMouseUp={this.finishMoves}
             onMouseOut={this.finishMoves}
           />
           <div className="canvas-container__button-group">
-            {
-              this.state.sizeIsFull
-                ? <FullscreenExitIcon
-                  onClick={this.outFullScreen}
-                />
-                : <FullscreenIcon
-                  onClick={this.fullScreen}
-                />
-            }
+            <IconButton
+              disableRipple
+              disableFocusRipple
+              onClick={() => this.state.sizeIsFull ? this.outFullScreen() : this.fullScreen()}
+              size="small"
+            >
+              {
+                this.state.imageIsShown ? <VisibilityOffIcon/> : <VisibilityIcon/>
+              }
+            </IconButton>
+            <IconButton
+              disableRipple
+              disableFocusRipple
+              onClick={() => this.state.sizeIsFull ? this.outFullScreen() : this.fullScreen()}
+              size="small"
+            >
+              {
+                this.state.sizeIsFull ? <FullscreenExitIcon/> : <FullscreenIcon/>
+              }
+            </IconButton>
           </div>
         </div>
       </div>
