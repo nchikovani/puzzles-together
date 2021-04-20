@@ -30,6 +30,7 @@ interface IGameState {
 class Game extends React.Component<IGameProps, IGameState>{
   puzzles: Puzzles | null = null;
   canvasRef: RefObject<HTMLCanvasElement>;
+  puzzleImageRef: RefObject<HTMLImageElement>
   mouseX: number = 0;
   mouseY: number = 0;
   movablePart: Part | null = null;
@@ -46,6 +47,7 @@ class Game extends React.Component<IGameProps, IGameState>{
   constructor(props: IGameProps) {
     super(props);
     this.canvasRef = createRef();
+    this.puzzleImageRef = createRef();
 
     this.state = {
       sizeIsFull: false,
@@ -98,7 +100,9 @@ class Game extends React.Component<IGameProps, IGameState>{
     image.onload = () => {
       if (!this.ctx) return;
       this.puzzles = new Puzzles(gameData, this.ctx, image);
-
+      if (this.puzzleImageRef.current) {
+        this.puzzleImageRef.current.src = image.src;
+      }
       this.puzzles.drawPuzzles();
       if (this.setIntervalId) window.clearInterval(this.setIntervalId);
       this.setIntervalId = window.setInterval(this.updateCanvas, 1000 / fps);
@@ -243,7 +247,8 @@ class Game extends React.Component<IGameProps, IGameState>{
             <IconButton
               disableRipple
               disableFocusRipple
-              onClick={() => this.state.sizeIsFull ? this.outFullScreen() : this.fullScreen()}
+              disabled={!this.props.gameData}
+              onClick={() => this.state.imageIsShown ? this.setState({imageIsShown: false}) : this.setState({imageIsShown: true})}
               size="small"
             >
               {
@@ -253,6 +258,7 @@ class Game extends React.Component<IGameProps, IGameState>{
             <IconButton
               disableRipple
               disableFocusRipple
+              disabled={!this.props.gameData}
               onClick={() => this.state.sizeIsFull ? this.outFullScreen() : this.fullScreen()}
               size="small"
             >
@@ -261,6 +267,7 @@ class Game extends React.Component<IGameProps, IGameState>{
               }
             </IconButton>
           </div>
+          <img ref={this.puzzleImageRef} alt="puzzle-preview" className={`canvas-container__puzzle-image ${this.state.imageIsShown ? 'canvas-container__puzzle-image_active' : ''}`}/>
         </div>
       </div>
     );
