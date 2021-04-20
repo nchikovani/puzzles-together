@@ -20,6 +20,7 @@ interface IRoomProps extends RouteComponentProps<IMatchParams>, WithTranslation 
   socketService: SocketService;
   options: IOption[] | null;
   isLoaded: boolean;
+  roomName: string | null;
 }
 
 class Room extends React.Component<IRoomProps, {}> {
@@ -42,7 +43,7 @@ class Room extends React.Component<IRoomProps, {}> {
           this.props.isLoaded
             ? <div className="App" style={{width: '100%'}}>
               <Helmet
-                title={`${this.props.t('room.room')}: ${this.props.match.params.roomId}`}
+                title={`${this.props.t('room.room')}: ${this.props.roomName || this.props.match.params.roomId}`}
               />
               <div className="room-game">
                 <div className="room-game__game">
@@ -68,6 +69,7 @@ const mapStateToProps = (store: IStore) => {
   return {
     options: store.game.options,
     isLoaded: store.room.isLoaded,
+    roomName: store.room.name,
   }
 }
 

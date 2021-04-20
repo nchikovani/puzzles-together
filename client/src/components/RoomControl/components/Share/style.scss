@@ -1,0 +1,32 @@
+.room-control-share {
+
+  &__social-list {
+    display: flex;
+
+  }
+
+  &__social-item {
+    margin-right: 15px;
+    margin-bottom: 15px;
+
+  }
+  &__social-link {
+    display: block;
+    background: grey;
+    color: white;
+    font-size: 1.5em;
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+    &.vk {
+      background: #4D75A3;
+    }
+    &.facebook {
+      background: #3B5998;
+    }
+    &.odnoklassniki {
+      background: #e47d08;
+    }
+  }
+}
