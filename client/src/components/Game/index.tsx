@@ -45,6 +45,17 @@ class Game extends React.Component<IGameProps, {}>{
     this.finishMoves = this.finishMoves.bind(this);
   }
 
+  componentDidMount() {
+    this.ctx = this.canvasRef.current && this.canvasRef.current.getContext("2d");
+    if (!this.ctx) return;
+
+    this.ctx.canvas.width = this.ctx.canvas.offsetWidth;
+    this.ctx.canvas.height = this.ctx.canvas.offsetWidth / canvasProportions;
+    this.canvasRef.current && this.canvasRef.current.addEventListener('wheel', this.mouseWheelHandler);
+    window.addEventListener(`resize`, this.resizeHandler);
+    this.props.gameData && this.initGame(this.props.gameData);
+  }
+
   componentDidUpdate(prevProps: Readonly<IGameProps>) {
     const {gameData} = this.props;
     if (gameData && gameData !== prevProps.gameData) {
@@ -58,22 +69,10 @@ class Game extends React.Component<IGameProps, {}>{
     }
   }
 
-  componentDidMount() {
-    this.ctx = this.canvasRef.current && this.canvasRef.current.getContext("2d");
-    if (!this.ctx) return;
-
-    this.ctx.canvas.width = this.ctx.canvas.offsetWidth;
-    this.ctx.canvas.height = this.ctx.canvas.offsetWidth / canvasProportions;
-    this.canvasRef.current && this.canvasRef.current.addEventListener('wheel', this.mouseWheelHandler);
-    window.addEventListener(`resize`, this.resizeHandler);
-    if (this.props.gameData) {
-      this.initGame(this.props.gameData);
-    }
-  }
-
   componentWillUnmount() {
     this.canvasRef.current && this.canvasRef.current.removeEventListener('wheel', this.mouseWheelHandler);
     window.removeEventListener(`resize`, this.resizeHandler);
+    if (this.setIntervalId) window.clearInterval(this.setIntervalId);
     store.dispatch(clearGame());
   }
 
@@ -84,6 +83,7 @@ class Game extends React.Component<IGameProps, {}>{
       this.puzzles = new Puzzles(gameData, this.ctx, image);
 
       this.puzzles.drawPuzzles();
+      if (this.setIntervalId) window.clearInterval(this.setIntervalId);
       this.setIntervalId = window.setInterval(this.updateCanvas, 1000 / fps);
     };
     image.src = gameData.image;
