@@ -1,6 +1,8 @@
 import React, {createRef, RefObject} from 'react';
 import Puzzles from "./Puzzles/Puzzles";
 import Part from './Puzzles/Part';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import {IGameData, IUpdate} from "shared";
 import {IStore} from "../../store/store.types";
 import SocketService from '../../service/socketService';
@@ -17,7 +19,12 @@ interface IGameProps {
   socketService: SocketService;
 }
 
-class Game extends React.Component<IGameProps, {}>{
+interface IGameState {
+  sizeIsFull: boolean;
+  imageIsShown: boolean;
+}
+
+class Game extends React.Component<IGameProps, IGameState>{
   puzzles: Puzzles | null = null;
   canvasRef: RefObject<HTMLCanvasElement>;
   mouseX: number = 0;
@@ -37,12 +44,19 @@ class Game extends React.Component<IGameProps, {}>{
     super(props);
     this.canvasRef = createRef();
 
+    this.state = {
+      sizeIsFull: false,
+      imageIsShown: false,
+    };
+
     this.mouseWheelHandler = this.mouseWheelHandler.bind(this);
     this.resizeHandler = this.resizeHandler.bind(this);
     this.mouseDownHandler = this.mouseDownHandler.bind(this);
     this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
     this.updateCanvas = this.updateCanvas.bind(this);
     this.finishMoves = this.finishMoves.bind(this);
+    this.fullScreen = this.fullScreen.bind(this);
+    this.outFullScreen = this.outFullScreen.bind(this);
   }
 
   componentDidMount() {
@@ -120,8 +134,12 @@ class Game extends React.Component<IGameProps, {}>{
   }
 
   resizeHandler() {
-    if (!this.ctx) return;
+    if (this.state.sizeIsFull) this.canvasResizeFullScreen();
+    this.canvasResize();
+  }
 
+  canvasResize() {
+    if (!this.ctx) return;
     this.ctx.canvas.width = this.ctx.canvas.offsetWidth;
     this.ctx.canvas.height = this.ctx.canvas.offsetWidth / canvasProportions;
     this.puzzles && this.puzzles.updatePartsBuffers();
@@ -173,15 +191,63 @@ class Game extends React.Component<IGameProps, {}>{
     if (this.canvasRef.current) this.canvasRef.current.style.cursor = 'default';
   }
 
+  canvasResizeFullScreen() {
+    if (!this.ctx) return;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    if (windowWidth > windowHeight * canvasProportions) {
+      this.ctx.canvas.style.width = windowHeight * canvasProportions + 'px';
+      this.ctx.canvas.style.height = windowHeight + 'px';
+    } else {
+      this.ctx.canvas.style.width = windowWidth + 'px';
+      this.ctx.canvas.style.height = windowWidth / canvasProportions + 'px';
+    }
+  }
+
+  fullScreen() {
+    this.canvasResizeFullScreen();
+    this.canvasResize();
+    this.setState({
+      sizeIsFull: true,
+    });
+  }
+
+  outFullScreen() {
+    if (!this.ctx) return;
+    this.ctx.canvas.style.width = '100%';
+    this.ctx.canvas.style.height = 'auto';
+    this.canvasResize();
+    this.setState({
+      sizeIsFull: false,
+    });
+  }
+
   render() {
-    return <canvas
-      ref={this.canvasRef}
-      className="canvas"
-      onMouseDown={this.mouseDownHandler}
-      onMouseMove={this.mouseMoveHandler}
-      onMouseUp={this.finishMoves}
-      onMouseOut={this.finishMoves}
-    />;
+    return (
+      <div className="canvas-container">
+        <div className={`${this.state.sizeIsFull ? 'canvas-container__fixed-wrap' : ''}`}>
+          <canvas
+            ref={this.canvasRef}
+            className={`canvas`}
+            onMouseDown={this.mouseDownHandler}
+            onMouseMove={this.mouseMoveHandler}
+            onMouseUp={this.finishMoves}
+            onMouseOut={this.finishMoves}
+          />
+          <div className="canvas-container__button-group">
+            {
+              this.state.sizeIsFull
+                ? <FullscreenExitIcon
+                  onClick={this.outFullScreen}
+                />
+                : <FullscreenIcon
+                  onClick={this.fullScreen}
+                />
+            }
+          </div>
+        </div>
+      </div>
+    );
   }
 
 }

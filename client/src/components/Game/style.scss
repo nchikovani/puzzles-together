@@ -1,3 +1,26 @@
+.canvas-container {
+  position: relative;
+  &__fixed-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .canvas {
+      height: 100vh;
+    }
+  }
+  &__button-group {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
 .canvas {
   width: 100%;
   display: block;
