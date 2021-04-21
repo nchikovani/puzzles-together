@@ -148,9 +148,8 @@ class Game extends React.Component<IGameProps, IGameState>{
   canvasResize() {
     if (!this.ctx) return;
     this.ctx.canvas.width = this.ctx.canvas.offsetWidth;
-    const height = Math.round(this.ctx.canvas.offsetWidth / canvasProportions);
-    console.log(this.ctx.canvas.offsetWidth / canvasProportions, this.ctx.canvas.offsetWidth, canvasProportions); //бага//гриды?
-    this.ctx.canvas.height = height;
+    this.ctx.canvas.height = this.ctx.canvas.offsetWidth / canvasProportions;
+    this.ctx.canvas.height = this.ctx.canvas.offsetWidth / canvasProportions;
     this.puzzles && this.puzzles.updatePartsBuffers();
     this.puzzles && this.puzzles.drawPuzzles();
   }
