@@ -1,3 +1,14 @@
+@import '../../styles/vars';
+
+.rooms-page {
+  &__navigation {
+    margin-bottom: 10px;
+    button {
+      color: $primary !important;
+    }
+  }
+}
+
 .room-list {
   display: flex;
   flex-wrap: wrap;
@@ -8,6 +19,8 @@
     margin-bottom: 10px;
     border: 1px solid black;
     cursor: pointer;
+    background-size: cover;
+    background-position: center;
   }
   &__create-room {
     background: #f2f2f2;

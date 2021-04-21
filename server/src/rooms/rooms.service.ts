@@ -13,11 +13,18 @@ class RoomsService {
     return await Rooms.findById(id).exec();
   }
 
-  async getRoomsByUserId(userId: string) {
+  async getOwnRoomsByUserId(userId: string) {
     const user = await UsersService.getUserById(userId);
     if (!user) throw new ServerError(404, serverErrorMessages.userNotFound);
     return await Rooms.find({owner: user._id}).exec();
   }
+
+  async getVisitedRoomsByUserId(userId: string) {
+    const user = await UsersService.getUserById(userId);
+    if (!user) throw new ServerError(404, serverErrorMessages.userNotFound);
+    return await Rooms.find({visitorsId: user._id}).exec();
+  }
+
 
   async addRoom(userId: string) {
     const user = await UsersService.getUserById(userId);
@@ -41,6 +48,11 @@ class RoomsService {
   async deleteRoom(id: string) {
     if (!Types.ObjectId.isValid(id)) throw new ServerError(404, serverErrorMessages.roomNotFound);
     return await Rooms.findByIdAndDelete(id).exec();
+  }
+
+  async pushVisitor(roomId: string, userId: string) {
+    if (!Types.ObjectId.isValid(roomId)) throw new ServerError(404, serverErrorMessages.roomNotFound);
+    return await Rooms.findByIdAndUpdate(roomId, {$push: {visitorsId: [userId]}}).exec();
   }
 }
 

@@ -9,9 +9,9 @@ export const fetchGetUser = () => async (dispatch: Dispatch) => {
 };
 
 export const fetchGetRooms = (userId: string) => async (dispatch: Dispatch) => {
-  const {rooms} = await userService.getRooms(userId);
+  const {ownRooms, visitedRooms} = await userService.getRooms(userId);
 
-  rooms && dispatch(setRooms(rooms, true));
+  dispatch(setRooms(ownRooms, visitedRooms, true));
 };
 
 export const fetchAddRoom = ( history: History) => async (dispatch: Dispatch) => {

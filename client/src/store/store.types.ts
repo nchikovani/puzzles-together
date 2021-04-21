@@ -10,15 +10,17 @@ export interface IGameState {
 }
 
 export interface IRoomsState {
-  list: IRoomItemState[];
+  ownRooms: IRoomItemState[];
+  visitedRooms: IRoomItemState[];
   isLoaded: boolean;
 }
 
 export interface IRoomItemState {
   _id: string;
   owner: string;
+  visitorsId: string[];
   name?: string;
-  puzzle?: string;//?
+  puzzleImage?: string;
 }
 
 export interface IRoomState {

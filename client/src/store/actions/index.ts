@@ -27,9 +27,10 @@ export const setUser = (id: string, registered: boolean) => (<const>{
   isLoaded: true,
 });
 
-export const setRooms = (rooms: any[], isLoaded: boolean) => (<const>{
+export const setRooms = (ownRooms: any[], visitedRooms: any[], isLoaded: boolean) => (<const>{
   type: actionTypes.SET_ROOMS,
-  rooms,
+  ownRooms,
+  visitedRooms,
   isLoaded
 });
 

@@ -20,6 +20,10 @@ export default async function roomRouters(action: WebSocketClientActionsType, io
       const room = await RoomsService.getRoomById(action.roomId);
       if (!room) throw new ServerError(404, serverErrorMessages.roomNotFound);
 
+      if(socket.userId && socket.userId != room.owner && !room.visitorsId.find(visitorId => visitorId == socket.userId)) {
+        await RoomsService.pushVisitor(room._id, socket.userId);
+      }
+
       const roomId = String(room._id);
 
       if (activePuzzle !== undefined) {
