@@ -148,7 +148,9 @@ class Game extends React.Component<IGameProps, IGameState>{
   canvasResize() {
     if (!this.ctx) return;
     this.ctx.canvas.width = this.ctx.canvas.offsetWidth;
-    this.ctx.canvas.height = this.ctx.canvas.offsetWidth / canvasProportions;
+    const height = Math.round(this.ctx.canvas.offsetWidth / canvasProportions);
+    console.log(this.ctx.canvas.offsetWidth / canvasProportions, this.ctx.canvas.offsetWidth, canvasProportions); //бага//гриды?
+    this.ctx.canvas.height = height;
     this.puzzles && this.puzzles.updatePartsBuffers();
     this.puzzles && this.puzzles.drawPuzzles();
   }
@@ -172,9 +174,8 @@ class Game extends React.Component<IGameProps, IGameState>{
   mouseMoveHandler(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
     const canvasElement = this.canvasRef.current;
     if (!canvasElement) return;
-    this.mouseX = e.pageX - canvasElement.getBoundingClientRect().left;
-    this.mouseY = e.pageY - canvasElement.getBoundingClientRect().top;
-
+    this.mouseX = e.pageX - canvasElement.getBoundingClientRect().left - window.pageXOffset;
+    this.mouseY = e.pageY - canvasElement.getBoundingClientRect().top - window.pageYOffset;
     if (!this.puzzles || this.canvasIsMoving) return;
     const isOverPart = !!this.puzzles.getPartInCoords(this.mouseX, this.mouseY);
     canvasElement.style.cursor = isOverPart ? 'pointer' : 'default';
