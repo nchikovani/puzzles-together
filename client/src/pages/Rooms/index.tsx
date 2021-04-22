@@ -47,7 +47,7 @@ const Rooms: React.FC<IRoomsProps> = ({rooms}) => {
   }
   const deleteRoom = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, roomId: string) => {
     e.stopPropagation();
-    dispatch(openModalWindow(<ConfirmWindow message="Вы уверены, что хотите удалить комнату?" confirmAction={()=>dispatch(fetchDeleteRoom(roomId))}/>))
+    dispatch(openModalWindow(<ConfirmWindow message={t("confirm.deleteRoom")} confirmAction={()=>dispatch(fetchDeleteRoom(roomId))}/>))
   }
   const getRooms = () => {
     const targetRooms = roomShown === 'own' ? rooms.ownRooms : rooms.visitedRooms;
@@ -102,10 +102,10 @@ const Rooms: React.FC<IRoomsProps> = ({rooms}) => {
     <div className="rooms-page__navigation">
       <Button
         onClick={() => setRoomShown('own')}
-      >Мои комнаты</Button>
+      >{t("rooms.myRooms")}</Button>
       <Button
         onClick={() => setRoomShown('visited')}
-      >Комнаты которые я посещал</Button>
+      >{t("rooms.visitedRooms")}</Button>
     </div>
     {
       rooms.isLoaded
