@@ -20,6 +20,7 @@
     z-index: 3;
   }
   &__puzzle-image {
+    opacity: 0;
     position: absolute;
     width: 0;
     height: 0;
@@ -30,6 +31,7 @@
     z-index: 2;
     transition: all .5s ease;
     &_active {
+      opacity: 1;
       width: 100%;
       height: 100%;
     }
