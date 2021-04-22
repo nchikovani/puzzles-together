@@ -48,6 +48,22 @@ export const addRoom = async () => {
   return await response.json();
 }
 
+export const deleteRoom = async (roomId: string) => {
+  const response = await fetch(`/rooms/${roomId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    mode: 'same-origin',
+  });
+  if (!response.ok) {
+    const {message} = await response.json();
+    throw new ServerError(response.status, message);
+  }
+
+  return response;
+}
+
 // const getHeaders = (token?: string | null) => {
 //   const headers: any = {
 //     'Content-Type': 'application/json',

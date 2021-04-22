@@ -38,6 +38,16 @@ class RoomsController {
     const room = await RoomsService.addRoom(userIdFromToken);
     return res.status(200).json({room: room});
   }
+
+  async deleteRoom(req: Request, res: Response) {
+    const userIdFromToken = req.userId;
+    const roomId = req.params.roomId;
+    const room = await RoomsService.getRoomById(roomId);
+    if (!room) throw new ServerError(404, serverErrorMessages.roomNotFound);
+    if (room.owner != userIdFromToken) throw new ServerError(403, serverErrorMessages.noAccessRights);
+    await RoomsService.deleteRoom(roomId);
+    return res.sendStatus(200);
+  }
 }
 
 export default new RoomsController();

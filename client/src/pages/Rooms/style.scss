@@ -12,17 +12,48 @@
 .room-list {
   display: flex;
   flex-wrap: wrap;
-  &__item {
-    width: 200px;
-    height: 200px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    border: 1px solid black;
-    cursor: pointer;
-    background-size: cover;
-    background-position: center;
+}
+
+.room-item {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border: 1px solid black;
+  cursor: pointer;
+  background-size: cover !important;
+  background-position: center !important;
+  &_create {
+    background: #eee !important;
   }
-  &__create-room {
-    background: #f2f2f2;
+  &__button-group {
+    display: flex;
+    justify-content: flex-end;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  &__content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    padding: 5px;
+    word-break: break-word;
+  }
+
+  &__background {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(256, 256, 256, 0.5);
   }
 }

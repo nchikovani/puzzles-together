@@ -2,13 +2,19 @@ import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom'
 import './style.scss';
 import {connect, useDispatch} from "react-redux";
-import {fetchAddRoom, fetchGetRooms} from '../../store/actions/fetchActions';
+import {openModalWindow} from '../../store/actions'
+import ConfirmWindow from '../../components/ConfirmWindow';
+import {fetchAddRoom, fetchGetRooms, fetchDeleteRoom} from '../../store/actions/fetchActions';
 import {IRoomsState, IStore} from "../../store/store.types";
 import {useRouteMatch} from "react-router-dom";
 import {setRooms} from '../../store/actions';
 import {useTranslation} from "react-i18next";
 import {Helmet} from "react-helmet";
 import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 interface IMatchParams {
   userId: string;
@@ -39,7 +45,55 @@ const Rooms: React.FC<IRoomsProps> = ({rooms}) => {
   const createRoom = () => {
     dispatch(fetchAddRoom(history))
   }
-  console.log(rooms);
+  const deleteRoom = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, roomId: string) => {
+    e.stopPropagation();
+    dispatch(openModalWindow(<ConfirmWindow message="Вы уверены, что хотите удалить комнату?" confirmAction={()=>dispatch(fetchDeleteRoom(roomId))}/>))
+  }
+  const getRooms = () => {
+    const targetRooms = roomShown === 'own' ? rooms.ownRooms : rooms.visitedRooms;
+    return <div className="room-list">
+      {
+        roomShown === 'own' &&
+        <Card
+          className="room-item room-item_create"
+          onClick={createRoom}
+        >
+          <div className="room-item__content">
+            <Typography variant="h6">
+              {t('rooms.createRoom')}
+            </Typography>
+          </div>
+        </Card>
+      }
+      {
+        targetRooms.map(room => <Card
+          key={room._id}
+          className="room-item"
+          style={{backgroundImage: `url(${room.puzzleImage})`}}
+          onClick={() => joinRoom(room._id)}
+        >
+          <div className="room-item__background"/>
+          <div className="room-item__content">
+            {
+              roomShown === 'own' &&
+              <div className="room-item__button-group">
+                <IconButton
+                  onClick={(e) => deleteRoom(e, room._id)}
+                  aria-label="delete"
+                  size="small"
+                >
+                  <CloseIcon/>
+                </IconButton>
+              </div>
+            }
+            <Typography variant="h6">
+              {room.name || room._id}
+            </Typography>
+          </div>
+        </Card>)
+      }
+    </div>
+  }
 
   return <div className="rooms-page">
     <Helmet
@@ -55,37 +109,7 @@ const Rooms: React.FC<IRoomsProps> = ({rooms}) => {
     </div>
     {
       rooms.isLoaded
-      ? roomShown === 'own'
-        ? <div className="room-list">
-          <div
-            className="room-list__item room-list__create-room"
-            onClick={createRoom}
-          >
-            {t('rooms.createRoom')}
-          </div>
-          {
-            rooms.ownRooms.map(room => <div
-              key={room._id}
-              className="room-list__item"
-              style={{backgroundImage: `url(${room.puzzleImage})`}}
-              onClick={() => joinRoom(room._id)}
-            >
-              {room.name || room._id}
-            </div>)
-          }
-        </div>
-        : <div className="room-list">
-          {
-            rooms.visitedRooms.map(room => <div
-              key={room._id}
-              className="room-list__item"
-              style={{backgroundImage: `url(${room.puzzleImage})`}}
-              onClick={() => joinRoom(room._id)}
-            >
-              {room.name || room._id}
-            </div>)
-          }
-        </div>
+      ? getRooms()
       : null
     }
   </div>

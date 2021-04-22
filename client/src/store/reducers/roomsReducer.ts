@@ -15,6 +15,11 @@ function roomsReducer(state: IRoomsState = initial, action: ActionType) {
         visitedRooms: action.visitedRooms,
         isLoaded: action.isLoaded,
       }
+    case actionTypes.DELETE_ROOM:
+      return {
+        ...state,
+        ownRooms: state.ownRooms.filter((room) => room._id !== action.roomId),
+      }
     // case actionTypes.ADD_ROOM:
     //   return [
     //     ...state,

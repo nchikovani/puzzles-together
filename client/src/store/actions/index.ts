@@ -34,6 +34,11 @@ export const setRooms = (ownRooms: any[], visitedRooms: any[], isLoaded: boolean
   isLoaded
 });
 
+export const deleteRoom = (roomId: string) => (<const>{
+  type: actionTypes.DELETE_ROOM,
+  roomId,
+});
+
 
 
 export const setRoom = (id: string, owner: string, name: string | undefined, createPuzzleOnlyOwner: boolean) => (<const>{
