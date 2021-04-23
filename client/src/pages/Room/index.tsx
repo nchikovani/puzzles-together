@@ -40,25 +40,30 @@ class Room extends React.Component<IRoomProps, {}> {
   render() {
     return (
       <>
+
         {
           this.props.isLoaded
-            ? <div className="App" style={{width: '100%'}}>
+            ? <div className="room" style={{width: '100%'}}>
               <Helmet
                 title={`${this.props.t('room.room')}: ${this.props.roomName || this.props.match.params.roomId}`}
               />
+
+
+
+
+
               <div className="room-game">
                 <div className="room-game__game">
                   <Game socketService={this.props.socketService}/>
                 </div>
-                <div className="room-game__room-control">
-                  <RoomControl socketService={this.props.socketService}/>
-                </div>
-                <div className="room-game__chat">
-                  <Chat/>
-                </div>
-                {/*<aside className="room-game__sidebar">*/}
-                {/*  */}
-                {/*</aside>*/}
+                <aside className="room-game__sidebar">
+                  <div className="room-game__room-control">
+                    <RoomControl socketService={this.props.socketService}/>
+                  </div>
+                  <div className="room-game__chat">
+                    <Chat/>
+                  </div>
+                </aside>
               </div>
             </div>
             : null
