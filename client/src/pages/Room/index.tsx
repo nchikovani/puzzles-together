@@ -1,6 +1,7 @@
 import React from 'react';
 import Game from "../../components/Game";
 import RoomControl from '../../components/RoomControl';
+import Chat from '../../components/Chat';
 import SocketService from '../../service/socketService';
 import store from '../../store';
 import {clearRoom} from '../../store/actions';
@@ -49,12 +50,15 @@ class Room extends React.Component<IRoomProps, {}> {
                 <div className="room-game__game">
                   <Game socketService={this.props.socketService}/>
                 </div>
-                <aside className="room-game__sidebar">
-                  <div className="room-game__room-control">
-                    <RoomControl socketService={this.props.socketService}/>
-                  </div>
-                  <div className="room-game__chat"/>
-                </aside>
+                <div className="room-game__room-control">
+                  <RoomControl socketService={this.props.socketService}/>
+                </div>
+                <div className="room-game__chat">
+                  <Chat/>
+                </div>
+                {/*<aside className="room-game__sidebar">*/}
+                {/*  */}
+                {/*</aside>*/}
               </div>
             </div>
             : null
