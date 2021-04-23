@@ -14,17 +14,25 @@
     flex: 1 0;
     flex-basis: 0;
     padding: 10px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
   }
   &__message-wrap {
     display: flex;
+    &:first-child {
+      margin-top: auto;
+    }
     &_my {
       justify-content: flex-end;
+      .chat__message {
+        align-items: flex-end;
+      }
     }
   }
   &__message {
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
     padding: 8px;
     background: white;
     border-radius: 5px;
@@ -33,11 +41,9 @@
     .MuiTypography-body1 {
       font-size: 14px !important;
     }
-
   }
   &__input {
     display: flex;
-
     justify-content: space-around;
     align-items: center;
     width: 100%;
@@ -56,5 +62,15 @@
   }
   &__send-button {
     margin-right: 10px !important;
+  }
+}
+
+.chat-message {
+
+  &__user-name {
+    font-weight: bold !important;
+  }
+  &__content {
+
   }
 }

@@ -30,43 +30,7 @@ const Chat: React.FC<IChat> = ({user}) => {
         userId: 'userId123',
         content: 'Привет!!',
         date: new Date(),
-      },
-      {
-        messageId: '123',
-        userId: '6081dc7fff955935345149e5',
-        content: 'пока!!',
-        date: new Date(),
-      },
-      {
-        messageId: '321',
-        userId: 'userId123',
-        content: 'Привет!!',
-        date: new Date(),
-      },
-      {
-        messageId: '123',
-        userId: '6081dc7fff955935345149e5',
-        content: 'пока!!',
-        date: new Date(),
-      },
-      {
-        messageId: '321',
-        userId: 'userId123',
-        content: 'Привет!!',
-        date: new Date(),
-      },
-      {
-        messageId: '123',
-        userId: '6081dc7fff955935345149e5',
-        content: 'пока!!',
-        date: new Date(),
-      },
-      {
-        messageId: '321',
-        userId: 'userId123',
-        content: 'Привет!!',
-        date: new Date(),
-      },
+      }
     ]
   }
   return (
@@ -81,11 +45,15 @@ const Chat: React.FC<IChat> = ({user}) => {
                 key={message.messageId}
                 className={`chat__message-wrap ${message.userId === user.id ? 'chat__message-wrap_my' : ''}`}
               >
-                <div className='chat__message'>
-                  <Typography>
+                <div className='chat__message chat-message'>
+                  <Typography
+                    className="chat-message__user-name"
+                  >
                     {message.userId}
                   </Typography>
-                  <Typography>
+                  <Typography
+                    className="chat-message__content"
+                  >
                     {message.content}
                   </Typography>
                 </div>

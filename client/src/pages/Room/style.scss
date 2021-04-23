@@ -3,6 +3,7 @@
   align-items: normal;
   margin-top: 20px;
   &__game {
+    flex-shrink: 0;
     width: 77%;
     margin-right: 10px;
     border: 1px solid black;
