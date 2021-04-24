@@ -9,6 +9,7 @@ import * as fs from "fs";
 import config from '../../config';
 import roomRouters from './roomRouters';
 import puzzleRouters from './puzzleRouters';
+import chatRouters from "./chatRouters";
 const {errorAction} = webSocketServerActions;
 import jwt = require("jsonwebtoken");
 const cookieParser = require('socket.io-cookie-parser');
@@ -30,6 +31,7 @@ class SocketService {
 
       socket.on("room", (action) => this.asyncMiddleware(roomRouters)(action, socket));
       socket.on("puzzle", (action) => this.asyncMiddleware(puzzleRouters)(action, socket));
+      socket.on("chat", (action) => this.asyncMiddleware(chatRouters)(action, socket));
 
       socket.on('disconnect', async () => {
         console.log('User disconnected from webSocket');

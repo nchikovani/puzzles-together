@@ -1,38 +1,33 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import SendIcon from '@material-ui/icons/Send';
 import './style.scss';
-import {IStore, IUserState} from "../../store/store.types";
+import {IChatState, IStore, IUserState} from "../../store/store.types";
 import {connect} from "react-redux";
+import SocketService from "../../service/socketService";
 
-interface IChat {
+interface IChatProps {
   user: IUserState;
+  chat: IChatState;
+  chatId: string | null;
+  socketService: SocketService;
 }
 
-const Chat: React.FC<IChat> = ({user}) => {
-  const chat = {
-    // senders: {
-    //   userId: 'userId',
-    //   name: 'name',
-    // },
-    messages: [
-      {
-        messageId: '123',
-        userId: '6081dc7fff955935345149e5',
-        content: 'пока!!',
-        date: new Date(),
-      },
-      {
-        messageId: '321',
-        userId: 'userId123',
-        content: 'Привет!!',
-        date: new Date(),
-      }
-    ]
-  }
+const Chat: React.FC<IChatProps> = ({user, chat, socketService}) => {
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    //получить чат
+  }, []);
+
+  const sendMessage = () => {
+    if (!chat.id) return;
+    socketService.sendMessage(chat.id, message);
+    setMessage('');
+  };
   return (
     <div
       className="chat"
@@ -42,7 +37,7 @@ const Chat: React.FC<IChat> = ({user}) => {
           {
             chat.messages.map((message) => (
               <div
-                key={message.messageId}
+                key={message.id}
                 className={`chat__message-wrap ${message.userId === user.id ? 'chat__message-wrap_my' : ''}`}
               >
                 <div className='chat__message chat-message'>
@@ -56,7 +51,13 @@ const Chat: React.FC<IChat> = ({user}) => {
                   >
                     {message.content}
                   </Typography>
+                  <Typography
+                    className="chat-message__time"
+                  >
+                    {`${message.date.getHours()}:${message.date.getMinutes()}`}
+                  </Typography>
                 </div>
+
               </div>
             ))
           }
@@ -64,6 +65,8 @@ const Chat: React.FC<IChat> = ({user}) => {
       {/*</div>*/}
       <div className="chat__input">
         <TextField
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Введите сообщение"
           multiline
           rowsMax={4}
@@ -74,6 +77,7 @@ const Chat: React.FC<IChat> = ({user}) => {
         <IconButton
           className="chat__send-button"
           size="small"
+          onClick={sendMessage}
         >
           <SendIcon/>
         </IconButton>
@@ -86,6 +90,7 @@ const Chat: React.FC<IChat> = ({user}) => {
 const mapStateToProps = (store: IStore) => {
   return {
     user: store.user,
+    chat: store.chat,
   }
 }
 

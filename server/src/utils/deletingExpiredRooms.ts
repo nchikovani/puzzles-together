@@ -1,4 +1,4 @@
-import RoomsService from "../rooms/rooms.service";
+import RoomsService from "../models/rooms/rooms.service";
 import config from "../config";
 
 export const deletingExpiredRooms = async () => {

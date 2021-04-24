@@ -23,6 +23,7 @@ export const serverErrorMessages = {
   accessIsDenied: 'Access to the page is denied',
   invalidToken: 'Invalid token',
   noAccessRights: 'NO_ACCESS_RIGHTS',
+  chatNotFound: 'CHAT_NOT_FOUND',
 };
 
 

@@ -2,7 +2,7 @@ import Rooms from "./room.model";
 import {Types} from 'mongoose';
 import UsersService from '../users/users.service';
 import {ServerError, serverErrorMessages} from 'shared';
-import config from "../config";
+import config from "../../config";
 import * as fs from "fs";
 
 class RoomsService {
@@ -28,11 +28,12 @@ class RoomsService {
   }
 
 
-  async addRoom(userId: string) {
+  async createRoom(userId: string, chatId: string) {
     const user = await UsersService.getUserById(userId);
     if (!user) throw new ServerError(404, serverErrorMessages.userNotFound);
     const newRoom = new Rooms({
       owner: user._id,
+      chatId,
     });
     return await newRoom.save();
   }

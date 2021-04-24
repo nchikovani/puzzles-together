@@ -1,5 +1,5 @@
 import {Puzzle} from "../../utils/Puzzle";
-import RoomsService from '../../rooms/rooms.service';
+import RoomsService from '../../models/rooms/rooms.service';
 import {SocketObject} from "./SocketService.types";
 import * as webSocketActionsTypes from 'shared/webSocketActionsTypes';
 import {WebSocketClientActionsType} from 'shared';

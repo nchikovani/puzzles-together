@@ -8,8 +8,7 @@ import {clearRoom} from '../../store/actions';
 import {connect} from "react-redux";
 import {WithTranslation, withTranslation} from 'react-i18next';
 import {withRouter, RouteComponentProps} from "react-router";
-import {IOption} from 'shared'
-import {IStore} from '../../store/store.types';
+import {IRoomState, IStore} from '../../store/store.types';
 import {Helmet} from "react-helmet";
 import './style.scss';
 
@@ -19,9 +18,7 @@ interface IMatchParams {
 
 interface IRoomProps extends RouteComponentProps<IMatchParams>, WithTranslation {
   socketService: SocketService;
-  options: IOption[] | null;
-  isLoaded: boolean;
-  roomName: string | null;
+  room: IRoomState;
 }
 
 class Room extends React.Component<IRoomProps, {}> {
@@ -30,6 +27,10 @@ class Room extends React.Component<IRoomProps, {}> {
     const roomId = props.match.params.roomId;
     props.socketService.connect();
     props.socketService.joinRoom(roomId);
+  }
+
+  componentDidMount() {
+    //получить комнату
   }
 
   componentWillUnmount() {
@@ -42,16 +43,11 @@ class Room extends React.Component<IRoomProps, {}> {
       <>
 
         {
-          this.props.isLoaded
+          this.props.room.isLoaded
             ? <div className="room" style={{width: '100%'}}>
               <Helmet
-                title={`${this.props.t('room.room')}: ${this.props.roomName || this.props.match.params.roomId}`}
+                title={`${this.props.t('room.room')}: ${this.props.room.name || this.props.match.params.roomId}`}
               />
-
-
-
-
-
               <div className="room-game">
                 <div className="room-game__game">
                   <Game socketService={this.props.socketService}/>
@@ -61,7 +57,7 @@ class Room extends React.Component<IRoomProps, {}> {
                     <RoomControl socketService={this.props.socketService}/>
                   </div>
                   <div className="room-game__chat">
-                    <Chat/>
+                    <Chat socketService={this.props.socketService} chatId={this.props.room.chatId}/>
                   </div>
                 </aside>
               </div>
@@ -76,9 +72,7 @@ class Room extends React.Component<IRoomProps, {}> {
 
 const mapStateToProps = (store: IStore) => {
   return {
-    options: store.game.options,
-    isLoaded: store.room.isLoaded,
-    roomName: store.room.name,
+    room: store.room
   }
 }
 

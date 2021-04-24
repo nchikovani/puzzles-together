@@ -5,8 +5,9 @@ import http = require("http");
 import cookieParser = require('cookie-parser');
 import {Server} from "socket.io";
 import mongoose = require('mongoose');
-import usersRouters from './users/users.routers';
-import roomsRouters from './rooms/rooms.routers';
+import usersRouters from './models/users/users.routers';
+import roomsRouters from './models/rooms/rooms.routers';
+import chatRouters from './models/chat/chat.routers';
 import SocketService from "./service/SocketService";
 import errorHandler from "./middleware/errorHandler";
 import {checkToken} from "./middleware/checkToken";
@@ -27,6 +28,7 @@ const io = new Server(server, {
 
 app.use('/users', usersRouters);
 app.use('/rooms', checkToken, roomsRouters);
+app.use('/chat', checkToken, chatRouters);
 app.use(errorHandler);
 
 app.get("*", (req, res) => {

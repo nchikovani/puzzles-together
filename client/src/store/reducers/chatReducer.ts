@@ -1,0 +1,30 @@
+import * as actionTypes from '../actionTypes';
+import {IChatState, ActionType} from "../store.types";
+
+const initial: IChatState = {
+  id: null,
+  messages: [],
+  isLoaded: false,
+}
+
+function roomReducer(state: IChatState = initial, action: ActionType) {
+  switch (action.type) {
+    case actionTypes.SET_CHAT:
+      return {
+        id: action.id,
+        messages: action.messages,
+        isLoaded: true,
+      }
+    case actionTypes.ADD_CHAT_MESSAGE:
+      return {
+        ...state,
+        messages: [...state.messages, action.message]
+      }
+    case actionTypes.CLEAR_CHAT:
+      return initial;
+    default:
+      return state;
+  }
+}
+
+export default roomReducer;

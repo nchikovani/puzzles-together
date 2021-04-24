@@ -28,7 +28,21 @@ export interface IRoomState {
   owner: string | null;
   name: string | null;
   createPuzzleOnlyOwner: boolean;
+  chatId: string | null;
   isLoaded: boolean;
+}
+
+export interface IChatState {
+  id: string | null;
+  messages: IChatMessage[];
+  isLoaded: boolean;
+}
+
+interface IChatMessage {
+  id: string;
+  userId: string;
+  content: string;
+  date: Date;
 }
 
 export interface IUserState {
@@ -56,6 +70,7 @@ export interface IStore {
   game: IGameState;
   user: IUserState;
   rooms: IRoomsState;
+  chat: IChatState;
   error: IErrorState;
   modalWindow: IModalWindowState;
 }

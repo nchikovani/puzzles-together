@@ -6,6 +6,9 @@ const initial: IRoomState = {
   owner: null,
   name: null,
   createPuzzleOnlyOwner: true,
+  chat: {
+    messages: [],
+  },
   isLoaded: false,
 }
 
@@ -17,6 +20,9 @@ function roomReducer(state: IRoomState = initial, action: ActionType) {
         owner: action.owner,
         name: action.name || null,
         createPuzzleOnlyOwner: action.createPuzzleOnlyOwner,
+        chat: {
+          messages: [],
+        },
         isLoaded: true,
       }
     case actionTypes.SET_ROOM_SETTINGS:
@@ -24,6 +30,14 @@ function roomReducer(state: IRoomState = initial, action: ActionType) {
         ...state,
         name: action.name,
         createPuzzleOnlyOwner: action.createPuzzleOnlyOwner,
+      }
+    case actionTypes.ADD_CHAT_MESSAGE:
+      return {
+        ...state,
+        chat: {
+          ...state.chat,
+          messages: [...state.chat.messages, action.message]
+        }
       }
     case actionTypes.CLEAR_ROOM:
       return initial;

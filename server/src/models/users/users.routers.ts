@@ -1,6 +1,6 @@
 import express = require("express");
 import UsersController from './users.controller';
-import {asyncMiddleware} from "../middleware/asyncMiddleware";
+import {asyncMiddleware} from "../../middleware/asyncMiddleware";
 
 const router = express.Router();
 

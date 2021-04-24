@@ -13,6 +13,7 @@ const RoomsSchema = new Schema({
   visitorsId: [{type: Schema.Types.ObjectId, ref: 'Users'}],
   name: { type: String, required: false},
   createPuzzleOnlyOwner: {type: Boolean, required: true, default: true},
+  chatId:  { type: Schema.Types.ObjectId, ref: 'Chat', required: true },
   lastVisit: {type: Date, required: true, default: new Date() }
 });
 

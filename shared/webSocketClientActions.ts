@@ -22,3 +22,9 @@ export const getOptionsAction = (image: string) => (<const>{
   type: actionTypes.GET_OPTIONS,
   image,
 });
+
+export const sendChatMessageAction = (chatId: string, message: string) => (<const>{
+  type: actionTypes.SEND_CHAT_MESSAGE_ACTION,
+  chatId,
+  message,
+});

@@ -2,9 +2,17 @@ import {io} from "socket.io-client";
 import {IUpdate, WebSocketServerActionsType} from 'shared';
 import {webSocketActionsTypes, webSocketClientActions, ServerError} from 'shared';
 import store from '../store';
-import {setGameData, setUpdate, setOptions, setIsSolved, setRoom, setRoomSettings} from '../store/actions';
+import {
+  setGameData,
+  setUpdate,
+  setOptions,
+  setIsSolved,
+  setRoom,
+  setRoomSettings,
+  addChatMessage
+} from '../store/actions';
 
-const {createAction, getOptionsAction, joinAction, setUpdateAction, setRoomSettingsAction} = webSocketClientActions;
+const {createAction, getOptionsAction, joinAction, setUpdateAction, setRoomSettingsAction, sendChatMessageAction} = webSocketClientActions;
 const SERVER_URL = 'http://localhost:8080';
 
 
@@ -20,6 +28,7 @@ export default class socketService {
 
     this.socket.on("puzzle", this.puzzleHandlers);
     this.socket.on("room", this.roomHandlers);
+    this.socket.on("chat", this.chatHandlers);
 
     this.socket.on('connect_error', (error) => {
       throw new ServerError(500, error.message);
@@ -41,6 +50,16 @@ export default class socketService {
         break;
       case webSocketActionsTypes.ROOM_SETTINGS:
         store.dispatch(setRoomSettings(action.name, action.createPuzzleOnlyOwner));
+        break;
+      case webSocketActionsTypes.ERROR:
+        throw new ServerError(action.error.code || 500, action.error.message);
+    }
+  }
+
+  private chatHandlers(action: WebSocketServerActionsType) {
+    switch (action.type) {
+      case webSocketActionsTypes.CHAT_MESSAGE:
+        store.dispatch(addChatMessage(action.message));
         break;
       case webSocketActionsTypes.ERROR:
         throw new ServerError(action.error.code || 500, action.error.message);
@@ -72,6 +91,10 @@ export default class socketService {
 
   setRoomSettings(roomSettings: {name: string; createPuzzleOnlyOwner: boolean}) {
     this.socket.emit('room', setRoomSettingsAction(roomSettings));
+  }
+
+  sendMessage(chatId: string, message: string) {
+    this.socket.emit('chat', sendChatMessageAction(chatId, message));
   }
 
   getOptions(image: string) {

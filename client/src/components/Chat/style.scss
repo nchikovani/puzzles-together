@@ -10,7 +10,6 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    //justify-content: flex-end;
     flex: 1 0;
     flex-basis: 0;
     padding: 10px;
@@ -38,9 +37,6 @@
     border-radius: 5px;
     margin-top: 8px;
     max-width: 77%;
-    .MuiTypography-body1 {
-      font-size: 14px !important;
-    }
   }
   &__input {
     display: flex;
@@ -69,8 +65,15 @@
 
   &__user-name {
     font-weight: bold !important;
+    font-size: 14px !important;
+    word-break: break-word;
   }
   &__content {
-
+    font-size: 14px !important;
+    word-break: break-word;
+  }
+  &__time {
+    font-size: 12px !important;
+    color: #888 !important;
   }
 }

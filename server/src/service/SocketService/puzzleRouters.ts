@@ -7,7 +7,7 @@ import {WebSocketClientActionsType} from 'shared';
 import {ServerError, serverErrorMessages} from 'shared';
 import {Server} from "socket.io";
 import {DefaultEventsMap} from "socket.io/dist/typed-events";
-import RoomsService from "../../rooms/rooms.service";
+import RoomsService from "../../models/rooms/rooms.service";
 const {gameDataAction, optionsAction, updateAction, solvedAction} = webSocketServerActions;
 
 export default async function puzzleRouter(action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>, socket: SocketObject, activePuzzlesService: ActivePuzzlesService) {

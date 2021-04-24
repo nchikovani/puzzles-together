@@ -2,7 +2,7 @@ import UsersService from './users.service';
 import {NextFunction, Request, Response} from 'express';
 import jwt = require("jsonwebtoken");
 import {ServerError, serverErrorMessages} from 'shared';
-import config from "../config";
+import config from "../../config";
 
 class UsersController {
   async getUserInfo(req: Request, res: Response, next: NextFunction) {

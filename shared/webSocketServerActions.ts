@@ -17,6 +17,11 @@ export const roomSettingsAction = (name: string, createPuzzleOnlyOwner: boolean)
   createPuzzleOnlyOwner,
 });
 
+export const chatMessageAction = (message: any) => (<const>{
+  type: actionTypes.CHAT_MESSAGE,
+  message
+});
+
 export const gameDataAction = (gameData: IGameData) => (<const>{
   type: actionTypes.GAME_DATA,
   gameData,

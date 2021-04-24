@@ -1,8 +1,9 @@
 import RoomsService from './rooms.service';
+import ChatService from '../chat/chat.service';
 import {ServerError, serverErrorMessages} from 'shared';
 import {Request, Response} from 'express';
 import * as fs from "fs";
-import config from "../config";
+import config from "../../config";
 import {IRoom} from './room.model';
 
 class RoomsController {
@@ -33,9 +34,10 @@ class RoomsController {
     return res.status(200).json({ownRooms: resultOwnRooms, visitedRooms: resultVisitedRooms});
   }
 
-  async addRoom(req: Request, res: Response) {
+  async createRoom(req: Request, res: Response) {
     const userIdFromToken = req.userId;
-    const room = await RoomsService.addRoom(userIdFromToken);
+    const chat = await ChatService.createChat();
+    const room = await RoomsService.createRoom(userIdFromToken, chat._id);
     return res.status(200).json({room: room});
   }
 
