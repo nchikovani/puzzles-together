@@ -1,6 +1,7 @@
 import Rooms from "./room.model";
 import {Types} from 'mongoose';
 import UsersService from '../users/users.service';
+import ChatService from '../chat/chat.service';
 import {ServerError, serverErrorMessages} from 'shared';
 import config from "../../config";
 import * as fs from "fs";
@@ -53,7 +54,10 @@ class RoomsService {
     if (fs.existsSync(`${config.roomJsonPuzzlePath}${id}.json`)) {
       fs.unlinkSync(`${config.roomJsonPuzzlePath}${id}.json`);
     }
-    return await Rooms.findByIdAndDelete(id).exec();
+    const room = await Rooms.findById(id).exec();
+    if (!room) throw new ServerError(404, serverErrorMessages.roomNotFound);
+    await ChatService.deleteChat(room.chatId);
+    await room.delete();
   }
 
   async pushVisitor(roomId: string, userId: string) {

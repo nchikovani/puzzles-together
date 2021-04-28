@@ -7,12 +7,12 @@ const initial: IChatState = {
   isLoaded: false,
 }
 
-function roomReducer(state: IChatState = initial, action: ActionType) {
+function chatReducer(state: IChatState = initial, action: ActionType) {
   switch (action.type) {
     case actionTypes.SET_CHAT:
       return {
-        id: action.id,
-        messages: action.messages,
+        ...action.chat,
+        id: action.chat._id,
         isLoaded: true,
       }
     case actionTypes.ADD_CHAT_MESSAGE:
@@ -27,4 +27,4 @@ function roomReducer(state: IChatState = initial, action: ActionType) {
   }
 }
 
-export default roomReducer;
+export default chatReducer;

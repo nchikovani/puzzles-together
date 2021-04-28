@@ -4,5 +4,5 @@ import {asyncMiddleware} from "../../middleware/asyncMiddleware";
 
 const router = express.Router();
 
-router.get("/", asyncMiddleware(UsersController.getChat));
+router.get("/:chatId", asyncMiddleware(UsersController.getChat));
 export default router;

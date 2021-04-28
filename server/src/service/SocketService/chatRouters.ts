@@ -6,6 +6,9 @@ import {ServerError, serverErrorMessages} from 'shared';
 import ActivePuzzlesService from "./ActivePuzzlesService";
 import {Server} from "socket.io";
 import {DefaultEventsMap} from "socket.io/dist/typed-events";
+import {chatMessageAction} from "shared/webSocketServerActions";
+import {IMessage} from "../../models/chat/chat.model";
+const shortid = require('shortid');
 
 export default async function chatRouters(action: WebSocketClientActionsType, io: Server<DefaultEventsMap, DefaultEventsMap>, socket: SocketObject, activePuzzlesService: ActivePuzzlesService) {
   switch (action.type) {
@@ -13,7 +16,15 @@ export default async function chatRouters(action: WebSocketClientActionsType, io
       const roomId = socket.roomId;
       if (!roomId) throw new ServerError(400, serverErrorMessages.didNotJoin);
       if (!socket.userId) throw new ServerError(400, serverErrorMessages.didNotJoin);
-      await ChatService.addMessage(action.chatId, socket.userId, action.message);
+      const message: IMessage = {
+        id: shortid.generate(),
+        userId: socket.userId,
+        content: action.message,
+        date: new Date,
+      }
+      await ChatService.addMessage(action.chatId, message);
+      //отправлять отправителю isFetched
+      io.to(roomId).emit("chat", chatMessageAction(message));//всем кроме отправителя
     }
   }
 }

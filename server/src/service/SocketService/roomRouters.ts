@@ -40,7 +40,7 @@ export default async function roomRouters(action: WebSocketClientActionsType, io
       socket.roomId = roomId;
       const gameData = (puzzle && puzzle.puzzleIsCreated) ? puzzle.getGameData() : null;
 
-      socket.emit("room", roomAction(roomId, room.owner, room.name, room.createPuzzleOnlyOwner, gameData));
+      socket.emit("room", roomAction(room, gameData));
       socket.join(roomId);
       break;
     }

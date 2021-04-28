@@ -29,10 +29,6 @@ class Room extends React.Component<IRoomProps, {}> {
     props.socketService.joinRoom(roomId);
   }
 
-  componentDidMount() {
-    //получить комнату
-  }
-
   componentWillUnmount() {
     this.props.socketService.disconnect();
     store.dispatch(clearRoom());

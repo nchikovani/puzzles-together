@@ -1,5 +1,5 @@
 import * as userService from '../../service/userService';
-import {setUser, setRooms, deleteRoom} from './index';
+import {setUser, setRooms, deleteRoom, setChat} from './index';
 import { History } from 'history';
 import {Dispatch} from "redux";
 
@@ -22,4 +22,10 @@ export const fetchAddRoom = ( history: History) => async (dispatch: Dispatch) =>
 export const fetchDeleteRoom = ( roomId: string) => async (dispatch: Dispatch) => {
   await userService.deleteRoom(roomId);
   dispatch(deleteRoom(roomId));
+};
+
+export const fetchGetChat = (chatId: string) => async (dispatch: Dispatch) => {
+  const {chat} = await userService.getChat(chatId);
+
+  dispatch(setChat(chat));
 };

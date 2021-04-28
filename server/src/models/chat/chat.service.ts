@@ -1,24 +1,22 @@
 import Chat from "./chat.model";
-import {ServerError, serverErrorMessages} from 'shared';
-import {Types} from "mongoose";
-import Rooms from "../rooms/room.model";
 
 class ChatService {
   async getChat(id: string) {
-    if (!Types.ObjectId.isValid(id)) throw new ServerError(404, serverErrorMessages.userNotFound);
     return await Chat.findById(id).exec();
   }
 
-  async addMessage(chatId: string, userId: string, messageContent: string) {
-    if (!Types.ObjectId.isValid(chatId)) throw new ServerError(404, serverErrorMessages.roomNotFound);
+  async addMessage(chatId: string, message: any) {
 
-    console.log(messageContent);
-    return await Rooms.findByIdAndUpdate(chatId, {$push: {messages: {userId, content: messageContent}}}).exec();
+    return await Chat.findByIdAndUpdate(chatId, {$push: {messages: message}}).exec();
   }
 
   async createChat() {
     const newChat = new Chat({});
     return await newChat.save();
+  }
+
+  async deleteChat(id: string) {
+    return await Chat.findByIdAndDelete(id).exec();
   }
 }
 

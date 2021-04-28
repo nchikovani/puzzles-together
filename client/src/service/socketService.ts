@@ -46,7 +46,7 @@ export default class socketService {
     switch (action.type) {
       case webSocketActionsTypes.ROOM:
         store.dispatch(setGameData(action.gameData));
-        store.dispatch(setRoom(action.id, action.owner, action.name, action.createPuzzleOnlyOwner));
+        store.dispatch(setRoom(action.room));
         break;
       case webSocketActionsTypes.ROOM_SETTINGS:
         store.dispatch(setRoomSettings(action.name, action.createPuzzleOnlyOwner));

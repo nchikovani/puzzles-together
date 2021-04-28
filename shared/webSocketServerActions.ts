@@ -2,12 +2,9 @@ import {IGameData, IOption, IUpdate} from "./Game.types";
 import * as actionTypes from './webSocketActionsTypes';
 
 //server
-export const roomAction = (id: string, owner: string, name: string | undefined, createPuzzleOnlyOwner: boolean, gameData: IGameData | null) => (<const>{
+export const roomAction = (room: any, gameData: IGameData | null) => (<const>{
   type: actionTypes.ROOM,
-  id,
-  owner,
-  name,
-  createPuzzleOnlyOwner,
+  room,
   gameData,
 });
 

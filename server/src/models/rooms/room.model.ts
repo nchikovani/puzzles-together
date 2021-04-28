@@ -4,7 +4,8 @@ export interface IRoom extends Document {
   owner: any;
   visitorsId: any[];
   name: string;
-  createPuzzleOnlyOwner: boolean
+  createPuzzleOnlyOwner: boolean;
+  chatId: string;
   lastVisit: Date;
 }
 

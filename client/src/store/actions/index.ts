@@ -39,12 +39,9 @@ export const deleteRoom = (roomId: string) => (<const>{
 });
 
 //room - activeRoom
-export const setRoom = (id: string, owner: string, name: string | undefined, createPuzzleOnlyOwner: boolean) => (<const>{
+export const setRoom = (room: any) => (<const>{
   type: actionTypes.SET_ROOM,
-  id,
-  owner,
-  name,
-  createPuzzleOnlyOwner,
+  room,
 });
 export const setRoomSettings = (name: string, createPuzzleOnlyOwner: boolean) => (<const>{
   type: actionTypes.SET_ROOM_SETTINGS,
@@ -58,16 +55,14 @@ export const clearRoom = () => (<const>{
 //chat
 export const setChat = (chat: any) => (<const>{
   type: actionTypes.SET_CHAT,
-  id: chat.id,
-  messages: chat.messages,
+  chat,
 });
 export const addChatMessage = (message: any) => (<const>{
   type: actionTypes.ADD_CHAT_MESSAGE,
   message,
 });
-export const clearChat = (message: any) => (<const>{
+export const clearChat = () => (<const>{
   type: actionTypes.CLEAR_CHAT,
-  message,
 });
 
 //puzzle
