@@ -1,0 +1,17 @@
+.confirm-window {
+  &__message {
+    padding: 10px;
+    border-bottom: solid 1px black;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+  &__button-group {
+    padding: 10px;
+    display: flex;
+    justify-content: flex-end;
+    .button {
+      text-transform: uppercase;
+      margin-left: 10px;
+    }
+  }
+}

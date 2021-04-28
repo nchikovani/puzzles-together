@@ -12,7 +12,8 @@ import SocketService from '../../service/socketService';
 import './style.scss';
 import {connect} from "react-redux";
 import {fps, canvasProportions} from './Puzzles/puzzleConstants';
-import {clearGame} from "../../store/actions";
+import {clearGame, openModalWindow} from "../../store/actions";
+import NoticeWindow from "../NoticeWindow";
 import store from "../../store";
 
 interface IGameProps {
@@ -84,7 +85,8 @@ class Game extends React.Component<IGameProps, IGameState>{
       this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
     if (this.props.isSolved !== prevProps.isSolved && this.props.isSolved) {
-      this.puzzles && this.puzzles.parts && alert(`Ураа, ты собрал пазл из ${this.puzzles.parts.length} кусков. Так держать!`);
+      this.puzzles && store.dispatch(openModalWindow(<NoticeWindow message={`Ураа, ты собрал пазл из ${this.puzzles.parts.length} кусков. Так держать!`}/>));
+
     }
   }
 

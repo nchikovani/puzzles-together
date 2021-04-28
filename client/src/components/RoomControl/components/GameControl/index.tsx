@@ -9,7 +9,7 @@ import {connect, useDispatch} from "react-redux";
 import SocketService from "../../../../service/socketService";
 import {IOption} from "../../../../../../shared";
 import {useTranslation} from "react-i18next";
-import {setOptions, openModalWindow} from '../../../../store/actions';
+import {setOptions, openModalWindow, clearGame} from '../../../../store/actions';
 
 interface IGameControlProps {
   socketService: SocketService;
@@ -45,9 +45,9 @@ const GameControl: React.FC<IGameControlProps> = ({socketService, options, puzzl
   }
 
   const createPuzzle = () => {
+    dispatch(clearGame());
     socketService.createPuzzle(selectedOption);
     setSelectedOption('');
-    dispatch(setOptions(null));
   }
 
   const confirmCreatePuzzle = () => {
